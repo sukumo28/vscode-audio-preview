@@ -5,10 +5,10 @@ You can play your wav file and preview its info on VS Code with this extension.
 ## Features
 
 How to preview wav.
-![how-to-use](https://github.com/sukumo28/wav-preview/images/how-to-use.gif)
+![how-to-use](https://github.com/sukumo28/wav-preview/blob/main/images/how-to-use.gif?raw=true)
 
 If this extension is not open by default, please follow movie below.
-![how-to-set-default](https://github.com/sukumo28/wav-preview/images/how-to-set-default.gif)
+![how-to-set-default](https://github.com/sukumo28/wav-preview/blob/main/images/how-to-set-default.gif?raw=true)
 
 ## Known Issues
 
