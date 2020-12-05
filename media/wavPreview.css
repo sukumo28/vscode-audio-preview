@@ -1,0 +1,58 @@
+table {
+    width: 60%;
+    margin: 1em;
+    padding: 0.5em;
+    border-collapse: collapse;
+    max-width: 500px;
+}
+
+th, td {
+    padding: 0.5em;
+}
+
+button {
+    display: block;
+    width: 60%;
+    max-width: 500px;
+    margin: 1em;
+}
+
+button:disabled {
+    background-color: lightgray;
+    color: black;
+}
+
+/* light theme color */
+th, td {
+    border: solid 1px black;
+}
+
+th {
+    background-color: black;
+    color: white;
+}
+
+/* dark theme color */
+body.vscode-dark th, body.vscode-dark td {
+    border: solid 1px lightgray;
+}
+
+body.vscode-dark th {
+    background-color: darkgray;
+    color: black;
+}
+
+/* high contrast theme color */
+body.vscode-high-contrast th, body.vscode-high-contrast td {
+    border: solid 1px white;
+}
+
+body.vscode-high-contrast th {
+    background-color: white;
+    color: black;
+}
+
+body.vscode-high-contrast button {
+    background-color: white;
+    color: black;
+}
