@@ -17,6 +17,13 @@ button {
     margin: 1em;
 }
 
+input[type="range"] {
+    display: block;
+    width: 60%;
+    max-width: 500px;
+    margin: 1em;
+}
+
 button:disabled {
     background-color: lightgray;
     color: black;

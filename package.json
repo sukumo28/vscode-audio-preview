@@ -11,7 +11,12 @@
 		"Other"
 	],
 	"keywords": [
-		"wav", "viewer", "sound", "music", "play", "listen"
+		"wav",
+		"viewer",
+		"sound",
+		"music",
+		"play",
+		"listen"
 	],
 	"icon": "wav-preview.png",
 	"repository": {
@@ -22,17 +27,20 @@
 		"url": "https://github.com/sukumo28/wav-preview.git"
 	},
 	"activationEvents": [
-		"onCustomEditor:wavPreview.wavPreview"
+		"onCustomEditor:wavPreview.audioPreview"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"customEditors": [
 			{
-				"viewType": "wavPreview.wavPreview",
-				"displayName": "Wav Preview",
+				"viewType": "wavPreview.audioPreview",
+				"displayName": "Audio Preview",
 				"selector": [
 					{
 						"filenamePattern": "*.wav"
+					},
+					{
+						"filenamePattern": "*.mp3"
 					}
 				],
 				"priority": "default"
@@ -61,6 +69,6 @@
 		"vscode-test": "^1.4.0"
 	},
 	"dependencies": {
-		"wavefile": "^11.0.0"
+		"audio-decode": "^1.4.0"
 	}
 }

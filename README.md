@@ -12,10 +12,4 @@ If this extension is not open by default, please follow movie below.
 
 ## Known Issues
 
-Feel free to report isuues on github.
-
-## Release Notes
-
-### 1.0.0
-
-Initial release of wav-preview
+Feel free to report isuues on github.  
