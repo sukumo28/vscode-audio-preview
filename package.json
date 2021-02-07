@@ -2,7 +2,7 @@
 	"name": "wav-preview",
 	"displayName": "wav-preview",
 	"description": "preview and play wav file in VS Code",
-	"version": "1.0.3",
+	"version": "1.1.1",
 	"engines": {
 		"vscode": "^1.51.0"
 	},
@@ -11,7 +11,12 @@
 		"Other"
 	],
 	"keywords": [
-		"wav", "viewer", "sound", "music", "play", "listen"
+		"wav",
+		"viewer",
+		"sound",
+		"music",
+		"play",
+		"listen"
 	],
 	"icon": "wav-preview.png",
 	"repository": {
@@ -22,17 +27,20 @@
 		"url": "https://github.com/sukumo28/wav-preview.git"
 	},
 	"activationEvents": [
-		"onCustomEditor:wavPreview.wavPreview"
+		"onCustomEditor:wavPreview.audioPreview"
 	],
-	"main": "./out/extension.js",
+	"main": "./dist/extension.js",
 	"contributes": {
 		"customEditors": [
 			{
-				"viewType": "wavPreview.wavPreview",
-				"displayName": "Wav Preview",
+				"viewType": "wavPreview.audioPreview",
+				"displayName": "Audio Preview",
 				"selector": [
 					{
 						"filenamePattern": "*.wav"
+					},
+					{
+						"filenamePattern": "*.mp3"
 					}
 				],
 				"priority": "default"
@@ -40,27 +48,28 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"vscode:prepublish": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.51.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.0.0",
 		"@types/node": "^12.11.7",
-		"eslint": "^7.9.0",
+		"@types/vscode": "^1.51.0",
 		"@typescript-eslint/eslint-plugin": "^4.1.1",
 		"@typescript-eslint/parser": "^4.1.1",
+		"eslint": "^7.9.0",
 		"glob": "^7.1.6",
 		"mocha": "^8.1.3",
+		"ts-loader": "^8.0.15",
 		"typescript": "^4.0.2",
-		"vscode-test": "^1.4.0"
+		"vscode-test": "^1.4.0",
+		"webpack": "^5.21.1",
+		"webpack-cli": "^4.5.0"
 	},
 	"dependencies": {
-		"wavefile": "^11.0.0"
+		"audio-decode": "^1.4.0"
 	}
 }
