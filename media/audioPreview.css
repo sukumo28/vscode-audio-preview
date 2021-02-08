@@ -18,7 +18,7 @@ button {
 }
 
 input[type="range"] {
-    display: block;
+    display: none;
     width: 60%;
     max-width: 500px;
     margin: 1em;

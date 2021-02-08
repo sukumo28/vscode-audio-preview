@@ -66,7 +66,10 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
             AudioPreviewEditorProvider.viewType,
             new AudioPreviewEditorProvider(context),
             {
-                supportsMultipleEditorsPerDocument: false
+                supportsMultipleEditorsPerDocument: false,
+                webviewOptions: {
+                    retainContextWhenHidden: true,
+                }
             }
         );
     }
