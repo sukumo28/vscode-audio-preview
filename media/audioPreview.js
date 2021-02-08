@@ -101,7 +101,7 @@ class Player {
             // create audio buffer because
             // passed audioBuffer is once stringified(?), 
             // and it isn't recognised as an AudioBuffer when you set it by `source.buffer = audioBuffer`
-            const ac = new AudioContext();
+            const ac = new AudioContext({ sampleRate: audioBuffer.sampleRate });
             const ab = ac.createBuffer(audioBuffer.numberOfChannels, audioBuffer.length, audioBuffer.sampleRate);
             for (let ch = 0; ch < ab.numberOfChannels; ch++) {
                 const f32a = new Float32Array(ab.length);
@@ -111,7 +111,7 @@ class Player {
                 ab.copyToChannel(f32a, ch);
             }
 
-            //set player ui
+            // set player ui
             new Player(ac, ab, audioBuffer.duration);
         } catch (err) {
             message.textContent = "failed to prepare audioBufferSourceNode: " + err;
