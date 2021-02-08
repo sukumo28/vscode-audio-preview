@@ -5,15 +5,26 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "watch",
-			"problemMatcher": "$tsc-watch",
-			"isBackground": true,
+			"script": "webpack",
+			"isBackground": false,
 			"presentation": {
-				"reveal": "never"
+				"echo": true,
+				"reveal": "always",
 			},
 			"group": {
 				"kind": "build",
 				"isDefault": true
+			}
+		},
+		{
+			"label": "test-compile",
+			"type": "npm",
+			"script": "test-compile",
+			"problemMatcher": "$tsc",
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
 			}
 		}
 	]
