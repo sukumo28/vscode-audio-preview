@@ -15,6 +15,7 @@ class Player {
         };
 
         this.seekBar = document.getElementById("seek-bar");
+        this.seekBar.style.display = "block";
         this.seekBar.value = 0;
         this.seekBar.onchange = () => { this.onChange(); };
 
