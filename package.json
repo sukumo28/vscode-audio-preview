@@ -38,9 +38,6 @@
 				"selector": [
 					{
 						"filenamePattern": "*.wav"
-					},
-					{
-						"filenamePattern": "*.mp3"
 					}
 				],
 				"priority": "default"
