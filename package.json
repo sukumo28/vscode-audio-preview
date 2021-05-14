@@ -44,6 +44,12 @@
 			}
 		]
 	},
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": "limited",
+			"description": "This ext does not play audio files in untrusted workspaces."
+		}
+	},
 	"scripts": {
 		"vscode:prepublish": "webpack --mode production",
 		"webpack": "webpack --mode development",
