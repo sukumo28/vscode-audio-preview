@@ -84,7 +84,7 @@ class Player {
 
     // Handle messages from the extension
     window.addEventListener('message', async e => {
-        const { audioBuffer } = e.data;
+        const { audioBuffer, isTrusted } = e.data;
         if (!audioBuffer) {
             message.textContent = "failed to decode: undefined";
             return;
@@ -96,6 +96,12 @@ class Player {
             `<tr><td>numberOfChannels</td><td>${audioBuffer.numberOfChannels}</td></tr>\n` +
             `<tr><td>length</td><td>${audioBuffer.length}</td></tr>\n` +
             `<tr><td>duration</td><td>${audioBuffer.duration}</td></tr>\n`;
+
+        // do not play audio in untrusted workspace 
+        if (isTrusted === false) {
+            message.textContent = "Cannot play audio in untrusted workspaces";
+            return
+        }
 
         try {
             // create audio buffer because

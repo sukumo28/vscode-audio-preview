@@ -107,7 +107,10 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
         // Wait for the webview to be properly ready before we init
 		webviewPanel.webview.onDidReceiveMessage(e => {
 			if (e.type === 'ready') {
-				webviewPanel.webview.postMessage({audioBuffer: document.documentData});
+				webviewPanel.webview.postMessage({
+                    audioBuffer: document.documentData,
+                    isTrusted: vscode.workspace.isTrusted
+                });
 			}
 		});
     }

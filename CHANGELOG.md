@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.0 - 2021-05-15  
+### Changed  
+- Support Workspace Trust  
+
 ## 1.2.0 - 2021-02-08  
 ### Changed  
 - Keep decode result when pannel is hidden
