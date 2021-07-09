@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.4.0 - 2021-07-09  
+### Changed  
+- Show more header fields  
+
 ## 1.3.0 - 2021-05-15  
 ### Changed  
 - Support Workspace Trust  
