@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.0 - 2020-07-09  
+### Changed  
+- Improve performance  
+
 ## 1.4.0 - 2021-07-09  
 ### Changed  
 - Show more header fields  
