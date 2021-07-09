@@ -9,9 +9,9 @@ class Player {
         this.ab = audioBuffer;
 
         this.button = document.getElementById("listen-button");
-        this.button.onclick = () => { 
+        this.button.onclick = () => {
             if (this.isPlaying) this.stop();
-            else this.play(); 
+            else this.play();
         };
 
         this.seekBar = document.getElementById("seek-bar");
@@ -79,51 +79,90 @@ class Player {
 (function () {
     const vscode = acquireVsCodeApi();
 
-    const infoTable = document.getElementById("info-table");
-    const message = document.getElementById("message");
-
     // Handle messages from the extension
     window.addEventListener('message', async e => {
-        const { audioBuffer, isTrusted } = e.data;
-        if (!audioBuffer) {
-            message.textContent = "failed to decode: undefined";
+        const { type, data, isTrusted } = e.data;
+
+        switch (type) {
+            case "info":
+                await showInfo(data);
+                // do not play audio in untrusted workspace 
+                if (isTrusted === false) {
+                    const message = document.getElementById("message");
+                    message.textContent = "Cannot play audio in untrusted workspaces";
+                    break;
+                }
+                vscode.postMessage({ type: 'play' });
+                break;
+
+            case "data":
+                await showPlayer(data);
+                break;
+        }
+    });
+
+    async function showInfo(data) {
+        const message = document.getElementById("message");
+        if (!data) {
+            message.textContent = "failed to decode header: undefined";
             return;
         }
 
-        //insert datas to info table
-        infoTable.innerHTML +=
-            `<tr><td>sampleRate</td><td>${audioBuffer.sampleRate}</td></tr>\n` +
-            `<tr><td>numberOfChannels</td><td>${audioBuffer.numberOfChannels}</td></tr>\n` +
-            `<tr><td>length</td><td>${audioBuffer.length}</td></tr>\n` +
-            `<tr><td>duration</td><td>${audioBuffer.duration}</td></tr>\n`;
+        const compressFormat = {
+            0: "unknown", 1: "uncompressed PCM", 2: "Microsoft ADPCM",
+            3: "IEEE Float", 6: "a-law", 7: "mu-law",
+            17: "IMA ADPCM", 20: "ITU G.723 ADPCM (Yamaha)", 49: "GSM 6.10",
+            64: "ITU G.721 ADPCM", 80: "MPEG",
+            65535: "Experimental"
+        };
 
-        // do not play audio in untrusted workspace 
-        if (isTrusted === false) {
-            message.textContent = "Cannot play audio in untrusted workspaces";
-            return
+        const channels = {
+            1: "mono", 2: "stereo"
+        };
+
+        //insert datas to info table
+        const infoTable = document.getElementById("info-table");
+        infoTable.innerHTML = `
+        <table>
+            <tr><th>Key</th><th>Value</th></tr>
+            <tr><td>format</td><td>${data.fmt.audioFormat} (${compressFormat[data.fmt.audioFormat]})</td></tr>
+            <tr><td>number of channel</td><td>${data.fmt.numChannels} (${channels[data.fmt.numChannels]})</td></tr>
+            <tr><td>sampleRate</td><td>${data.fmt.sampleRate}</td></tr>
+            <tr><td>byteRate</td><td>${data.fmt.byteRate}</td></tr>
+            <tr><td>blockAlign</td><td>${data.fmt.blockAlign}</td></tr>
+            <tr><td>bitsPerSample (bit depth)</td><td>${data.fmt.bitsPerSample}</td></tr>
+        </table>
+        `;
+    }
+
+    async function showPlayer(data) {
+        const message = document.getElementById("message");
+        if (!data) {
+            message.textContent = "failed to decode data: undefined";
+            return;
         }
 
         try {
             // create audio buffer because
             // passed audioBuffer is once stringified(?), 
             // and it isn't recognised as an AudioBuffer when you set it by `source.buffer = audioBuffer`
-            const ac = new AudioContext({ sampleRate: audioBuffer.sampleRate });
-            const ab = ac.createBuffer(audioBuffer.numberOfChannels, audioBuffer.length, audioBuffer.sampleRate);
+            const ac = new AudioContext({ sampleRate: data.sampleRate });
+            const ab = ac.createBuffer(data.numberOfChannels, data.length, data.sampleRate);
             for (let ch = 0; ch < ab.numberOfChannels; ch++) {
                 const f32a = new Float32Array(ab.length);
                 for (let i = 0; i < ab.length; i++) {
-                    f32a[i] = audioBuffer._channelData[ch][i];
+                    f32a[i] = data.samples[ch][i];
                 }
                 ab.copyToChannel(f32a, ch);
             }
 
             // set player ui
-            new Player(ac, ab, audioBuffer.duration);
+            new Player(ac, ab, data.duration);
         } catch (err) {
             message.textContent = "failed to prepare audioBufferSourceNode: " + err;
             return;
         }
-    });
+    }
 
     // Signal to VS Code that the webview is initialized.
     vscode.postMessage({ type: 'ready' });

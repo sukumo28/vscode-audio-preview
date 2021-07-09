@@ -75,6 +75,6 @@
 		"webpack-cli": "^4.5.0"
 	},
 	"dependencies": {
-		"audio-decode": "^1.4.0"
+		"wavefile": "^11.0.0"
 	}
 }
