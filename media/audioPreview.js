@@ -65,7 +65,6 @@ class Player {
     }
 
     onChange() {
-        console.log(this.seekBar.value);
         // stop if plaing
         if (this.isPlaying) {
             this.stop();
@@ -78,6 +77,7 @@ class Player {
 
 (function () {
     const vscode = acquireVsCodeApi();
+    let audioBuffer;
 
     // Handle messages from the extension
     window.addEventListener('message', async e => {
@@ -92,11 +92,18 @@ class Player {
                     message.textContent = "Cannot play audio in untrusted workspaces";
                     break;
                 }
-                vscode.postMessage({ type: 'play' });
+                vscode.postMessage({ type: 'prepare' });
+                break;
+
+            case "prepare":
+                await showPlayer(data);
+                vscode.postMessage({ type: 'play', start: 0, end: 10000 });
                 break;
 
             case "data":
-                await showPlayer(data);
+                await setData(data);
+                if (audioBuffer.length <= data.end) break;
+                vscode.postMessage({ type: 'play', start: data.end, end: data.end + 10000 });
                 break;
         }
     });
@@ -143,25 +150,36 @@ class Player {
         }
 
         try {
-            // create audio buffer because
-            // passed audioBuffer is once stringified(?), 
-            // and it isn't recognised as an AudioBuffer when you set it by `source.buffer = audioBuffer`
             const ac = new AudioContext({ sampleRate: data.sampleRate });
-            const ab = ac.createBuffer(data.numberOfChannels, data.length, data.sampleRate);
-            for (let ch = 0; ch < ab.numberOfChannels; ch++) {
-                const f32a = new Float32Array(ab.length);
-                for (let i = 0; i < ab.length; i++) {
-                    f32a[i] = data.samples[ch][i];
-                }
-                ab.copyToChannel(f32a, ch);
+            audioBuffer = ac.createBuffer(data.numberOfChannels, data.length, data.sampleRate);
+            for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
+                const f32a = new Float32Array(audioBuffer.length);
+                audioBuffer.copyToChannel(f32a, ch);
             }
 
             // set player ui
-            new Player(ac, ab, data.duration);
+            new Player(ac, audioBuffer, data.duration);
         } catch (err) {
             message.textContent = "failed to prepare audioBufferSourceNode: " + err;
             return;
         }
+    }
+
+    async function setData(data) {
+        // copy passed data.samples into audioBuffer manually, because it is once stringified(?), 
+        // and its children are not recognised as Float32Array
+        for (let ch = 0; ch < data.numberOfChannels; ch++) {
+            const f32a = new Float32Array(data.length);
+            for (let i = 0; i < f32a.length; i++) {
+                f32a[i] = data.samples[ch][i];
+            }
+            audioBuffer.copyToChannel(f32a, ch, data.start);
+        }
+
+        // show progress
+        const decodeState = document.getElementById("decode-state");
+        const progress = Math.floor(data.end * 100 / audioBuffer.length);
+        decodeState.textContent = "decode: " + progress + "% done";
     }
 
     // Signal to VS Code that the webview is initialized.
