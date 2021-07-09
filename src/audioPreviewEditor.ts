@@ -5,7 +5,7 @@ import { getNonce } from "./util";
 import { WaveFile } from 'wavefile';
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
-    
+
     static async create(
         uri: vscode.Uri,
         backupId: string | undefined,
@@ -16,7 +16,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         try {
             const wav = new WaveFile(fileData);
             return new AudioPreviewDocument(uri, wav);
-        } catch(err) {
+        } catch (err) {
             vscode.window.showErrorMessage(err);
             return new AudioPreviewDocument(uri, undefined);
         }
@@ -28,11 +28,11 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         }
         return vscode.workspace.fs.readFile(uri);
     }
-    
+
     private readonly _uri: vscode.Uri;
     private _documentData: any;
 
-    private constructor(
+    private constructor (
         uri: vscode.Uri,
         initialContent: any
     ) {
@@ -43,65 +43,94 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
     public get uri() { return this._uri; }
 
-    public get wavHeader(): any { 
+    public get wavHeader(): any {
         return {
             fmt: this._documentData.fmt
-        }; 
+        };
     }
 
-    public get wavData(): any { 
+    public prepareData(): any {
         try {
-            const sampleRate = this._documentData.fmt.sampleRate;
-            const chNum = this._documentData.fmt.numChannels;
-    
-            // decompress
-            switch(this._documentData.fmt.audioFormat) {
+            // decompose
+            switch (this._documentData.fmt.audioFormat) {
                 case 6:
                     this._documentData.fromALaw();
                     break;
-    
+
                 case 7:
                     this._documentData.fromMuLaw();
                     break;
-                
+
                 case 17:
                     this._documentData.fromIMAADPCM();
                     break;
             }
-    
+
+            // load 
+            const chNum = this._documentData.fmt.numChannels;
             let samples = this._documentData.getSamples(false, Float32Array);
-            if (chNum == 1) {
+            if (chNum === 1) {
                 samples = [samples];
             }
-    
-            // convert to [-1,1] float32
-            if (this._documentData.fmt.audioFormat === 1) {
-                const max = 1 << (this._documentData.fmt.bitsPerSample - 1);
-                for (let ch=0; ch<chNum; ch++) {
-                    for (let i=0; i<samples[ch].length; i++) {
-                        const v = samples[ch][i];
-                        samples[ch][i] = v < 0? v/max : v/(max-1);
-                    }
-                }
-            }
-            
+            this._documentData.samples = samples;
+
+            const sampleRate = this._documentData.fmt.sampleRate;
+            const length = samples[0].length;
             return {
-                samples,
                 sampleRate,
                 numberOfChannels: chNum,
-                length: samples[0].length,
-                duration: samples[0].length / sampleRate
-            }; 
+                length,
+                duration: length / sampleRate
+            };
 
-        } catch(err) {
+        } catch (err) {
             vscode.window.showErrorMessage(err);
             return {
-                samples: [[]],
-                sampleRate: 0,
+                sampleRate: 1,
                 numberOfChannels: 1,
                 length: 0,
                 duration: 0
-            }; 
+            };
+        }
+    }
+
+    // you have to prepareData before calling wavData
+    public wavData(start: number, end: number): any {
+        try {
+            const chNum = this._documentData.fmt.numChannels;
+            const samples = new Array(chNum);
+            for (let ch = 0; ch < chNum; ch++) {
+                samples[ch] = this._documentData.samples[ch].slice(start, end);
+            }
+
+            // convert to [-1,1] float32
+            if (this._documentData.fmt.audioFormat === 1) {
+                const max = 1 << (this._documentData.fmt.bitsPerSample - 1);
+                for (let ch = 0; ch < chNum; ch++) {
+                    for (let i = 0; i < samples[ch].length; i++) {
+                        const v = samples[ch][i];
+                        samples[ch][i] = v < 0 ? v / max : v / (max - 1);
+                    }
+                }
+            }
+
+            return { 
+                samples,
+                length: samples[0].length,
+                numberOfChannels: chNum,
+                start,
+                end
+            };
+
+        } catch (err) {
+            vscode.window.showErrorMessage(err);
+            return { 
+                samples: [[]],
+                length: 0,
+                numberOfChannels: 1,
+                start: 0,
+                end: 1
+            };
         }
     }
 
@@ -109,14 +138,14 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public readonly onDidDispose = this._onDidDispose.event;
 
     /**
-	 * Called by VS Code when there are no more references to the document.
-	 * 
-	 * This happens when all editors for it have been closed.
-	 */
-	dispose(): void {
-		this._onDidDispose.fire();
-		super.dispose();
-	}
+     * Called by VS Code when there are no more references to the document.
+     * 
+     * This happens when all editors for it have been closed.
+     */
+    dispose(): void {
+        this._onDidDispose.fire();
+        super.dispose();
+    }
 }
 
 export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorProvider {
@@ -136,9 +165,9 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
     private static readonly viewType = 'wavPreview.audioPreview';
 
-    constructor(
-		private readonly _context: vscode.ExtensionContext
-	) { }
+    constructor (
+        private readonly _context: vscode.ExtensionContext
+    ) { }
 
     async openCustomDocument(
         uri: vscode.Uri,
@@ -159,13 +188,13 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
         _token: vscode.CancellationToken
     ): Promise<void> {
         // Setup initial content for the webview
-		webviewPanel.webview.options = {
-			enableScripts: true,
-		};
+        webviewPanel.webview.options = {
+            enableScripts: true,
+        };
         webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
-        
+
         // Wait for the webview to be properly ready before we init
-		webviewPanel.webview.onDidReceiveMessage(e => {
+        webviewPanel.webview.onDidReceiveMessage(e => {
             switch (e.type) {
                 case "ready":
                     webviewPanel.webview.postMessage({
@@ -175,34 +204,42 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     });
                     break;
 
+                case "prepare":
+                    webviewPanel.webview.postMessage({
+                        type: "prepare",
+                        data: document.prepareData(),
+                        isTrusted: vscode.workspace.isTrusted
+                    });
+                    break;
+
                 case "play":
                     webviewPanel.webview.postMessage({
                         type: "data",
-                        data: document.wavData,
+                        data: document.wavData(e.start, e.end),
                         isTrusted: vscode.workspace.isTrusted
                     });
                     break;
             }
-		});
+        });
     }
 
     /**
-	 * Get the static HTML used for in our editor's webviews.
-	 */
+     * Get the static HTML used for in our editor's webviews.
+     */
     private getHtmlForWebview(webview: vscode.Webview): string {
         // Local path to script and css for the webview
-		const scriptUri = webview.asWebviewUri(vscode.Uri.file(
-			path.join(this._context.extensionPath, 'media', 'audioPreview.js')
-        )); 
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.file(
-			path.join(this._context.extensionPath, 'media', 'vscode.css')
-		));
-		const styleMainUri = webview.asWebviewUri(vscode.Uri.file(
-			path.join(this._context.extensionPath, 'media', 'audioPreview.css')
+        const scriptUri = webview.asWebviewUri(vscode.Uri.file(
+            path.join(this._context.extensionPath, 'media', 'audioPreview.js')
         ));
-        
+        const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.file(
+            path.join(this._context.extensionPath, 'media', 'vscode.css')
+        ));
+        const styleMainUri = webview.asWebviewUri(vscode.Uri.file(
+            path.join(this._context.extensionPath, 'media', 'audioPreview.css')
+        ));
+
         // Use a nonce to whitelist which scripts can be run
-		const nonce = getNonce();
+        const nonce = getNonce();
 
         return /* html */`
             <!DOCTYPE html>
@@ -224,6 +261,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
                 <button id="listen-button" disabled>please wait...</button>
                 <input type="range" id="seek-bar" value="0" />
+                <div id="decode-state"></div>
 
                 <div id="message"></div>
 

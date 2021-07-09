@@ -2,7 +2,7 @@
 	"name": "wav-preview",
 	"displayName": "wav-preview",
 	"description": "preview and play wav file in VS Code",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"engines": {
 		"vscode": "^1.56.2"
 	},
