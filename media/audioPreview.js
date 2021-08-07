@@ -20,8 +20,8 @@ class Player {
         this.seekBar.onchange = () => { this.onChange(); };
 
         //enable play button
-        this.button.textContent = "Play";
-        this.button.disabled = false;
+        this.button.textContent = "play";
+        this.button.style.display = "block";
     }
 
     play() {
@@ -79,8 +79,7 @@ class Player {
         }
         this.button.removeEventListener("click", this.button.onclick);
         this.seekBar.removeEventListener("change", this.seekBar.onchange);
-        this.button.textContent = "please wait...";
-        this.button.disabled = true;
+        this.button.style.display = "none"
         this.seekBar.style.display = "none";
         this.button = undefined;
         this.seekBar = undefined;
@@ -100,8 +99,8 @@ class Player {
         switch (type) {
             case "info":
                 if (!data) {
-                    message.textContent = "failed to decode header: invalid";
-                    return;
+                    message.textContent = "failed to decode header";
+                    break;
                 }
                 await showInfo(data);
                 // do not play audio in untrusted workspace 
@@ -114,14 +113,18 @@ class Player {
 
             case "prepare":
                 if (!data) {
-                    message.textContent = "failed to decode data: invalid";
-                    return;
+                    message.textContent = "failed to decode data";
+                    break;
                 }
                 await showPlayer(data);
                 vscode.postMessage({ type: 'play', start: 0, end: 10000 });
                 break;
 
             case "data":
+                if (!data) {
+                    message.textContent = "failed to decode data: invalid";
+                    break;
+                }
                 await setData(data);
                 if (audioBuffer.length <= data.end) break;
                 vscode.postMessage({ type: 'play', start: data.end, end: data.end + 10000 });
@@ -142,19 +145,19 @@ class Player {
             17: "IMA ADPCM", 20: "ITU G.723 ADPCM (Yamaha)", 49: "GSM 6.10",
             64: "ITU G.721 ADPCM", 80: "MPEG",
             65535: "Experimental"
-        };
+        }[data.fmt.audioFormat] || "unsupported";
 
         const channels = {
             1: "mono", 2: "stereo"
-        };
+        }[data.fmt.numChannels] || "unsupported";
 
         //insert datas to info table
         const infoTable = document.getElementById("info-table");
         infoTable.innerHTML = `
         <table>
             <tr><th>Key</th><th>Value</th></tr>
-            <tr><td>format</td><td>${data.fmt.audioFormat} (${compressFormat[data.fmt.audioFormat]})</td></tr>
-            <tr><td>number of channel</td><td>${data.fmt.numChannels} (${channels[data.fmt.numChannels]})</td></tr>
+            <tr><td>format</td><td>${data.fmt.audioFormat} (${compressFormat})</td></tr>
+            <tr><td>number of channel</td><td>${data.fmt.numChannels} (${channels})</td></tr>
             <tr><td>sampleRate</td><td>${data.fmt.sampleRate}</td></tr>
             <tr><td>byteRate</td><td>${data.fmt.byteRate}</td></tr>
             <tr><td>blockAlign</td><td>${data.fmt.blockAlign}</td></tr>
@@ -176,6 +179,7 @@ class Player {
             player = new Player(ac, audioBuffer, data.duration);
         } catch (err) {
             message.textContent = "failed to prepare audioBufferSourceNode: " + err;
+            document.getElementById("listen-button").style.display = "none";
             return;
         }
     }
@@ -199,8 +203,10 @@ class Player {
     async function reload() {
         message.textContent = "";
         decodeState.textContent = "";
-        player.dispose();
-        player = undefined;
+        if (player) {
+            player.dispose();
+            player = undefined;
+        }
     }
 
     // Signal to VS Code that the webview is initialized.
