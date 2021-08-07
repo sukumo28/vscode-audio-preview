@@ -65,7 +65,6 @@ class Player {
     }
 
     onChange() {
-        // stop if plaing
         if (this.isPlaying) {
             this.stop();
         }
@@ -73,11 +72,26 @@ class Player {
         this.currentSec = this.seekBar.value * this.duration / 100;
         this.play();
     }
+
+    dispose() {
+        if (this.isPlaying) {
+            this.stop();
+        }
+        this.button.removeEventListener("click", this.button.onclick);
+        this.seekBar.removeEventListener("change", this.seekBar.onchange);
+        this.button.textContent = "please wait...";
+        this.button.disabled = true;
+        this.seekBar.style.display = "none";
+        this.button = undefined;
+        this.seekBar = undefined;
+    }
 }
 
 (function () {
     const vscode = acquireVsCodeApi();
-    let audioBuffer;
+    let audioBuffer, player;
+    const message = document.getElementById("message");
+    const decodeState = document.getElementById("decode-state");
 
     // Handle messages from the extension
     window.addEventListener('message', async e => {
@@ -85,10 +99,13 @@ class Player {
 
         switch (type) {
             case "info":
+                if (!data) {
+                    message.textContent = "failed to decode header: invalid";
+                    return;
+                }
                 await showInfo(data);
                 // do not play audio in untrusted workspace 
                 if (isTrusted === false) {
-                    const message = document.getElementById("message");
                     message.textContent = "Cannot play audio in untrusted workspaces";
                     break;
                 }
@@ -96,6 +113,10 @@ class Player {
                 break;
 
             case "prepare":
+                if (!data) {
+                    message.textContent = "failed to decode data: invalid";
+                    return;
+                }
                 await showPlayer(data);
                 vscode.postMessage({ type: 'play', start: 0, end: 10000 });
                 break;
@@ -105,16 +126,16 @@ class Player {
                 if (audioBuffer.length <= data.end) break;
                 vscode.postMessage({ type: 'play', start: data.end, end: data.end + 10000 });
                 break;
+
+            case "reload":
+                await reload();
+                vscode.postMessage({ type: 'ready' });
+                break;
+
         }
     });
 
     async function showInfo(data) {
-        const message = document.getElementById("message");
-        if (!data) {
-            message.textContent = "failed to decode header: undefined";
-            return;
-        }
-
         const compressFormat = {
             0: "unknown", 1: "uncompressed PCM", 2: "Microsoft ADPCM",
             3: "IEEE Float", 6: "a-law", 7: "mu-law",
@@ -143,12 +164,6 @@ class Player {
     }
 
     async function showPlayer(data) {
-        const message = document.getElementById("message");
-        if (!data) {
-            message.textContent = "failed to decode data: undefined";
-            return;
-        }
-
         try {
             const ac = new AudioContext({ sampleRate: data.sampleRate });
             audioBuffer = ac.createBuffer(data.numberOfChannels, data.length, data.sampleRate);
@@ -158,7 +173,7 @@ class Player {
             }
 
             // set player ui
-            new Player(ac, audioBuffer, data.duration);
+            player = new Player(ac, audioBuffer, data.duration);
         } catch (err) {
             message.textContent = "failed to prepare audioBufferSourceNode: " + err;
             return;
@@ -166,7 +181,7 @@ class Player {
     }
 
     async function setData(data) {
-        // copy passed data.samples into audioBuffer manually, because it is once stringified(?), 
+        // copy passed data.samples into audioBuffer manually, because it is once stringified, 
         // and its children are not recognised as Float32Array
         for (let ch = 0; ch < data.numberOfChannels; ch++) {
             const f32a = new Float32Array(data.length);
@@ -177,9 +192,15 @@ class Player {
         }
 
         // show progress
-        const decodeState = document.getElementById("decode-state");
-        const progress = Math.floor(data.end * 100 / audioBuffer.length);
+        const progress = Math.min(Math.floor(data.end * 100 / audioBuffer.length), 100);
         decodeState.textContent = "decode: " + progress + "% done";
+    }
+
+    async function reload() {
+        message.textContent = "";
+        decodeState.textContent = "";
+        player.dispose();
+        player = undefined;
     }
 
     // Signal to VS Code that the webview is initialized.
