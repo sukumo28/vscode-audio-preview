@@ -17,7 +17,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
             const wav = new WaveFile(fileData);
             return new AudioPreviewDocument(uri, wav);
         } catch (err) {
-            vscode.window.showErrorMessage(err);
+            vscode.window.showErrorMessage(err.message);
             return new AudioPreviewDocument(uri, undefined);
         }
     }
@@ -49,6 +49,8 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public onDidChange: vscode.Event<vscode.Uri>;
 
     public wavHeader(): any {
+        if (!this._documentData) return;
+
         return {
             fmt: this._documentData.fmt
         };
@@ -58,6 +60,10 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         try {
             // decompose
             switch (this._documentData.fmt.audioFormat) {
+                case 1:
+                case 3:
+                    break;
+
                 case 6:
                     this._documentData.fromALaw();
                     break;
@@ -69,6 +75,9 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 case 17:
                     this._documentData.fromIMAADPCM();
                     break;
+
+                default:
+                    throw new Error(`Unsupported audio format: ${this._documentData.fmt.audioFormat}`);
             }
 
             // load 
@@ -89,13 +98,8 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
             };
 
         } catch (err) {
-            vscode.window.showErrorMessage(err);
-            return {
-                sampleRate: 1,
-                numberOfChannels: 1,
-                length: 0,
-                duration: 0
-            };
+            vscode.window.showErrorMessage(err.message);
+            return;
         }
     }
 
@@ -119,7 +123,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 }
             }
 
-            return { 
+            return {
                 samples,
                 length: samples[0].length,
                 numberOfChannels: chNum,
@@ -128,20 +132,19 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
             };
 
         } catch (err) {
-            vscode.window.showErrorMessage(err);
-            return { 
-                samples: [[]],
-                length: 0,
-                numberOfChannels: 1,
-                start: 0,
-                end: 1
-            };
+            vscode.window.showErrorMessage(err.message);
+            return;
         }
     }
 
     public async reload() {
         const fileData = await AudioPreviewDocument.readFile(this._uri);
-        this._documentData = new WaveFile(fileData);
+        try {
+            this._documentData = new WaveFile(fileData);
+        } catch (err) {
+            vscode.window.showErrorMessage(err.message);
+            this._documentData = undefined;
+        }
     }
 
     private readonly _onDidDispose = this._register(new vscode.EventEmitter<void>());
@@ -213,7 +216,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
         _token: vscode.CancellationToken
     ): Promise<void> {
         // Add the webview to our internal set of active webviews
-		this.webviews.add(document.uri, webviewPanel);
+        this.webviews.add(document.uri, webviewPanel);
 
         // Setup initial content for the webview
         webviewPanel.webview.options = {
@@ -235,16 +238,14 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 case "prepare":
                     webviewPanel.webview.postMessage({
                         type: "prepare",
-                        data: document.prepareData(),
-                        isTrusted: vscode.workspace.isTrusted
+                        data: document.prepareData()
                     });
                     break;
 
                 case "play":
                     webviewPanel.webview.postMessage({
                         type: "data",
-                        data: document.wavData(e.start, e.end),
-                        isTrusted: vscode.workspace.isTrusted
+                        data: document.wavData(e.start, e.end)
                     });
                     break;
             }
@@ -287,7 +288,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
             <body>
                 <div id="info-table"></div>
 
-                <button id="listen-button" disabled>please wait...</button>
+                <button id="listen-button">play</button>
                 <input type="range" id="seek-bar" value="0" />
                 <div id="decode-state"></div>
 
@@ -303,34 +304,34 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 /**
  * Tracks all webviews.
  */
- class WebviewCollection {
+class WebviewCollection {
 
-	private readonly _webviews = new Set<{
-		readonly resource: string;
-		readonly webviewPanel: vscode.WebviewPanel;
-	}>();
+    private readonly _webviews = new Set<{
+        readonly resource: string;
+        readonly webviewPanel: vscode.WebviewPanel;
+    }>();
 
-	/**
-	 * Get all known webviews for a given uri.
-	 */
-	public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
-		const key = uri.toString();
-		for (const entry of this._webviews) {
-			if (entry.resource === key) {
-				yield entry.webviewPanel;
-			}
-		}
-	}
+    /**
+     * Get all known webviews for a given uri.
+     */
+    public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
+        const key = uri.toString();
+        for (const entry of this._webviews) {
+            if (entry.resource === key) {
+                yield entry.webviewPanel;
+            }
+        }
+    }
 
-	/**
-	 * Add a new webview to the collection.
-	 */
-	public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
-		const entry = { resource: uri.toString(), webviewPanel };
-		this._webviews.add(entry);
+    /**
+     * Add a new webview to the collection.
+     */
+    public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
+        const entry = { resource: uri.toString(), webviewPanel };
+        this._webviews.add(entry);
 
-		webviewPanel.onDidDispose(() => {
-			this._webviews.delete(entry);
-		});
-	}
+        webviewPanel.onDidDispose(() => {
+            this._webviews.delete(entry);
+        });
+    }
 }
