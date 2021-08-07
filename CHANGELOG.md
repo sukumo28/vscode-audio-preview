@@ -1,10 +1,14 @@
 # Change Log
 
-## 1.6.0 - 2020-08-07  
+## 1.6.1 - 2021-08-07  
+### Changed  
+- Handle broken file  
+
+## 1.6.0 - 2021-08-07  
 ### Changed  
 - Support auto reloading  
 
-## 1.5.0 - 2020-07-09  
+## 1.5.0 - 2021-07-09  
 ### Changed  
 - Improve performance  
 
