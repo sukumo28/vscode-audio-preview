@@ -52,7 +52,8 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         if (!this._documentData) return;
 
         return {
-            fmt: this._documentData.fmt
+            fmt: this._documentData.fmt,
+            chunkSize: this._documentData.chunkSize,
         };
     }
 
@@ -286,7 +287,9 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 <title>Wav Preview</title>
             </head>
             <body>
-                <div id="info-table"></div>
+                <table id="info-table">
+                    <tr><th>Key</th><th>Value</th></tr>
+                </table>
 
                 <button id="listen-button">play</button>
                 <input type="range" id="seek-bar" value="0" />
