@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.7.0 - 2021-08-07  
+### Changed  
+- Show more info  
+
 ## 1.6.1 - 2021-08-07  
 ### Changed  
 - Handle broken file  

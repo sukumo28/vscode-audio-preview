@@ -86,6 +86,16 @@ class Player {
     }
 }
 
+function insertTableData(table, values) {
+    const tr = document.createElement("tr");
+    for (const v of values) {
+        const td = document.createElement("td");
+        td.textContent = v;
+        tr.appendChild(td);
+    }
+    table.appendChild(tr);
+}
+
 (function () {
     const vscode = acquireVsCodeApi();
     let audioBuffer, player;
@@ -151,19 +161,21 @@ class Player {
             1: "mono", 2: "stereo"
         }[data.fmt.numChannels] || "unsupported";
 
+        const info = [
+            { name: "format", value: `${data.fmt.audioFormat} (${compressFormat})` },
+            { name: "number of channel", value: `${data.fmt.numChannels} (${channels})` },
+            { name: "sampleRate", value: `${data.fmt.sampleRate}` },
+            { name: "byteRate", value: `${data.fmt.byteRate}` },
+            { name: "blockAlign", value: `${data.fmt.blockAlign}` },
+            { name: "bitsPerSample (bit depth)", value: `${data.fmt.bitsPerSample}` },
+            { name: "fileSize", value: `${data.chunkSize + 8} byte` },
+        ];
+
         //insert datas to info table
         const infoTable = document.getElementById("info-table");
-        infoTable.innerHTML = `
-        <table>
-            <tr><th>Key</th><th>Value</th></tr>
-            <tr><td>format</td><td>${data.fmt.audioFormat} (${compressFormat})</td></tr>
-            <tr><td>number of channel</td><td>${data.fmt.numChannels} (${channels})</td></tr>
-            <tr><td>sampleRate</td><td>${data.fmt.sampleRate}</td></tr>
-            <tr><td>byteRate</td><td>${data.fmt.byteRate}</td></tr>
-            <tr><td>blockAlign</td><td>${data.fmt.blockAlign}</td></tr>
-            <tr><td>bitsPerSample (bit depth)</td><td>${data.fmt.bitsPerSample}</td></tr>
-        </table>
-        `;
+        for (const i of info) {
+            insertTableData(infoTable, [i.name, i.value]);
+        }
     }
 
     async function showPlayer(data) {
@@ -177,6 +189,10 @@ class Player {
 
             // set player ui
             player = new Player(ac, audioBuffer, data.duration);
+
+            // insert additional data to infoTable
+            const infoTable = document.getElementById("info-table");
+            insertTableData(infoTable, ["duration", data.duration+"s"]);
         } catch (err) {
             message.textContent = "failed to prepare audioBufferSourceNode: " + err;
             document.getElementById("listen-button").style.display = "none";
