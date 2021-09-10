@@ -291,9 +291,10 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     <tr><th>Key</th><th>Value</th></tr>
                 </table>
 
+                <div id="decode-state"></div>
                 <button id="listen-button">play</button>
                 <input type="range" id="seek-bar" value="0" />
-                <div id="decode-state"></div>
+                <input type="range" id="volume-bar" value="100">
 
                 <div id="message"></div>
 

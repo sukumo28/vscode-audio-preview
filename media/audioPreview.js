@@ -7,6 +7,14 @@ class Player {
         this.duration = duration;
         this.ac = audioContext;
         this.ab = audioBuffer;
+        
+        this.gainNode = this.ac.createGain();
+        this.gainNode.connect(this.ac.destination);
+        
+        this.volumeBar = document.getElementById("volume-bar");
+        this.volumeBar.style.display = "block";
+        this.volumeBar.value = 100;
+        this.volumeBar.onchange = () => { this.onVolumeChange(); };
 
         this.button = document.getElementById("listen-button");
         this.button.onclick = () => {
@@ -28,7 +36,7 @@ class Player {
         // create audio source node (you cannot call start more than once)
         this.source = this.ac.createBufferSource();
         this.source.buffer = this.ab;
-        this.source.connect(this.ac.destination);
+        this.source.connect(this.gainNode);
 
         // play
         this.isPlaying = true;
@@ -73,16 +81,23 @@ class Player {
         this.play();
     }
 
+    onVolumeChange() {
+        this.gainNode.gain.value = this.volumeBar.value / 100;
+    }
+
     dispose() {
         if (this.isPlaying) {
             this.stop();
         }
         this.button.removeEventListener("click", this.button.onclick);
         this.seekBar.removeEventListener("change", this.seekBar.onchange);
+        this.volumeBar.removeEventListener("change", this.volumeBar.onchange);
         this.button.style.display = "none"
         this.seekBar.style.display = "none";
+        this.volumeBar.style.display = "none";
         this.button = undefined;
         this.seekBar = undefined;
+        this.volumeBar = undefined;
     }
 }
 
