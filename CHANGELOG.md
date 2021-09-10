@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.0 - 2021-09-10  
+### Added  
+- Volume control  
+
 ## 1.7.0 - 2021-08-07  
 ### Changed  
 - Show more info  
