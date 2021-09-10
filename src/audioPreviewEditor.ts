@@ -16,7 +16,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         try {
             const wav = new WaveFile(fileData);
             return new AudioPreviewDocument(uri, wav);
-        } catch (err) {
+        } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
             return new AudioPreviewDocument(uri, undefined);
         }
@@ -98,7 +98,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 duration: length / sampleRate
             };
 
-        } catch (err) {
+        } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
             return;
         }
@@ -132,7 +132,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 end
             };
 
-        } catch (err) {
+        } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
             return;
         }
@@ -142,7 +142,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         const fileData = await AudioPreviewDocument.readFile(this._uri);
         try {
             this._documentData = new WaveFile(fileData);
-        } catch (err) {
+        } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
             this._documentData = undefined;
         }
