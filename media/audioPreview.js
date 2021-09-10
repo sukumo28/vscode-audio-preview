@@ -171,8 +171,14 @@ function insertTableData(table, values) {
             { name: "fileSize", value: `${data.chunkSize + 8} byte` },
         ];
 
-        //insert datas to info table
+        // clear info table
         const infoTable = document.getElementById("info-table");
+        const trList = infoTable.querySelectorAll("tr");
+        for (const tr of trList) {
+            if(tr.querySelector("th")) continue; // skip header
+            infoTable.removeChild(tr);
+        }
+        // insert datas to info table
         for (const i of info) {
             insertTableData(infoTable, [i.name, i.value]);
         }
