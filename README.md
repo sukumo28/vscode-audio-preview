@@ -10,6 +10,12 @@ How to preview wav.
 If this extension is not open by default, please follow movie below.
 ![how-to-set-default](https://github.com/sukumo28/wav-preview/blob/main/images/how-to-set-default.gif?raw=true)
 
+## Settings  
+If you enable `WavPreview.autoPlay` in settings.json, you can play audio automatically when you open it.  
+```json
+"WavPreview.autoPlay": true
+```
+
 ## Known Issues
 
 Feel free to report isuues on github.  

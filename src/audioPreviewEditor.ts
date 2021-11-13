@@ -243,11 +243,21 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     });
                     break;
 
-                case "play":
+                case "data":
                     webviewPanel.webview.postMessage({
                         type: "data",
                         data: document.wavData(e.start, e.end)
                     });
+
+                    // play audio automatically after first data message 
+                    // if WapPreview.autoPlay is true
+                    if (e.start != 0) break;
+                    const config = vscode.workspace.getConfiguration("WavPreview");
+                    if (config.get("autoPlay")) {
+                        webviewPanel.webview.postMessage({
+                            type: "autoPlay",
+                        });
+                    } 
                     break;
             }
         });

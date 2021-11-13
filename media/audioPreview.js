@@ -142,7 +142,7 @@ function insertTableData(table, values) {
                     break;
                 }
                 await showPlayer(data);
-                vscode.postMessage({ type: 'play', start: 0, end: 10000 });
+                vscode.postMessage({ type: 'data', start: 0, end: 10000 });
                 break;
 
             case "data":
@@ -152,7 +152,13 @@ function insertTableData(table, values) {
                 }
                 await setData(data);
                 if (audioBuffer.length <= data.end) break;
-                vscode.postMessage({ type: 'play', start: data.end, end: data.end + 10000 });
+                vscode.postMessage({ type: 'data', start: data.end, end: data.end + 10000 });
+                break;
+
+            case "autoPlay":
+                if (player) {
+                    player.button.click();
+                }
                 break;
 
             case "reload":

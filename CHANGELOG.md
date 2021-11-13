@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.0 - 2021-11-13  
+### Added  
+- AutoPlay Option  
+
 ## 1.8.0 - 2021-09-10  
 ### Added  
 - Volume control  
