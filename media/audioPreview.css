@@ -28,6 +28,11 @@ input[type="range"] {
     display: none;
 }
 
+canvas {
+    width: 100%;
+    border: 1px solid gray;
+}
+
 /* light theme color */
 th, td {
     border: solid 1px black;

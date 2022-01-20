@@ -117,6 +117,10 @@ function insertTableData(table, values) {
     const message = document.getElementById("message");
     const decodeState = document.getElementById("decode-state");
 
+    const showWaveFormButton = document.getElementById("show-waveform-button");
+    showWaveFormButton.onclick = showWaveForm;
+    const waveFormCanvasBox = document.getElementById("waveform-canvas-box");
+
     // Handle messages from the extension
     window.addEventListener('message', async e => {
         const { type, data, isTrusted } = e.data;
@@ -141,7 +145,7 @@ function insertTableData(table, values) {
                     message.textContent = "failed to decode data";
                     break;
                 }
-                await showPlayer(data);
+                await prepare(data);
                 vscode.postMessage({ type: 'data', start: 0, end: 10000 });
                 break;
 
@@ -151,7 +155,10 @@ function insertTableData(table, values) {
                     break;
                 }
                 await setData(data);
-                if (audioBuffer.length <= data.end) break;
+                if (audioBuffer.length <= data.end) {
+                    showWaveFormButton.style.display = "block";
+                    break;
+                }
                 vscode.postMessage({ type: 'data', start: data.end, end: data.end + 10000 });
                 break;
 
@@ -205,7 +212,7 @@ function insertTableData(table, values) {
         }
     }
 
-    async function showPlayer(data) {
+    async function prepare(data) {
         try {
             const ac = new AudioContext({ sampleRate: data.sampleRate });
             audioBuffer = ac.createBuffer(data.numberOfChannels, data.length, data.sampleRate);
@@ -220,8 +227,14 @@ function insertTableData(table, values) {
             // insert additional data to infoTable
             const infoTable = document.getElementById("info-table");
             insertTableData(infoTable, ["duration", data.duration+"s"]);
+
+            // init waveform view
+            showWaveFormButton.style.display = "none";
+            for (const c of waveFormCanvasBox.children) {
+                waveFormCanvasBox.removeChild(c);
+            }
         } catch (err) {
-            message.textContent = "failed to prepare audioBufferSourceNode: " + err;
+            message.textContent = "failed to prepare: " + err;
             document.getElementById("listen-button").style.display = "none";
             return;
         }
@@ -249,6 +262,37 @@ function insertTableData(table, values) {
         if (player) {
             player.dispose();
             player = undefined;
+        }
+    }
+
+    function showWaveForm() {
+        showWaveFormButton.style.display = "none";
+
+        for (let ch=0; ch < audioBuffer.numberOfChannels; ch++) {
+            const waveFormCanvas = document.createElement("canvas");
+            waveFormCanvas.width = 3000;
+            waveFormCanvas.height = 500;
+            const waveFormCanvasContext = waveFormCanvas.getContext("2d");
+
+            const width = waveFormCanvas.width;
+            const height = waveFormCanvas.height;
+    
+            waveFormCanvasContext.clearRect(0, 0, width, height);
+    
+            waveFormCanvasContext.fillStyle = "green";
+            const data = audioBuffer.getChannelData(ch);
+            let maxAbs = 0;
+            for (let i=0; i<data.length; i++) {
+                if (Math.abs(data[i]) > maxAbs) maxAbs = Math.abs(data[i]);
+            }
+            for (let i=0; i<data.length; i++) {
+                const sample = data[i] / maxAbs; // normalize to [-1,1]
+                const x = (i/data.length) * width;
+                const y = height - (sample*height/2 + height/2);
+                waveFormCanvasContext.fillRect(x, y, 1, 1);
+            }
+
+            waveFormCanvasBox.appendChild(waveFormCanvas);
         }
     }
 

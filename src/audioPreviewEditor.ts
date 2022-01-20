@@ -303,10 +303,17 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
                 <div id="decode-state"></div>
                 <button id="listen-button">play</button>
-                <input type="range" id="seek-bar" value="0" />
+
+                <div>Volume</div>
                 <input type="range" id="volume-bar" value="100">
+                
+                <div>Seek Bar</div>
+                <input type="range" id="seek-bar" value="0" />
 
                 <div id="message"></div>
+
+                <button id="show-waveform-button" style="display:none">show waveform</button>
+                <div id="waveform-canvas-box"></div>
 
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>
