@@ -24,7 +24,7 @@ input[type="range"] {
     margin: 1em;
 }
 
-#listen-button {
+#listen-button, #show-waveform-button, #show-spectrogram-button {
     display: none;
 }
 

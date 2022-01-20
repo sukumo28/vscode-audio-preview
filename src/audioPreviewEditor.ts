@@ -3,6 +3,7 @@ import { Disposable, disposeAll } from "./dispose";
 import * as path from "path";
 import { getNonce } from "./util";
 import { WaveFile } from 'wavefile';
+import Ooura from "ooura";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
@@ -138,6 +139,69 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         }
     }
 
+    public spectrogram(): number[][][] {
+        const spectrogram = [];
+
+        const chNum = this._documentData.fmt.numChannels;
+        const fs = this._documentData.fmt.sampleRate;
+
+        const windowSize = 1024;
+        const window = [];
+        for (let i=0; i<windowSize; i++) {
+            window.push(0.5 - 0.5*Math.cos(2*Math.PI*i/windowSize));
+        }
+
+        const ooura = new Ooura(windowSize, {type: "real", radix: 4});
+
+        for (let ch=0; ch < chNum; ch++) {
+            const chSpectrogram = [];
+            for (let i=0; i<windowSize; i++) {
+                chSpectrogram.push([]);
+            }
+
+            const chData = this._documentData.samples[ch];
+            for (let i=windowSize/2; i<chData.length-windowSize/2; i++) {
+                const d = chData.slice(i-windowSize/2, i+windowSize/2);
+                const dd = new Float64Array(d.length);
+                for (let j=0; j<d.length; j++) {
+                    dd[j] = d[j] * window[j];
+                }
+
+                const re = ooura.vectorArrayFactory();
+                const im = ooura.vectorArrayFactory();
+                ooura.fft(dd.buffer, re.buffer, im.buffer);
+
+                let maxValue = 0;
+                const ps = ooura.scalarArrayFactory();
+                for (let i=0; i<ps.length; i++) {
+                    ps[i] = re[i]*re[i] + im[i]*im[i];
+                }
+                const normalizedPs = [];
+                for (let i=0; i<ps.length; i++) {
+                    normalizedPs.push(ps[i] / maxValue);
+                }
+                chSpectrogram.push(normalizedPs);
+            }
+
+            for (let i=0; i<windowSize; i++) {
+                chSpectrogram.push([]);
+            }
+            spectrogram.push(chSpectrogram);
+        }
+
+        return spectrogram;
+    }
+
+    private getHanningWindow(width:number, fs:number) {
+        const samples = Math.floor(width/1000 * fs);
+        const window = new Float64Array(samples);
+        for(let i=0; i<window.length; i++) {
+            const t = i*1000/fs; 
+            window[i] = 0.5 - 0.5*Math.cos(2*Math.PI*t/width);
+        }
+        return window;
+    }
+
     public async reload() {
         const fileData = await AudioPreviewDocument.readFile(this._uri);
         try {
@@ -259,6 +323,13 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                         });
                     } 
                     break;
+
+                case "spectrogram":
+                    webviewPanel.webview.postMessage({
+                        type: "spectrogram",
+                        data: document.spectrogram()
+                    });
+                    break;
             }
         });
     }
@@ -312,8 +383,11 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
                 <div id="message"></div>
 
-                <button id="show-waveform-button" style="display:none">show waveform</button>
+                <button id="show-waveform-button">show waveform</button>
                 <div id="waveform-canvas-box"></div>
+
+                <button id="show-spectrogram-button">show spectrogram</button>
+                <div id="spectrogram-canvas-box"></div>
 
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>

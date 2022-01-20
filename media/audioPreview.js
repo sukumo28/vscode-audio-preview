@@ -121,6 +121,10 @@ function insertTableData(table, values) {
     showWaveFormButton.onclick = showWaveForm;
     const waveFormCanvasBox = document.getElementById("waveform-canvas-box");
 
+    const showSpectrogramButton = document.getElementById("show-spectrogram-button");
+    showSpectrogramButton.onclick = showSpectrogram;
+    const spectrogramCanvasBox = document.getElementById("spectrogram-canvas-box");
+
     // Handle messages from the extension
     window.addEventListener('message', async e => {
         const { type, data, isTrusted } = e.data;
@@ -157,6 +161,7 @@ function insertTableData(table, values) {
                 await setData(data);
                 if (audioBuffer.length <= data.end) {
                     showWaveFormButton.style.display = "block";
+                    showSpectrogramButton.style.display = "block";
                     break;
                 }
                 vscode.postMessage({ type: 'data', start: data.end, end: data.end + 10000 });
@@ -173,6 +178,13 @@ function insertTableData(table, values) {
                 vscode.postMessage({ type: 'ready' });
                 break;
 
+            case "spectrogram":
+                if (!data) {
+                    message.textContent = "failed to draw spectrogram";
+                    break;
+                }
+                drawSpectrogram(data);
+                break;
         }
     });
 
@@ -228,11 +240,16 @@ function insertTableData(table, values) {
             const infoTable = document.getElementById("info-table");
             insertTableData(infoTable, ["duration", data.duration+"s"]);
 
-            // init waveform view
+            // init waveform and spectrogram view
             showWaveFormButton.style.display = "none";
             for (const c of waveFormCanvasBox.children) {
                 waveFormCanvasBox.removeChild(c);
             }
+            showSpectrogramButton.style.display = "none";
+            for (const c of spectrogramCanvasBox.children) {
+                spectrogramCanvasBox.removeChild(c);
+            }
+
         } catch (err) {
             message.textContent = "failed to prepare: " + err;
             document.getElementById("listen-button").style.display = "none";
@@ -268,18 +285,17 @@ function insertTableData(table, values) {
     function showWaveForm() {
         showWaveFormButton.style.display = "none";
 
-        for (let ch=0; ch < audioBuffer.numberOfChannels; ch++) {
-            const waveFormCanvas = document.createElement("canvas");
-            waveFormCanvas.width = 3000;
-            waveFormCanvas.height = 500;
-            const waveFormCanvasContext = waveFormCanvas.getContext("2d");
+        for (let ch=0; ch < audioBuffer.numberOfChannels; ch++) { 
+            const width = 3000;
+            const height = 500;
 
-            const width = waveFormCanvas.width;
-            const height = waveFormCanvas.height;
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const context = canvas.getContext("2d");
+            waveFormCanvasBox.appendChild(canvas);
     
-            waveFormCanvasContext.clearRect(0, 0, width, height);
-    
-            waveFormCanvasContext.fillStyle = "green";
+            context.fillStyle = "green";
             const data = audioBuffer.getChannelData(ch);
             let maxAbs = 0;
             for (let i=0; i<data.length; i++) {
@@ -289,11 +305,38 @@ function insertTableData(table, values) {
                 const sample = data[i] / maxAbs; // normalize to [-1,1]
                 const x = (i/data.length) * width;
                 const y = height - (sample*height/2 + height/2);
-                waveFormCanvasContext.fillRect(x, y, 1, 1);
+                context.fillRect(x, y, 1, 1);
             }
-
-            waveFormCanvasBox.appendChild(waveFormCanvas);
         }
+    }
+
+    function showSpectrogram() {
+        showSpectrogramButton.style.display = "none";
+        vscode.postMessage({ type: "spectrogram"});
+    }
+
+    function drawSpectrogram(data) {
+        for (let ch=0; ch < audioBuffer.numberOfChannels; ch++) { 
+            const width = 3000;
+            const height = 1000;
+    
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const context = canvas.getContext("2d");
+            spectrogramCanvasBox.appendChild(canvas);
+
+            const spectrogram = data[ch];
+            for (let i=0; i<spectrogram.length; i++) {
+                for (let j=0; j<spectrogram[i].length; j++) {
+                    context.fillStyle = `rgb(${spectrogram[i][j] * 255},0,0)`;
+                    const x = width * (i/spectrogram.length);
+                    const y = height * (1 - (j/spectrogram[i].length));
+                    context.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+
     }
 
     // Signal to VS Code that the webview is initialized.
