@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.10.0 - 2022-01-21  
+### Added  
+- Waveform and Spectrogram viewer  
+
 ## 1.9.0 - 2021-11-13  
 ### Added  
 - AutoPlay Option  
