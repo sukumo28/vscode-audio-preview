@@ -301,18 +301,28 @@ function insertTableData(table, values) {
             const context = canvas.getContext("2d");
             waveFormCanvasBox.appendChild(canvas);
 
-            context.fillStyle = "green";
-            const data = audioBuffer.getChannelData(ch);
-            let maxAbs = 0;
-            for (let i = 0; i < data.length; i++) {
-                if (Math.abs(data[i]) > maxAbs) maxAbs = Math.abs(data[i]);
-            }
-            for (let i = 0; i < data.length; i++) {
-                const sample = data[i] / maxAbs; // normalize to [-1,1]
-                const x = (i / data.length) * width;
-                const y = height - (sample * height / 2 + height / 2);
-                context.fillRect(x, y, 1, 1);
-            }
+            // call draw in setTimeout not to block ui
+            setTimeout(() => drawWaveForm(ch, context, 0, 10000, width, height), 10);
+        }
+    }
+
+    function drawWaveForm(ch, context, start, count, width, height) {
+        context.fillStyle = "green";
+        const data = audioBuffer.getChannelData(ch).slice(start, start+count);
+        let maxAbs = 0;
+        for (let i = 0; i < data.length; i++) {
+            if (Math.abs(data[i]) > maxAbs) maxAbs = Math.abs(data[i]);
+        }
+        for (let i = 0; i < data.length; i++) {
+            const sample = data[i] / maxAbs; // normalize to [-1,1]
+            const x = ((i+start) / audioBuffer.length) * width;
+            const y = height - (sample * height / 2 + height / 2);
+            context.fillRect(x, y, 1, 1);
+        }
+
+        if (start+count < audioBuffer.length) {
+            // call draw in setTimeout not to block ui
+            setTimeout(() => drawWaveForm(ch, context, start+count, count, width, height), 10);
         }
     }
 
@@ -336,14 +346,14 @@ function insertTableData(table, values) {
         const ch = data.channel;
         const canvas = spectrogramCanvasList[ch];
         const context = spectrogramCanvasContexts[ch];
-    
+
         const width = canvas.width;
         const height = canvas.height;
         const spectrogram = data.spectrogram;
-        const rectWidth = data.windowSize/2;
-        const rectHeight = (height / (data.windowSize/2));
+        const rectWidth = data.windowSize / 2;
+        const rectHeight = (height / (data.windowSize / 2));
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = width * ((i*rectWidth + data.start) / audioBuffer.length);
+            const x = width * ((i * rectWidth + data.start) / audioBuffer.length);
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height * (1 - (j / spectrogram[i].length));
 
@@ -351,11 +361,11 @@ function insertTableData(table, values) {
                 if (value < 0.001) {
                     continue;
                 } else if (value < 0.7) {
-                    context.fillStyle = `rgb(0,0,${Math.floor(value*255)})`;
+                    context.fillStyle = `rgb(0,0,${Math.floor(value * 255)})`;
                 } else {
-                    context.fillStyle = `rgb(0,${Math.floor(value*255)},255)`;
+                    context.fillStyle = `rgb(0,${Math.floor(value * 255)},255)`;
                 }
-                
+
                 context.fillRect(x, y, rectWidth, rectHeight);
             }
         }
