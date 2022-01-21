@@ -320,8 +320,8 @@ function insertTableData(table, values) {
         showSpectrogramButton.style.display = "none";
         for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
             const canvas = document.createElement("canvas");
-            canvas.width = 3000;
-            canvas.height = 1000;
+            canvas.width = 4500;
+            canvas.height = 2000;
             const context = canvas.getContext("2d");
             context.fillStyle = "rgb(0,0,0)";
             context.fillRect(0, 0, canvas.width, canvas.height);
@@ -340,21 +340,22 @@ function insertTableData(table, values) {
         const width = canvas.width;
         const height = canvas.height;
         const spectrogram = data.spectrogram;
-        const dataLength = audioBuffer.length / (data.windowSize/2);
-        const rectWidth = audioBuffer.length / dataLength;
+        const rectWidth = data.windowSize/2;
+        const rectHeight = (height / (data.windowSize/2));
         for (let i = 0; i < spectrogram.length; i++) {
             const x = width * ((i*rectWidth + data.start) / audioBuffer.length);
             for (let j = 0; j < spectrogram[i].length; j++) {
-                const ry = 1 - (j / spectrogram[i].length);
-                const y = height * (Math.pow(10,ry)/10);
+                const y = height * (1 - (j / spectrogram[i].length));
 
                 const value = spectrogram[i][j];
-                const v1 = Math.floor(value*255);
-                const v2 = value > 0.4? Math.floor(value*255) : 0;
-                const v3 = (0.001 < value && value < 0.2)? Math.floor((1-value)*255) : 0;
-                context.fillStyle = `rgb(${v1},${v2},${v3})`;
+                if (value < 0.001) {
+                    continue;
+                } else if (value < 0.7) {
+                    context.fillStyle = `rgb(0,0,${Math.floor(value*255)})`;
+                } else {
+                    context.fillStyle = `rgb(0,${Math.floor(value*255)},255)`;
+                }
                 
-                const rectHeight = ((data.windowSize/2) / height) * (Math.pow(10,ry)/10);
                 context.fillRect(x, y, rectWidth, rectHeight);
             }
         }

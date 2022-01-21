@@ -171,17 +171,19 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 const im = ooura.vectorArrayFactory();
                 ooura.fft(dd.buffer, re.buffer, im.buffer);
 
-                let maxValue = 0;
-                const ps = new Float64Array(windowSize/2);
-                for (let j = 0; j < ps.length; j++) {
-                    ps[j] = re[j] * re[j] + im[j] * im[j];
-                    if (ps[j] > maxValue) maxValue = ps[j];
+                const ps = [];
+                let maxAbs = 0, minValue = 0;
+                for (let j = 0; j < windowSize/2; j++) {
+                    const v = re[j] * re[j] + im[j] * im[j];
+                    const vv = Math.log10(v + 0.000000001);
+                    ps.push(vv);
+                    if (maxAbs < Math.abs(vv)) maxAbs = Math.abs(vv);
+                    if (vv < minValue) minValue = vv;
                 }
-                const normalizedPs = [];
-                for (let j = 0; j < ps.length; j++) {
-                    normalizedPs.push(ps[j] / maxValue);
+                for (let j=0; j < ps.length; j++) {
+                    ps[j] = (ps[j]+minValue)/maxAbs; // to [0,1]
                 }
-                spectrogram.push(normalizedPs);
+                spectrogram.push(ps);
             }
 
             return {
