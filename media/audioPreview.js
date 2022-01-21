@@ -7,10 +7,10 @@ class Player {
         this.duration = duration;
         this.ac = audioContext;
         this.ab = audioBuffer;
-        
+
         this.gainNode = this.ac.createGain();
         this.gainNode.connect(this.ac.destination);
-        
+
         this.volumeBar = document.getElementById("volume-bar");
         this.volumeBar.style.display = "block";
         this.volumeBar.value = 100;
@@ -124,6 +124,8 @@ function insertTableData(table, values) {
     const showSpectrogramButton = document.getElementById("show-spectrogram-button");
     showSpectrogramButton.onclick = showSpectrogram;
     const spectrogramCanvasBox = document.getElementById("spectrogram-canvas-box");
+    let spectrogramCanvasList = [];
+    let spectrogramCanvasContexts = [];
 
     // Handle messages from the extension
     window.addEventListener('message', async e => {
@@ -184,6 +186,8 @@ function insertTableData(table, values) {
                     break;
                 }
                 drawSpectrogram(data);
+                if (audioBuffer.length <= data.end) break;
+                vscode.postMessage({ type: "spectrogram", channel: data.channel, start: data.end, end: data.end + 10000 });
                 break;
         }
     });
@@ -215,7 +219,7 @@ function insertTableData(table, values) {
         const infoTable = document.getElementById("info-table");
         const trList = infoTable.querySelectorAll("tr");
         for (const tr of trList) {
-            if(tr.querySelector("th")) continue; // skip header
+            if (tr.querySelector("th")) continue; // skip header
             infoTable.removeChild(tr);
         }
         // insert datas to info table
@@ -238,7 +242,7 @@ function insertTableData(table, values) {
 
             // insert additional data to infoTable
             const infoTable = document.getElementById("info-table");
-            insertTableData(infoTable, ["duration", data.duration+"s"]);
+            insertTableData(infoTable, ["duration", data.duration + "s"]);
 
             // init waveform and spectrogram view
             showWaveFormButton.style.display = "none";
@@ -249,6 +253,8 @@ function insertTableData(table, values) {
             for (const c of spectrogramCanvasBox.children) {
                 spectrogramCanvasBox.removeChild(c);
             }
+            spectrogramCanvasList = [];
+            spectrogramCanvasContexts = [];
 
         } catch (err) {
             message.textContent = "failed to prepare: " + err;
@@ -285,7 +291,7 @@ function insertTableData(table, values) {
     function showWaveForm() {
         showWaveFormButton.style.display = "none";
 
-        for (let ch=0; ch < audioBuffer.numberOfChannels; ch++) { 
+        for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
             const width = 3000;
             const height = 500;
 
@@ -294,17 +300,17 @@ function insertTableData(table, values) {
             canvas.height = height;
             const context = canvas.getContext("2d");
             waveFormCanvasBox.appendChild(canvas);
-    
+
             context.fillStyle = "green";
             const data = audioBuffer.getChannelData(ch);
             let maxAbs = 0;
-            for (let i=0; i<data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 if (Math.abs(data[i]) > maxAbs) maxAbs = Math.abs(data[i]);
             }
-            for (let i=0; i<data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 const sample = data[i] / maxAbs; // normalize to [-1,1]
-                const x = (i/data.length) * width;
-                const y = height - (sample*height/2 + height/2);
+                const x = (i / data.length) * width;
+                const y = height - (sample * height / 2 + height / 2);
                 context.fillRect(x, y, 1, 1);
             }
         }
@@ -312,31 +318,46 @@ function insertTableData(table, values) {
 
     function showSpectrogram() {
         showSpectrogramButton.style.display = "none";
-        vscode.postMessage({ type: "spectrogram"});
+        for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
+            const canvas = document.createElement("canvas");
+            canvas.width = 3000;
+            canvas.height = 1000;
+            const context = canvas.getContext("2d");
+            context.fillStyle = "rgb(0,0,0)";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            spectrogramCanvasBox.appendChild(canvas);
+            spectrogramCanvasList.push(canvas);
+            spectrogramCanvasContexts.push(context);
+            vscode.postMessage({ type: "spectrogram", channel: ch, start: 0, end: 10000 });
+        }
     }
 
     function drawSpectrogram(data) {
-        for (let ch=0; ch < audioBuffer.numberOfChannels; ch++) { 
-            const width = 3000;
-            const height = 1000;
+        const ch = data.channel;
+        const canvas = spectrogramCanvasList[ch];
+        const context = spectrogramCanvasContexts[ch];
     
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            const context = canvas.getContext("2d");
-            spectrogramCanvasBox.appendChild(canvas);
+        const width = canvas.width;
+        const height = canvas.height;
+        const spectrogram = data.spectrogram;
+        const dataLength = audioBuffer.length / (data.windowSize/2);
+        const rectWidth = audioBuffer.length / dataLength;
+        for (let i = 0; i < spectrogram.length; i++) {
+            const x = width * ((i*rectWidth + data.start) / audioBuffer.length);
+            for (let j = 0; j < spectrogram[i].length; j++) {
+                const ry = 1 - (j / spectrogram[i].length);
+                const y = height * (Math.pow(10,ry)/10);
 
-            const spectrogram = data[ch];
-            for (let i=0; i<spectrogram.length; i++) {
-                for (let j=0; j<spectrogram[i].length; j++) {
-                    context.fillStyle = `rgb(${spectrogram[i][j] * 255},0,0)`;
-                    const x = width * (i/spectrogram.length);
-                    const y = height * (1 - (j/spectrogram[i].length));
-                    context.fillRect(x, y, 1, 1);
-                }
+                const value = spectrogram[i][j];
+                const v1 = Math.floor(value*255);
+                const v2 = value > 0.4? Math.floor(value*255) : 0;
+                const v3 = (0.001 < value && value < 0.2)? Math.floor((1-value)*255) : 0;
+                context.fillStyle = `rgb(${v1},${v2},${v3})`;
+                
+                const rectHeight = ((data.windowSize/2) / height) * (Math.pow(10,ry)/10);
+                context.fillRect(x, y, rectWidth, rectHeight);
             }
         }
-
     }
 
     // Signal to VS Code that the webview is initialized.

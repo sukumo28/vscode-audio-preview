@@ -139,31 +139,31 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         }
     }
 
-    public spectrogram(): number[][][] {
-        const spectrogram = [];
+    public spectrogram(ch: number, start: number, end: number): any {
+        try {
+            const spectrogram = [];
 
-        const chNum = this._documentData.fmt.numChannels;
-        const fs = this._documentData.fmt.sampleRate;
-
-        const windowSize = 1024;
-        const window = [];
-        for (let i=0; i<windowSize; i++) {
-            window.push(0.5 - 0.5*Math.cos(2*Math.PI*i/windowSize));
-        }
-
-        const ooura = new Ooura(windowSize, {type: "real", radix: 4});
-
-        for (let ch=0; ch < chNum; ch++) {
-            const chSpectrogram = [];
-            for (let i=0; i<windowSize; i++) {
-                chSpectrogram.push([]);
+            const windowSize = 1024;
+            const window = [];
+            for (let i = 0; i < windowSize; i++) {
+                window.push(0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize));
             }
 
-            const chData = this._documentData.samples[ch];
-            for (let i=windowSize/2; i<chData.length-windowSize/2; i++) {
-                const d = chData.slice(i-windowSize/2, i+windowSize/2);
-                const dd = new Float64Array(d.length);
-                for (let j=0; j<d.length; j++) {
+            const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
+
+            const data = this._documentData.samples[ch];
+            const loopEnd = end < data.length ? end : data.length;
+            for (let i = start; i < loopEnd; i+=windowSize/2) {
+                const s = i - windowSize / 2, t = i + windowSize / 2;
+                const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
+                const sg = ss - s, tg = t - tt;
+                const d = [];
+                d.push(...new Array(sg).fill(0));
+                d.push(...data.slice(ss, tt));
+                d.push(...new Array(tg).fill(0));
+
+                const dd = ooura.scalarArrayFactory();
+                for (let j = 0; j < dd.length; j++) {
                     dd[j] = d[j] * window[j];
                 }
 
@@ -172,34 +172,35 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 ooura.fft(dd.buffer, re.buffer, im.buffer);
 
                 let maxValue = 0;
-                const ps = ooura.scalarArrayFactory();
-                for (let i=0; i<ps.length; i++) {
-                    ps[i] = re[i]*re[i] + im[i]*im[i];
+                const ps = new Float64Array(windowSize/2);
+                for (let j = 0; j < ps.length; j++) {
+                    ps[j] = re[j] * re[j] + im[j] * im[j];
+                    if (ps[j] > maxValue) maxValue = ps[j];
                 }
                 const normalizedPs = [];
-                for (let i=0; i<ps.length; i++) {
-                    normalizedPs.push(ps[i] / maxValue);
+                for (let j = 0; j < ps.length; j++) {
+                    normalizedPs.push(ps[j] / maxValue);
                 }
-                chSpectrogram.push(normalizedPs);
+                spectrogram.push(normalizedPs);
             }
 
-            for (let i=0; i<windowSize; i++) {
-                chSpectrogram.push([]);
-            }
-            spectrogram.push(chSpectrogram);
-        }
+            return {
+                channel: ch,
+                spectrogram,
+                start,
+                end,
+                windowSize
+            };
 
-        return spectrogram;
-    }
-
-    private getHanningWindow(width:number, fs:number) {
-        const samples = Math.floor(width/1000 * fs);
-        const window = new Float64Array(samples);
-        for(let i=0; i<window.length; i++) {
-            const t = i*1000/fs; 
-            window[i] = 0.5 - 0.5*Math.cos(2*Math.PI*t/width);
+        } catch (err: any) {
+            vscode.window.showErrorMessage(err.message);
+            return {
+                channel: ch,
+                spectrogram: [[]],
+                start,
+                end,
+            };
         }
-        return window;
     }
 
     public async reload() {
@@ -321,13 +322,13 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                         webviewPanel.webview.postMessage({
                             type: "autoPlay",
                         });
-                    } 
+                    }
                     break;
 
                 case "spectrogram":
                     webviewPanel.webview.postMessage({
                         type: "spectrogram",
-                        data: document.spectrogram()
+                        data: document.spectrogram(e.channel, e.start, e.end)
                     });
                     break;
             }
