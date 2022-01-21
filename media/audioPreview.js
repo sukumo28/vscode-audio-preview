@@ -318,8 +318,8 @@ function insertTableData(table, values) {
     }
 
     function drawWaveForm(data, context, start, count, width, height) {
-        for (let i = 0; i < data.length; i++) {
-            const x = ((start + i) / audioBuffer.length) * width;
+        for (let i = 0; i < count; i++) {
+            const x = ((start + i) / data.length) * width;
             const y = height * (1 - data[start + i]);
             context.fillRect(x, y, 1, 1);
         }
