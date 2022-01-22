@@ -25,7 +25,13 @@ class Player {
         this.seekBar = document.getElementById("seek-bar");
         this.seekBar.style.display = "block";
         this.seekBar.value = 0;
-        this.seekBar.onchange = () => { this.onChange(); };
+
+        // use invisible another seek bar to get user's input.
+        // if we update this.seekBar from both user's input and setInterval,
+        // user's input is overwritten by setInterval before calling this.seekBar.onchange
+        this.userInputSeekBar = document.getElementById("user-input-seek-bar");
+        this.userInputSeekBar.style.display = "block";
+        this.userInputSeekBar.onchange = () => { this.onChange(); };
 
         //enable play button
         this.button.textContent = "play";
@@ -59,7 +65,7 @@ class Player {
 
             // update seek bar value
             this.seekBar.value = 100 * current / this.duration;
-        }, 500);
+        }, 10);
     }
 
     stop() {
@@ -77,7 +83,8 @@ class Player {
             this.stop();
         }
         // restart from selected place
-        this.currentSec = this.seekBar.value * this.duration / 100;
+        this.currentSec = this.userInputSeekBar.value * this.duration / 100;
+        this.seekBar.value = this.userInputSeekBar.value;
         this.play();
     }
 
@@ -308,7 +315,7 @@ function insertTableData(table, values) {
                 if (maxValue < data[i]) maxValue = data[i];
                 if (data[i] < minValue) minValue = data[i];
             }
-            for (let i=0; i < data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 data[i] = (data[i] - minValue) / (maxValue - minValue); // normalize to [0,1]
             }
 

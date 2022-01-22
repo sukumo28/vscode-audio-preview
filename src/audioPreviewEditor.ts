@@ -382,7 +382,10 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 <input type="range" id="volume-bar" value="100">
                 
                 <div>Seek Bar</div>
-                <input type="range" id="seek-bar" value="0" />
+                <div class="seek-bar-box">
+                    <input type="range" id="seek-bar" value="0" />
+                    <input type="range" id="user-input-seek-bar" value="0" />
+                </div>
 
                 <div id="message"></div>
 

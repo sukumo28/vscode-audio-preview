@@ -24,6 +24,20 @@ input[type="range"] {
     padding: 0;
 }
 
+.seek-bar-box {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#user-input-seek-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
 #listen-button, #show-waveform-button, #show-spectrogram-button {
     display: none;
 }
