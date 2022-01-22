@@ -86,6 +86,8 @@ class Player {
         this.currentSec = this.userInputSeekBar.value * this.duration / 100;
         this.seekBar.value = this.userInputSeekBar.value;
         this.play();
+        // reset userinput seekbar value to allow user to seek same pos repeatedly
+        this.userInputSeekBar.value = 0;
     }
 
     onVolumeChange() {
@@ -98,6 +100,7 @@ class Player {
         }
         this.button.removeEventListener("click", this.button.onclick);
         this.seekBar.removeEventListener("change", this.seekBar.onchange);
+        this.userInputSeekBar.removeEventListener("change", this.userInputSeekBar.onchange);
         this.volumeBar.removeEventListener("change", this.volumeBar.onchange);
         this.button.style.display = "none"
         this.seekBar.style.display = "none";
