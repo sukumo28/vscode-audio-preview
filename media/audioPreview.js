@@ -12,7 +12,6 @@ class Player {
         this.gainNode.connect(this.ac.destination);
 
         this.volumeBar = document.getElementById("volume-bar");
-        this.volumeBar.style.display = "block";
         this.volumeBar.value = 100;
         this.volumeBar.onchange = () => { this.onVolumeChange(); };
 
@@ -135,10 +134,10 @@ function insertTableData(table, values) {
         console.log(settings.style.display);
         if (settings.style.display !== "block") {
             settings.style.display = "block";
-            analyzeSettingButton.textContent = "hide settings";
+            analyzeSettingButton.textContent = "▲settings";
         } else {
             settings.style.display = "none";
-            analyzeSettingButton.textContent = "show settings";
+            analyzeSettingButton.textContent = "▼settings";
         }
     };
 
@@ -263,8 +262,6 @@ function insertTableData(table, values) {
             player = new Player(ac, audioBuffer, data.duration);
             const userinputSeekbar = document.getElementById("user-input-seek-bar");
             const visibleSeekbar = document.getElementById("seek-bar");
-            userinputSeekbar.style.display = "block";
-            visibleSeekbar.style.display = "block";
             player.registerSeekbar(userinputSeekbar, (value) => { visibleSeekbar.value = value; });
 
             // insert additional data to infoTable
@@ -319,8 +316,23 @@ function insertTableData(table, values) {
     function analyzeSettings() {
         const windowSizeSelect = document.getElementById("analyze-window-size");
         const windowSize = parseInt(windowSizeSelect.value, 10);
+
+        const minFreqInput = document.getElementById("analyze-min-frequency");
+        let minFreq = parseInt(minFreqInput.value, 10);
+        if (isNaN(minFreq) || minFreq < 0) minFreq = 0;
+        const maxFreqInput = document.getElementById("analyze-max-frequency");
+        let maxFreq = parseInt(maxFreqInput.value, 10);
+        const maxf = audioBuffer.sampleRate / 2;
+        if (isNaN(maxFreq) || maxf < maxFreq) maxFreq = maxf;
+        if (maxFreq <= minFreq) {
+            minFreq = 0;
+            maxFreq = maxf;
+        }
+
         return {
-            windowSize
+            windowSize,
+            minFrequency: minFreq,
+            maxFrequency: maxFreq
         };
     }
 
@@ -329,9 +341,10 @@ function insertTableData(table, values) {
         clearAnalyzeResult();
 
         const settings = analyzeSettings();
+        console.log(settings);
 
         for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
-            showWaveForm(ch, settings);
+            showWaveForm(ch);
             showSpectrogram(ch, settings);
         }
 
@@ -341,7 +354,6 @@ function insertTableData(table, values) {
         analyzeResultBox.appendChild(visibleBar);
 
         const inputSeekbar = document.createElement("input");
-        inputSeekbar.style.display = "block";
         inputSeekbar.type = "range";
         inputSeekbar.className = "input-seek-bar";
         analyzeResultBox.appendChild(inputSeekbar);
@@ -353,7 +365,7 @@ function insertTableData(table, values) {
         analyzeButton.style.display = "block";
     }
 
-    function showWaveForm(ch, settings) {
+    function showWaveForm(ch) {
         const width = 3000;
         const height = 500;
 
@@ -416,9 +428,9 @@ function insertTableData(table, values) {
         const height = canvas.height;
         const spectrogram = data.spectrogram;
         const rectWidth = data.settings.windowSize / 2;
-        const rectHeight = (height / (data.settings.windowSize / 2));
         for (let i = 0; i < spectrogram.length; i++) {
             const x = width * ((i * rectWidth + data.start) / audioBuffer.length);
+            const rectHeight = (height / spectrogram[i].length);
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height * (1 - (j / spectrogram[i].length));
 

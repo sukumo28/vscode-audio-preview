@@ -143,12 +143,17 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public spectrogram(ch: number, start: number, end: number, settings: any): any {
         try {
             const spectrogram = [];
+            const fs = this._documentData.fmt.sampleRate;
 
             const windowSize = settings.windowSize;
             const window = [];
             for (let i = 0; i < windowSize; i++) {
                 window.push(0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize));
             }
+
+            const df = fs / windowSize;
+            const minIndex = Math.floor(settings.minFrequency / df);
+            const maxIndex = Math.floor(settings.maxFrequency / df);
 
             const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
 
@@ -174,7 +179,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
                 const ps = [];
                 let maxValue = 0, minValue = Number.MAX_SAFE_INTEGER;
-                for (let j = 0; j < windowSize / 2; j++) {
+                for (let j = minIndex; j < maxIndex; j++) {
                     const v = re[j] * re[j] + im[j] * im[j];
                     const vv = Math.log10(v + 0.000000001);
                     ps.push(vv);
@@ -379,41 +384,49 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
             </head>
             <body>
                 <div id="info-and-control">
-                    <table id="info-table">
-                        <tr><th>Key</th><th>Value</th></tr>
-                    </table>
-
                     <div>
+                        <table id="info-table"></table>
+                    </div>
+
+                    <div id="player-box">
                         <div id="decode-state"></div>
-                        
-                        <div>Volume</div>
+                        <button id="listen-button">play</button>
+
+                        <div>volume</div>
                         <input type="range" id="volume-bar" value="100">
                         
-                        <div>Seek Bar</div>
+                        <div>seekbar</div>
                         <div class="seek-bar-box">
                             <input type="range" id="seek-bar" value="0" />
                             <input type="range" id="user-input-seek-bar" class="input-seek-bar" value="0" />
                         </div>
         
                         <div id="message"></div>
-                        <button id="listen-button">play</button>
                     </div>
                 </div>
 
-                <div>
+                <div id="analyze-controller">
                     <div id="analyze-controller-buttons">
+                        <div>analyze</div>
                         <button id="analyze-button" class="seek-bar-box">analyze</button>
-                        <button id="analyze-setting-button">show settings</button>
+                        <button id="analyze-setting-button">▼settings</button>
                     </div>
                     <div id="analyze-setting">
-                        <div>window size
+                        <div>
+                            window size:
                             <select id="analyze-window-size">
                                 <option value="512">256</option>
                                 <option value="512">512</option>
                                 <option value="1024" selected>1024</option>
                                 <option value="2048">2048</option>
                                 <option value="4096">4096</option>
+                                <option value="8192">8192</option>
                             </select>
+                        </div>
+                        <div>
+                            frequency:
+                            min<input id="analyze-min-frequency" type="number" value="0">
+                            max<input id="analyze-max-frequency" type="number" value="24000">
                         </div>
                     </div>
                 </div>
