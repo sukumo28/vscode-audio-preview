@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.11.0 - 2022-01-23  
+### Added  
+- AutoAnalyze option  
+- Analyze settings  
+- Seekbar on the Waveform and Spectrogram viwer  
+
 ## 1.10.0 - 2022-01-21  
 ### Added  
 - Waveform and Spectrogram viewer  
