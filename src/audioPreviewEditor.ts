@@ -153,7 +153,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
             const data = this._documentData.samples[ch];
             const loopEnd = end < data.length ? end : data.length;
-            for (let i = start; i < loopEnd; i+=windowSize/2) {
+            for (let i = start; i < loopEnd; i += windowSize / 2) {
                 const s = i - windowSize / 2, t = i + windowSize / 2;
                 const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
                 const sg = ss - s, tg = t - tt;
@@ -173,15 +173,15 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
                 const ps = [];
                 let maxValue = 0, minValue = Number.MAX_SAFE_INTEGER;
-                for (let j = 0; j < windowSize/2; j++) {
+                for (let j = 0; j < windowSize / 2; j++) {
                     const v = re[j] * re[j] + im[j] * im[j];
                     const vv = Math.log10(v + 0.000000001);
                     ps.push(vv);
                     if (maxValue < vv) maxValue = vv;
                     if (vv < minValue) minValue = vv;
                 }
-                for (let j=0; j < ps.length; j++) {
-                    ps[j] = (ps[j]-minValue)/(maxValue-minValue); // to [0,1]
+                for (let j = 0; j < ps.length; j++) {
+                    ps[j] = (ps[j] - minValue) / (maxValue - minValue); // to [0,1]
                 }
                 spectrogram.push(ps);
             }
@@ -371,29 +371,33 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 <title>Wav Preview</title>
             </head>
             <body>
-                <table id="info-table">
-                    <tr><th>Key</th><th>Value</th></tr>
-                </table>
+                <div id="info-and-control">
+                    <table id="info-table">
+                        <tr><th>Key</th><th>Value</th></tr>
+                    </table>
 
-                <div id="decode-state"></div>
-                <button id="listen-button">play</button>
-
-                <div>Volume</div>
-                <input type="range" id="volume-bar" value="100">
-                
-                <div>Seek Bar</div>
-                <div class="seek-bar-box">
-                    <input type="range" id="seek-bar" value="0" />
-                    <input type="range" id="user-input-seek-bar" value="0" />
+                    <div>
+                        <div id="decode-state"></div>
+                        
+                        <div>Volume</div>
+                        <input type="range" id="volume-bar" value="100">
+                        
+                        <div>Seek Bar</div>
+                        <div class="seek-bar-box">
+                            <input type="range" id="seek-bar" value="0" />
+                            <input type="range" id="user-input-seek-bar" class="input-seek-bar" value="0" />
+                        </div>
+        
+                        <div id="message"></div>
+                        <button id="listen-button">play</button>
+                    </div>
                 </div>
 
-                <div id="message"></div>
-
-                <button id="show-waveform-button">show waveform</button>
-                <div id="waveform-canvas-box"></div>
-
-                <button id="show-spectrogram-button">show spectrogram</button>
-                <div id="spectrogram-canvas-box"></div>
+                <div>
+                    <button id="analyze-button" class="seek-bar-box">Analyze</button>
+                </div>
+                
+                <div id="analyze-result-box"></div>
 
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>

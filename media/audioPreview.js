@@ -22,16 +22,9 @@ class Player {
             else this.play();
         };
 
-        this.seekBar = document.getElementById("seek-bar");
-        this.seekBar.style.display = "block";
-        this.seekBar.value = 0;
-
-        // use invisible another seek bar to get user's input.
-        // if we update this.seekBar from both user's input and setInterval,
-        // user's input is overwritten by setInterval before calling this.seekBar.onchange
-        this.userInputSeekBar = document.getElementById("user-input-seek-bar");
-        this.userInputSeekBar.style.display = "block";
-        this.userInputSeekBar.onchange = () => { this.onChange(); };
+        this.seekbarValue = 0;
+        this.userInputSeekBars = [];
+        this.seekbarUpdateCallbacks = [];
 
         //enable play button
         this.button.textContent = "play";
@@ -59,12 +52,15 @@ class Player {
                 this.stop();
                 // reset current time
                 this.currentSec = 0;
-                this.seekBar.value = 0;
+                this.seekbarValue = 0;
                 return;
             }
 
             // update seek bar value
-            this.seekBar.value = 100 * current / this.duration;
+            this.seekbarValue = 100 * current / this.duration;
+            for (const cb of this.seekbarUpdateCallbacks) {
+                cb(this.seekbarValue);
+            }
         }, 10);
     }
 
@@ -78,16 +74,22 @@ class Player {
         this.source = undefined;
     }
 
-    onChange() {
+    onChange(e) {
         if (this.isPlaying) {
             this.stop();
         }
         // restart from selected place
-        this.currentSec = this.userInputSeekBar.value * this.duration / 100;
-        this.seekBar.value = this.userInputSeekBar.value;
+        this.currentSec = e.target.value * this.duration / 100;
+        this.seekbarValue = e.target.value;
         this.play();
         // reset userinput seekbar value to allow user to seek same pos repeatedly
-        this.userInputSeekBar.value = 0;
+        e.target.value = 100;
+    }
+
+    registerSeekbar(inputbar, updateCallback) {
+        inputbar.onchange = (e) => {this.onChange(e);};
+        this.userInputSeekBars.push(inputbar);
+        this.seekbarUpdateCallbacks.push(updateCallback);
     }
 
     onVolumeChange() {
@@ -99,15 +101,15 @@ class Player {
             this.stop();
         }
         this.button.removeEventListener("click", this.button.onclick);
-        this.seekBar.removeEventListener("change", this.seekBar.onchange);
         this.userInputSeekBar.removeEventListener("change", this.userInputSeekBar.onchange);
         this.volumeBar.removeEventListener("change", this.volumeBar.onchange);
         this.button.style.display = "none"
-        this.seekBar.style.display = "none";
         this.volumeBar.style.display = "none";
         this.button = undefined;
-        this.seekBar = undefined;
         this.volumeBar = undefined;
+        for (const bar of this.userInputSeekBars) {
+            bar.removeEventListener("change", bar.onchange);
+        }
     }
 }
 
@@ -127,13 +129,9 @@ function insertTableData(table, values) {
     const message = document.getElementById("message");
     const decodeState = document.getElementById("decode-state");
 
-    const showWaveFormButton = document.getElementById("show-waveform-button");
-    showWaveFormButton.onclick = showWaveForm;
-    const waveFormCanvasBox = document.getElementById("waveform-canvas-box");
-
-    const showSpectrogramButton = document.getElementById("show-spectrogram-button");
-    showSpectrogramButton.onclick = showSpectrogram;
-    const spectrogramCanvasBox = document.getElementById("spectrogram-canvas-box");
+    const analyzeButton = document.getElementById("analyze-button");
+    analyzeButton.onclick = analyze;
+    const analyzeResultBox = document.getElementById("analyze-result-box");
     let spectrogramCanvasList = [];
     let spectrogramCanvasContexts = [];
 
@@ -172,8 +170,7 @@ function insertTableData(table, values) {
                 }
                 await setData(data);
                 if (audioBuffer.length <= data.end) {
-                    showWaveFormButton.style.display = "block";
-                    showSpectrogramButton.style.display = "block";
+                    analyzeButton.style.display = "block";
                     break;
                 }
                 vscode.postMessage({ type: 'data', start: data.end, end: data.end + 10000 });
@@ -219,8 +216,6 @@ function insertTableData(table, values) {
             { name: "format", value: `${data.fmt.audioFormat} (${compressFormat})` },
             { name: "number of channel", value: `${data.fmt.numChannels} (${channels})` },
             { name: "sampleRate", value: `${data.fmt.sampleRate}` },
-            { name: "byteRate", value: `${data.fmt.byteRate}` },
-            { name: "blockAlign", value: `${data.fmt.blockAlign}` },
             { name: "bitsPerSample (bit depth)", value: `${data.fmt.bitsPerSample}` },
             { name: "fileSize", value: `${data.chunkSize + 8} byte` },
         ];
@@ -249,19 +244,20 @@ function insertTableData(table, values) {
 
             // set player ui
             player = new Player(ac, audioBuffer, data.duration);
+            const userinputSeekbar = document.getElementById("user-input-seek-bar");
+            const visibleSeekbar = document.getElementById("seek-bar");
+            userinputSeekbar.style.display = "block";
+            visibleSeekbar.style.display = "block";
+            player.registerSeekbar(userinputSeekbar, (value) => { visibleSeekbar.value = value; });
 
             // insert additional data to infoTable
             const infoTable = document.getElementById("info-table");
             insertTableData(infoTable, ["duration", data.duration + "s"]);
 
             // init waveform and spectrogram view
-            showWaveFormButton.style.display = "none";
-            for (const c of waveFormCanvasBox.children) {
-                waveFormCanvasBox.removeChild(c);
-            }
-            showSpectrogramButton.style.display = "none";
-            for (const c of spectrogramCanvasBox.children) {
-                spectrogramCanvasBox.removeChild(c);
+            analyzeButton.style.display = "none";
+            for (const c of analyzeResultBox.children) {
+                analyzeResultBox.removeChild(c);
             }
             spectrogramCanvasList = [];
             spectrogramCanvasContexts = [];
@@ -298,33 +294,55 @@ function insertTableData(table, values) {
         }
     }
 
-    function showWaveForm() {
-        showWaveFormButton.style.display = "none";
+    function analyze() {
+        analyzeButton.style.display = "none";
 
         for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
-            const width = 3000;
-            const height = 500;
-
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            waveFormCanvasBox.appendChild(canvas);
-            const context = canvas.getContext("2d");
-            context.fillStyle = "green";
-
-            const data = audioBuffer.getChannelData(ch);
-            let maxValue = 0, minValue = Number.MAX_SAFE_INTEGER;
-            for (let i = 0; i < data.length; i++) {
-                if (maxValue < data[i]) maxValue = data[i];
-                if (data[i] < minValue) minValue = data[i];
-            }
-            for (let i = 0; i < data.length; i++) {
-                data[i] = (data[i] - minValue) / (maxValue - minValue); // normalize to [0,1]
-            }
-
-            // call draw in setTimeout not to block ui
-            setTimeout(() => drawWaveForm(data, context, 0, 10000, width, height), 10);
+            showWaveForm(ch);
+            showSpectrogram(ch);
         }
+
+        // register seekbar on figures
+        const visibleBar = document.createElement("div");
+        visibleBar.className = "seek-div";
+        analyzeResultBox.appendChild(visibleBar);
+
+        const inputSeekbar = document.createElement("input");
+        inputSeekbar.style.display = "block";
+        inputSeekbar.type = "range";
+        inputSeekbar.className = "input-seek-bar";
+        analyzeResultBox.appendChild(inputSeekbar);
+
+        player.registerSeekbar(inputSeekbar, (value) => {
+            visibleBar.style.width = `${value}%`;
+        });
+    }
+
+    function showWaveForm(ch) {
+        const width = 3000;
+        const height = 500;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        analyzeResultBox.appendChild(canvas);
+        const context = canvas.getContext("2d");
+        context.fillStyle = "rgb(0,0,0)";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "rgb(91,252,91)";
+
+        const data = audioBuffer.getChannelData(ch);
+        let maxValue = 0, minValue = Number.MAX_SAFE_INTEGER;
+        for (let i = 0; i < data.length; i++) {
+            if (maxValue < data[i]) maxValue = data[i];
+            if (data[i] < minValue) minValue = data[i];
+        }
+        for (let i = 0; i < data.length; i++) {
+            data[i] = (data[i] - minValue) / (maxValue - minValue); // normalize to [0,1]
+        }
+
+        // call draw in setTimeout not to block ui
+        setTimeout(() => drawWaveForm(data, context, 0, 10000, width, height), 10);
     }
 
     function drawWaveForm(data, context, start, count, width, height) {
@@ -340,20 +358,17 @@ function insertTableData(table, values) {
         }
     }
 
-    function showSpectrogram() {
-        showSpectrogramButton.style.display = "none";
-        for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
-            const canvas = document.createElement("canvas");
-            canvas.width = 4500;
-            canvas.height = 2000;
-            const context = canvas.getContext("2d");
-            context.fillStyle = "rgb(0,0,0)";
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            spectrogramCanvasBox.appendChild(canvas);
-            spectrogramCanvasList.push(canvas);
-            spectrogramCanvasContexts.push(context);
-            vscode.postMessage({ type: "spectrogram", channel: ch, start: 0, end: 10000 });
-        }
+    function showSpectrogram(ch) {
+        const canvas = document.createElement("canvas");
+        canvas.width = 4500;
+        canvas.height = 2000;
+        const context = canvas.getContext("2d");
+        context.fillStyle = "rgb(0,0,0)";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        analyzeResultBox.appendChild(canvas);
+        spectrogramCanvasList.push(canvas);
+        spectrogramCanvasContexts.push(context);
+        vscode.postMessage({ type: "spectrogram", channel: ch, start: 0, end: 10000 });
     }
 
     function drawSpectrogram(data) {
