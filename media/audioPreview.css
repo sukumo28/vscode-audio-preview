@@ -1,6 +1,7 @@
 #info-and-control {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
 }
 
 #info-and-control > div {
@@ -57,7 +58,17 @@ input[type="range"] {
     border-right: 3px solid yellow;
 }
 
-#listen-button, #analyze-button {
+#listen-button, #analyze-button, #analyze-setting-button {
+    display: none;
+}
+
+#analyze-controller-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+}
+
+#analyze-setting {
     display: none;
 }
 
@@ -66,7 +77,7 @@ input[type="range"] {
 }
 
 canvas {
-    max-width: 100%;
+    width: 100%;
     border: 1px solid gray;
 }
 

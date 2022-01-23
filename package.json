@@ -2,7 +2,7 @@
 	"name": "wav-preview",
 	"displayName": "wav-preview",
 	"description": "preview and play wav file in VS Code",
-	"version": "1.10.2",
+	"version": "1.10.3",
 	"engines": {
 		"vscode": "^1.59.1"
 	},
@@ -52,6 +52,11 @@
 					"type": "boolean",
 					"default": false,
 					"description": "automatically play audio file when you open it"
+				},
+				"WavPreview.autoAnalyze": {
+					"type": "boolean",
+					"default": true,
+					"description": "automatically analyze audio file when you open it"
 				}
 			}
 		}

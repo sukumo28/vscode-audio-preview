@@ -129,6 +129,19 @@ function insertTableData(table, values) {
     const message = document.getElementById("message");
     const decodeState = document.getElementById("decode-state");
 
+    const analyzeSettingButton = document.getElementById("analyze-setting-button");
+    analyzeSettingButton.onclick = () => {
+        const settings = document.getElementById("analyze-setting");
+        console.log(settings.style.display);
+        if (settings.style.display !== "block") {
+            settings.style.display = "block";
+            analyzeSettingButton.textContent = "hide settings";
+        } else {
+            settings.style.display = "none";
+            analyzeSettingButton.textContent = "show settings";
+        }
+    };
+
     const analyzeButton = document.getElementById("analyze-button");
     analyzeButton.onclick = analyze;
     const analyzeResultBox = document.getElementById("analyze-result-box");
@@ -169,17 +182,21 @@ function insertTableData(table, values) {
                     break;
                 }
                 await setData(data);
-                if (audioBuffer.length <= data.end) {
-                    analyzeButton.style.display = "block";
-                    break;
-                }
-                vscode.postMessage({ type: 'data', start: data.end, end: data.end + 10000 });
-                break;
 
-            case "autoPlay":
-                if (player) {
+                if (data.autoPlay && player) {
                     player.button.click();
                 }
+
+                if (data.isEnd) {
+                    analyzeSettingButton.style.display = "block";
+                    analyzeButton.style.display = "block";
+                    if (data.autoAnalyze) {
+                        analyzeButton.click();
+                    }
+                    break;
+                }
+                
+                vscode.postMessage({ type: 'data', start: data.end, end: data.end + 10000 });
                 break;
 
             case "reload":
@@ -194,7 +211,7 @@ function insertTableData(table, values) {
                 }
                 drawSpectrogram(data);
                 if (audioBuffer.length <= data.end) break;
-                vscode.postMessage({ type: "spectrogram", channel: data.channel, start: data.end, end: data.end + 10000 });
+                vscode.postMessage({ type: "spectrogram", channel: data.channel, start: data.end, end: data.end + 10000, settings: data.settings });
                 break;
         }
     });
@@ -254,13 +271,10 @@ function insertTableData(table, values) {
             const infoTable = document.getElementById("info-table");
             insertTableData(infoTable, ["duration", data.duration + "s"]);
 
-            // init waveform and spectrogram view
+            // init analyze controller 
+            analyzeSettingButton.style.display = "none";
             analyzeButton.style.display = "none";
-            for (const c of analyzeResultBox.children) {
-                analyzeResultBox.removeChild(c);
-            }
-            spectrogramCanvasList = [];
-            spectrogramCanvasContexts = [];
+            clearAnalyzeResult();
 
         } catch (err) {
             message.textContent = "failed to prepare: " + err;
@@ -294,12 +308,31 @@ function insertTableData(table, values) {
         }
     }
 
+    function clearAnalyzeResult() {
+        for (const c of Array.from(analyzeResultBox.children)) {
+            analyzeResultBox.removeChild(c);
+        }
+        spectrogramCanvasList = [];
+        spectrogramCanvasContexts = [];
+    }
+
+    function analyzeSettings() {
+        const windowSizeSelect = document.getElementById("analyze-window-size");
+        const windowSize = parseInt(windowSizeSelect.value, 10);
+        return {
+            windowSize
+        };
+    }
+
     function analyze() {
         analyzeButton.style.display = "none";
+        clearAnalyzeResult();
+
+        const settings = analyzeSettings();
 
         for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
-            showWaveForm(ch);
-            showSpectrogram(ch);
+            showWaveForm(ch, settings);
+            showSpectrogram(ch, settings);
         }
 
         // register seekbar on figures
@@ -316,9 +349,11 @@ function insertTableData(table, values) {
         player.registerSeekbar(inputSeekbar, (value) => {
             visibleBar.style.width = `${value}%`;
         });
+
+        analyzeButton.style.display = "block";
     }
 
-    function showWaveForm(ch) {
+    function showWaveForm(ch, settings) {
         const width = 3000;
         const height = 500;
 
@@ -358,7 +393,7 @@ function insertTableData(table, values) {
         }
     }
 
-    function showSpectrogram(ch) {
+    function showSpectrogram(ch, settings) {
         const canvas = document.createElement("canvas");
         canvas.width = 4500;
         canvas.height = 2000;
@@ -368,19 +403,20 @@ function insertTableData(table, values) {
         analyzeResultBox.appendChild(canvas);
         spectrogramCanvasList.push(canvas);
         spectrogramCanvasContexts.push(context);
-        vscode.postMessage({ type: "spectrogram", channel: ch, start: 0, end: 10000 });
+        vscode.postMessage({ type: "spectrogram", channel: ch, start: 0, end: 10000, settings });
     }
 
     function drawSpectrogram(data) {
         const ch = data.channel;
         const canvas = spectrogramCanvasList[ch];
         const context = spectrogramCanvasContexts[ch];
+        if (!canvas || !context) return;
 
         const width = canvas.width;
         const height = canvas.height;
         const spectrogram = data.spectrogram;
-        const rectWidth = data.windowSize / 2;
-        const rectHeight = (height / (data.windowSize / 2));
+        const rectWidth = data.settings.windowSize / 2;
+        const rectHeight = (height / (data.settings.windowSize / 2));
         for (let i = 0; i < spectrogram.length; i++) {
             const x = width * ((i * rectWidth + data.start) / audioBuffer.length);
             for (let j = 0; j < spectrogram[i].length; j++) {

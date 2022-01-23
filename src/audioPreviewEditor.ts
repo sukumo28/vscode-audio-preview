@@ -130,7 +130,8 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 length: samples[0].length,
                 numberOfChannels: chNum,
                 start,
-                end
+                end,
+                isEnd: this._documentData.samples[0].length <= end
             };
 
         } catch (err: any) {
@@ -139,11 +140,11 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         }
     }
 
-    public spectrogram(ch: number, start: number, end: number): any {
+    public spectrogram(ch: number, start: number, end: number, settings: any): any {
         try {
             const spectrogram = [];
 
-            const windowSize = 1024;
+            const windowSize = settings.windowSize;
             const window = [];
             for (let i = 0; i < windowSize; i++) {
                 window.push(0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize));
@@ -191,7 +192,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 spectrogram,
                 start,
                 end,
-                windowSize
+                settings
             };
 
         } catch (err: any) {
@@ -311,26 +312,32 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     break;
 
                 case "data":
-                    webviewPanel.webview.postMessage({
-                        type: "data",
-                        data: document.wavData(e.start, e.end)
-                    });
+                    const data = document.wavData(e.start, e.end);
 
                     // play audio automatically after first data message 
                     // if WapPreview.autoPlay is true
-                    if (e.start != 0) break;
-                    const config = vscode.workspace.getConfiguration("WavPreview");
-                    if (config.get("autoPlay")) {
-                        webviewPanel.webview.postMessage({
-                            type: "autoPlay",
-                        });
+                    if (e.start === 0){
+                        const config = vscode.workspace.getConfiguration("WavPreview");
+                        data.autoPlay = config.get("autoPlay");
                     }
+
+                    // analyze automatically
+                    if (data.isEnd) {
+                        const config = vscode.workspace.getConfiguration("WavPreview");
+                        data.autoAnalyze = config.get("autoAnalyze");
+                    }
+
+                    webviewPanel.webview.postMessage({
+                        type: "data",
+                        data: data
+                    });
+
                     break;
 
                 case "spectrogram":
                     webviewPanel.webview.postMessage({
                         type: "spectrogram",
-                        data: document.spectrogram(e.channel, e.start, e.end)
+                        data: document.spectrogram(e.channel, e.start, e.end, e.settings)
                     });
                     break;
             }
@@ -394,7 +401,21 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 </div>
 
                 <div>
-                    <button id="analyze-button" class="seek-bar-box">Analyze</button>
+                    <div id="analyze-controller-buttons">
+                        <button id="analyze-button" class="seek-bar-box">analyze</button>
+                        <button id="analyze-setting-button">show settings</button>
+                    </div>
+                    <div id="analyze-setting">
+                        <div>window size
+                            <select id="analyze-window-size">
+                                <option value="512">256</option>
+                                <option value="512">512</option>
+                                <option value="1024" selected>1024</option>
+                                <option value="2048">2048</option>
+                                <option value="4096">4096</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="analyze-result-box"></div>

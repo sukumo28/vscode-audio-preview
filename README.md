@@ -18,6 +18,11 @@ If you enable `WavPreview.autoPlay` in settings.json, you can play audio automat
 ```json
 "WavPreview.autoPlay": true
 ```
+  
+If you enable `WavPreview.autoAnalyze` in settings.json, you can analyze audio automatically when you open it (default: true).    
+```json
+"WavPreview.autoAnalyze": true
+```  
 
 ## Known Issues
 
