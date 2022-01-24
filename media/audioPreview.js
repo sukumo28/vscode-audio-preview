@@ -22,8 +22,8 @@ class Player {
         };
 
         this.seekbarValue = 0;
-        this.userInputSeekBars = [];
-        this.seekbarUpdateCallbacks = [];
+        this.userInputSeekBars = new Map();
+        this.seekbarUpdateCallbacks = new Map();
 
         //enable play button
         this.button.textContent = "play";
@@ -46,19 +46,21 @@ class Player {
         this.timer = setInterval(() => {
             const current = this.currentSec + this.ac.currentTime - this.lastStartSec;
 
+            // update seek bar value
+            let stop = false;
+            this.seekbarValue = 100 * current / this.duration;
+            this.seekbarUpdateCallbacks.forEach((cb) => {
+                const s = cb(this.seekbarValue);
+                if (s) stop = true; 
+            });
+
             // stop if finish playing
-            if (current > this.duration) {
+            if (current > this.duration || stop) {
                 this.stop();
                 // reset current time
                 this.currentSec = 0;
                 this.seekbarValue = 0;
                 return;
-            }
-
-            // update seek bar value
-            this.seekbarValue = 100 * current / this.duration;
-            for (const cb of this.seekbarUpdateCallbacks) {
-                cb(this.seekbarValue);
             }
         }, 10);
     }
@@ -85,10 +87,19 @@ class Player {
         e.target.value = 100;
     }
 
-    registerSeekbar(inputbar, updateCallback) {
-        inputbar.onchange = (e) => {this.onChange(e);};
-        this.userInputSeekBars.push(inputbar);
-        this.seekbarUpdateCallbacks.push(updateCallback);
+    registerSeekbar(name, inputbar, updateCallback, valueConvertFunc) {
+        if (!valueConvertFunc) valueConvertFunc = (e) => e;
+        inputbar.onchange = (e) => {this.onChange(valueConvertFunc(e));};
+        this.userInputSeekBars.set(name, inputbar);
+        this.seekbarUpdateCallbacks.set(name, updateCallback);
+    }
+
+    removeSeekbar(name) {
+        if (!this.userInputSeekBars.has(name)) return;
+        const bar = this.userInputSeekBars.get(name);
+        bar.removeEventListener("change", bar.onchange);
+        this.userInputSeekBars.delete(name);
+        this.seekbarUpdateCallbacks.delete(name);
     }
 
     onVolumeChange() {
@@ -100,15 +111,14 @@ class Player {
             this.stop();
         }
         this.button.removeEventListener("click", this.button.onclick);
-        this.userInputSeekBar.removeEventListener("change", this.userInputSeekBar.onchange);
         this.volumeBar.removeEventListener("change", this.volumeBar.onchange);
         this.button.style.display = "none"
         this.volumeBar.style.display = "none";
         this.button = undefined;
         this.volumeBar = undefined;
-        for (const bar of this.userInputSeekBars) {
+        this.userInputSeekBars.forEach((bar) => {
             bar.removeEventListener("change", bar.onchange);
-        }
+        });
     }
 }
 
@@ -263,7 +273,7 @@ function insertTableData(table, values) {
             player = new Player(ac, audioBuffer, data.duration);
             const userinputSeekbar = document.getElementById("user-input-seek-bar");
             const visibleSeekbar = document.getElementById("seek-bar");
-            player.registerSeekbar(userinputSeekbar, (value) => { visibleSeekbar.value = value; });
+            player.registerSeekbar("main-seekbar", userinputSeekbar, (value) => { visibleSeekbar.value = value; });
 
             // insert additional data to infoTable
             const infoTable = document.getElementById("info-table");
@@ -366,6 +376,9 @@ function insertTableData(table, values) {
             showSpectrogram(ch, settings);
         }
 
+        // remove old seekbar for analyze
+        player.removeSeekbar("analyze-result-seekbar");
+
         // register seekbar on figures
         const visibleBar = document.createElement("div");
         visibleBar.className = "seek-div";
@@ -376,9 +389,23 @@ function insertTableData(table, values) {
         inputSeekbar.className = "input-seek-bar";
         analyzeResultBox.appendChild(inputSeekbar);
 
-        player.registerSeekbar(inputSeekbar, (value) => {
-            visibleBar.style.width = `${value}%`;
-        });
+        player.registerSeekbar(
+            "analyze-result-seekbar",
+            inputSeekbar, 
+            (value) => {
+                const t = value * audioBuffer.duration / 100;
+                const v = ((t - settings.minTime) / (settings.maxTime - settings.minTime))*100;
+                const vv = v<0? 0 : 100<v? 100: v;
+                visibleBar.style.width = `${vv}%`;
+                return 100 < v;
+            },
+            (e) => {
+                const rv = e.target.value;
+                const nv = Math.floor(((rv/100 * (settings.maxTime - settings.minTime) + settings.minTime) / audioBuffer.duration)*100);
+                e.target.value = nv;
+                return e;
+            }
+        );
 
         analyzeButton.style.display = "block";
     }
