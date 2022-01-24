@@ -415,7 +415,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                         <div>
                             window size:
                             <select id="analyze-window-size">
-                                <option value="512">256</option>
+                                <option value="256">256</option>
                                 <option value="512">512</option>
                                 <option value="1024" selected>1024</option>
                                 <option value="2048">2048</option>
