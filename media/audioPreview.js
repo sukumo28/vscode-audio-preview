@@ -316,6 +316,7 @@ function insertTableData(table, values) {
     function analyzeSettings() {
         const windowSizeSelect = document.getElementById("analyze-window-size");
         const windowSize = parseInt(windowSizeSelect.value, 10);
+        windowSizeSelect.value = windowSize;
 
         const minFreqInput = document.getElementById("analyze-min-frequency");
         let minFreq = parseInt(minFreqInput.value, 10);
@@ -328,6 +329,8 @@ function insertTableData(table, values) {
             minFreq = 0;
             maxFreq = maxf;
         }
+        minFreqInput.value = minFreq;
+        maxFreqInput.value = maxFreq;
 
         return {
             windowSize,
