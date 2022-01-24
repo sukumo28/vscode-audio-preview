@@ -424,9 +424,14 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                             </select>
                         </div>
                         <div>
-                            frequency:
-                            min<input id="analyze-min-frequency" type="number" value="0">
-                            max<input id="analyze-max-frequency" type="number" value="24000">
+                            frequency range:
+                            <input id="analyze-min-frequency" type="number" value="0">Hz ~
+                            <input id="analyze-max-frequency" type="number" value="24000">Hz
+                        </div>
+                        <div>
+                            time range:
+                            <input id="analyze-min-time" type="number" step="0.01" value="0">s ~
+                            <input id="analyze-max-time" type="number" step="0.01" value="100">s
                         </div>
                     </div>
                 </div>

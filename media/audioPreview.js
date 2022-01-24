@@ -209,7 +209,8 @@ function insertTableData(table, values) {
                     break;
                 }
                 drawSpectrogram(data);
-                if (audioBuffer.length <= data.end) break;
+                const endIndex = Math.round(data.settings.maxTime * audioBuffer.sampleRate);
+                if (endIndex < data.end) break;
                 vscode.postMessage({ type: "spectrogram", channel: data.channel, start: data.end, end: data.end + 10000, settings: data.settings });
                 break;
         }
@@ -332,10 +333,25 @@ function insertTableData(table, values) {
         minFreqInput.value = minFreq;
         maxFreqInput.value = maxFreq;
 
+        const minTimeInput = document.getElementById("analyze-min-time");
+        let minTime = parseFloat(minTimeInput.value);
+        if (isNaN(minTime) || minTime < 0) minTime = 0;
+        const maxTimeInput = document.getElementById("analyze-max-time");
+        let maxTime = parseFloat(maxTimeInput.value);
+        if (isNaN(maxTime) || audioBuffer.duration < maxTime) maxTime = audioBuffer.duration;
+        if (maxTime <= minTime) {
+            minTime = 0;
+            maxTime = audioBuffer.duration;
+        }
+        minTimeInput.value = minTime;
+        maxTimeInput.value = maxTime;
+
         return {
             windowSize,
             minFrequency: minFreq,
-            maxFrequency: maxFreq
+            maxFrequency: maxFreq,
+            minTime: minTime,
+            maxTime: maxTime,
         };
     }
 
@@ -344,10 +360,9 @@ function insertTableData(table, values) {
         clearAnalyzeResult();
 
         const settings = analyzeSettings();
-        console.log(settings);
 
         for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
-            showWaveForm(ch);
+            showWaveForm(ch, settings);
             showSpectrogram(ch, settings);
         }
 
@@ -368,7 +383,7 @@ function insertTableData(table, values) {
         analyzeButton.style.display = "block";
     }
 
-    function showWaveForm(ch) {
+    function showWaveForm(ch, settings) {
         const width = 3000;
         const height = 500;
 
@@ -381,7 +396,9 @@ function insertTableData(table, values) {
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = "rgb(91,252,91)";
 
-        const data = audioBuffer.getChannelData(ch);
+        const startIndex = Math.floor(settings.minTime * audioBuffer.sampleRate);
+        const endIndex = Math.floor(settings.maxTime * audioBuffer.sampleRate);
+        const data = audioBuffer.getChannelData(ch).slice(startIndex, endIndex);
         let maxValue = 0, minValue = Number.MAX_SAFE_INTEGER;
         for (let i = 0; i < data.length; i++) {
             if (maxValue < data[i]) maxValue = data[i];
@@ -418,7 +435,8 @@ function insertTableData(table, values) {
         analyzeResultBox.appendChild(canvas);
         spectrogramCanvasList.push(canvas);
         spectrogramCanvasContexts.push(context);
-        vscode.postMessage({ type: "spectrogram", channel: ch, start: 0, end: 10000, settings });
+        const startIndex = Math.floor(settings.minTime * audioBuffer.sampleRate);
+        vscode.postMessage({ type: "spectrogram", channel: ch, start: startIndex, end: 10000, settings });
     }
 
     function drawSpectrogram(data) {
@@ -430,9 +448,13 @@ function insertTableData(table, values) {
         const width = canvas.width;
         const height = canvas.height;
         const spectrogram = data.spectrogram;
-        const rectWidth = data.settings.windowSize / 2;
+        const wholeSampleNum = (data.settings.maxTime - data.settings.minTime) * audioBuffer.sampleRate;
+        const blockSize = data.end - data.start;
+        const blockStart = data.start - Math.floor(data.settings.minTime*audioBuffer.sampleRate);
+        const hopSize = data.settings.windowSize / 2;
+        const rectWidth = width * (hopSize / blockSize);
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = width * ((i * rectWidth + data.start) / audioBuffer.length);
+            const x = width * ((i * hopSize + blockStart) / wholeSampleNum);
             const rectHeight = (height / spectrogram[i].length);
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height * (1 - (j / spectrogram[i].length));
