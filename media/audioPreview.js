@@ -518,8 +518,10 @@ function insertTableData(table, values) {
 
         analyzeResultBox.appendChild(canvasBox);
 
-        const startIndex = Math.floor(settings.minTime * audioBuffer.sampleRate);
-        vscode.postMessage({ type: "spectrogram", channel: ch, start: startIndex, end: 10000, settings });
+        const startIndex = Math.round(settings.minTime * audioBuffer.sampleRate);
+        const endIndex = Math.round(settings.maxTime * audioBuffer.sampleRate);
+        const end = startIndex + 10000 < endIndex? startIndex + 10000 : endIndex;
+        vscode.postMessage({ type: "spectrogram", channel: ch, start: startIndex, end, settings });
     }
 
     function drawSpectrogram(data) {
@@ -533,6 +535,7 @@ function insertTableData(table, values) {
         const spectrogram = data.spectrogram;
         const wholeSampleNum = (data.settings.maxTime - data.settings.minTime) * audioBuffer.sampleRate;
         const blockSize = data.end - data.start;
+        console.log(blockSize, data.start, data.end);
         const blockStart = data.start - Math.floor(data.settings.minTime * audioBuffer.sampleRate);
         const hopSize = data.settings.windowSize / 2;
 
