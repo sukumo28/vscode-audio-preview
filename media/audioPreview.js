@@ -6,6 +6,7 @@ class Player {
         this.duration = duration;
         this.ac = audioContext;
         this.ab = audioBuffer;
+        this.animationFrameID = 0;
 
         this.gainNode = this.ac.createGain();
         this.gainNode.connect(this.ac.destination);
@@ -42,7 +43,7 @@ class Player {
         this.source.start(this.ac.currentTime, this.currentSec);
 
         // move seek bar
-        requestAnimationFrame(() => this.tick());
+        this.animationFrameID = requestAnimationFrame(() => this.tick());
     }
 
     tick() {
@@ -66,11 +67,12 @@ class Player {
         }
 
         if (this.isPlaying) {
-            requestAnimationFrame(() => this.tick());
+            this.animationFrameID = requestAnimationFrame(() => this.tick());
         }
     }
 
     stop() {
+        cancelAnimationFrame(this.animationFrameID);
         this.source.stop();
         this.currentSec += this.ac.currentTime - this.lastStartSec;
         this.isPlaying = false;
