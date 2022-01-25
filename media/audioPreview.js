@@ -161,6 +161,8 @@ function insertTableData(table, values) {
     let spectrogramCanvasList = [];
     let spectrogramCanvasContexts = [];
 
+    let latestAnalyzeID = 0;
+
     // Handle messages from the extension
     window.addEventListener('message', async e => {
         const { type, data, isTrusted } = e.data;
@@ -222,6 +224,7 @@ function insertTableData(table, values) {
                     message.textContent = "failed to draw spectrogram";
                     break;
                 }
+                if (data.settings.analyzeID !== latestAnalyzeID) break; // cancel old analyze
                 drawSpectrogram(data);
                 const endIndex = Math.round(data.settings.maxTime * audioBuffer.sampleRate);
                 if (endIndex < data.end) break;
@@ -374,6 +377,7 @@ function insertTableData(table, values) {
         clearAnalyzeResult();
 
         const settings = analyzeSettings();
+        settings.analyzeID = ++latestAnalyzeID;
 
         for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
             showWaveForm(ch, settings);
@@ -464,19 +468,19 @@ function insertTableData(table, values) {
         }
 
         // call draw in requestAnimationFrame not to block ui
-        requestAnimationFrame(() =>  drawWaveForm(data, context, 0, 10000, width, height));
+        requestAnimationFrame(() =>  drawWaveForm(data, context, 0, 10000, width, height, settings.analyzeID));
     }
 
-    function drawWaveForm(data, context, start, count, width, height) {
+    function drawWaveForm(data, context, start, count, width, height, analyzeID) {
         for (let i = 0; i < count; i++) {
             const x = Math.round(((start + i) / data.length) * width);
             const y = Math.round(height * (1 - data[start + i]));
             context.fillRect(x, y, 1, 1);
         }
 
-        if (start + count < audioBuffer.length) {
+        if (start + count < audioBuffer.length && analyzeID === latestAnalyzeID) {
             // call draw in requestAnimationFrame not to block ui
-            requestAnimationFrame(() => drawWaveForm(data, context, start + count, count, width, height));
+            requestAnimationFrame(() => drawWaveForm(data, context, start + count, count, width, height, analyzeID));
         }
     }
 
