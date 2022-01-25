@@ -405,7 +405,7 @@ function insertTableData(table, values) {
             },
             (e) => {
                 const rv = e.target.value;
-                const nv = Math.floor(((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / audioBuffer.duration) * 100);
+                const nv = ((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / audioBuffer.duration) * 100;
                 e.target.value = nv;
                 return e;
             }
