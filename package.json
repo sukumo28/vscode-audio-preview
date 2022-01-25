@@ -55,7 +55,7 @@
 				},
 				"WavPreview.autoAnalyze": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "automatically analyze audio file when you open it"
 				}
 			}

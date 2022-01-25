@@ -14,16 +14,15 @@ You can also check waveform and spectrogram.
 ![waveform](https://github.com/sukumo28/wav-preview/blob/main/images/waveform.png?raw=true)
 
 ## Settings  
-If you enable `WavPreview.autoPlay` in settings.json, you can play audio automatically when you open it.  
+You can configure these options in `settings.json` or VS Code's GUI.  
 ```json
+// you can play audio automatically when you open it 
 "WavPreview.autoPlay": true
+
+// you can analyze audio automatically when you open it
+"WavPreview.autoAnalyze": true
 ```
   
-If you enable `WavPreview.autoAnalyze` in settings.json, you can analyze audio automatically when you open it (default: true).    
-```json
-"WavPreview.autoAnalyze": true
-```  
-
 ## Known Issues
 
 Feel free to report isuues on github.  

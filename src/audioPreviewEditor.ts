@@ -431,7 +431,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                         <div>
                             time range:
                             <input id="analyze-min-time" type="number" value="0">s ~
-                            <input id="analyze-max-time" type="number" value="100">s
+                            <input id="analyze-max-time" type="number" value="1000">s
                         </div>
                     </div>
                 </div>
