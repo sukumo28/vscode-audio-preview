@@ -2,7 +2,7 @@
 	"name": "wav-preview",
 	"displayName": "wav-preview",
 	"description": "preview and play wav file in VS Code",
-	"version": "1.11.1",
+	"version": "1.11.2",
 	"engines": {
 		"vscode": "^1.59.1"
 	},
@@ -18,7 +18,9 @@
 		"viewer",
 		"preview",
 		"play",
-		"listen"
+		"listen",
+		"waveform",
+		"spectrogram"
 	],
 	"icon": "wav-preview.png",
 	"repository": {
