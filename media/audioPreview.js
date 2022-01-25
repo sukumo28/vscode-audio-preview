@@ -3,7 +3,6 @@ class Player {
         this.lastStartSec = 0;
         this.currentSec = 0;
         this.isPlaying = false;
-        this.timer = undefined;
         this.duration = duration;
         this.ac = audioContext;
         this.ab = audioBuffer;
@@ -43,32 +42,36 @@ class Player {
         this.source.start(this.ac.currentTime, this.currentSec);
 
         // move seek bar
-        this.timer = setInterval(() => {
-            const current = this.currentSec + this.ac.currentTime - this.lastStartSec;
+        requestAnimationFrame(() => this.tick());
+    }
 
-            // update seek bar value
-            let stop = false;
-            this.seekbarValue = 100 * current / this.duration;
-            this.seekbarUpdateCallbacks.forEach((cb) => {
-                const s = cb(this.seekbarValue);
-                if (s) stop = true;
-            });
+    tick() {
+        const current = this.currentSec + this.ac.currentTime - this.lastStartSec;
 
-            // stop if finish playing
-            if (current > this.duration || stop) {
-                this.stop();
-                // reset current time
-                this.currentSec = 0;
-                this.seekbarValue = 0;
-                return;
-            }
-        }, 10);
+        // update seek bar value
+        let stop = false;
+        this.seekbarValue = 100 * current / this.duration;
+        this.seekbarUpdateCallbacks.forEach((cb) => {
+            const s = cb(this.seekbarValue);
+            if (s) stop = true;
+        });
+
+        // stop if finish playing
+        if (current > this.duration || stop) {
+            this.stop();
+            // reset current time
+            this.currentSec = 0;
+            this.seekbarValue = 0;
+            return;
+        }
+
+        if (this.isPlaying) {
+            requestAnimationFrame(() => this.tick());
+        }
     }
 
     stop() {
         this.source.stop();
-        clearInterval(this.timer);
-        this.timer = undefined;
         this.currentSec += this.ac.currentTime - this.lastStartSec;
         this.isPlaying = false;
         this.button.textContent = "play";
@@ -459,8 +462,8 @@ function insertTableData(table, values) {
             data[i] = (data[i] - minValue) / (maxValue - minValue); // normalize to [0,1]
         }
 
-        // call draw in setTimeout not to block ui
-        setTimeout(() => drawWaveForm(data, context, 0, 10000, width, height), 10);
+        // call draw in requestAnimationFrame not to block ui
+        requestAnimationFrame(() =>  drawWaveForm(data, context, 0, 10000, width, height));
     }
 
     function drawWaveForm(data, context, start, count, width, height) {
@@ -471,8 +474,8 @@ function insertTableData(table, values) {
         }
 
         if (start + count < audioBuffer.length) {
-            // call draw in setTimeout not to block ui
-            setTimeout(() => drawWaveForm(data, context, start + count, count, width, height), 10);
+            // call draw in requestAnimationFrame not to block ui
+            requestAnimationFrame(() => drawWaveForm(data, context, start + count, count, width, height));
         }
     }
 
