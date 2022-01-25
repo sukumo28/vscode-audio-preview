@@ -51,7 +51,7 @@ class Player {
             this.seekbarValue = 100 * current / this.duration;
             this.seekbarUpdateCallbacks.forEach((cb) => {
                 const s = cb(this.seekbarValue);
-                if (s) stop = true; 
+                if (s) stop = true;
             });
 
             // stop if finish playing
@@ -89,7 +89,7 @@ class Player {
 
     registerSeekbar(name, inputbar, updateCallback, valueConvertFunc) {
         if (!valueConvertFunc) valueConvertFunc = (e) => e;
-        inputbar.onchange = (e) => {this.onChange(valueConvertFunc(e));};
+        inputbar.onchange = (e) => { this.onChange(valueConvertFunc(e)); };
         this.userInputSeekBars.set(name, inputbar);
         this.seekbarUpdateCallbacks.set(name, updateCallback);
     }
@@ -204,7 +204,7 @@ function insertTableData(table, values) {
                     }
                     break;
                 }
-                
+
                 vscode.postMessage({ type: 'data', start: data.end, end: data.end + 10000 });
                 break;
 
@@ -391,17 +391,17 @@ function insertTableData(table, values) {
 
         player.registerSeekbar(
             "analyze-result-seekbar",
-            inputSeekbar, 
+            inputSeekbar,
             (value) => {
                 const t = value * audioBuffer.duration / 100;
-                const v = ((t - settings.minTime) / (settings.maxTime - settings.minTime))*100;
-                const vv = v<0? 0 : 100<v? 100: v;
+                const v = ((t - settings.minTime) / (settings.maxTime - settings.minTime)) * 100;
+                const vv = v < 0 ? 0 : 100 < v ? 100 : v;
                 visibleBar.style.width = `${vv}%`;
                 return 100 < v;
             },
             (e) => {
                 const rv = e.target.value;
-                const nv = Math.floor(((rv/100 * (settings.maxTime - settings.minTime) + settings.minTime) / audioBuffer.duration)*100);
+                const nv = Math.floor(((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / audioBuffer.duration) * 100);
                 e.target.value = nv;
                 return e;
             }
@@ -411,17 +411,40 @@ function insertTableData(table, values) {
     }
 
     function showWaveForm(ch, settings) {
-        const width = 3000;
-        const height = 500;
+        const width = 1000;
+        const height = 200;
+
+        const canvasBox = document.createElement("div");
+        canvasBox.className = "canvas-box";
 
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        analyzeResultBox.appendChild(canvas);
-        const context = canvas.getContext("2d");
-        context.fillStyle = "rgb(0,0,0)";
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        const context = canvas.getContext("2d", { alpha: false });
         context.fillStyle = "rgb(91,252,91)";
+        canvasBox.appendChild(canvas);
+
+        const axisCanvas = document.createElement("canvas");
+        axisCanvas.className = "axis-canvas";
+        axisCanvas.width = width;
+        axisCanvas.height = height;
+        const axisContext = axisCanvas.getContext("2d");
+        axisContext.font = `10px Arial`;
+        for (let i = 0; i < 10; i++) {
+            const x = Math.round(i * width / 10);
+            const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
+            const y = Math.round(i * height / 10);
+
+            axisContext.fillStyle = "white";
+            axisContext.fillText(`${(t).toFixed(1)}`, x, 10);
+            
+            axisContext.fillStyle = "rgb(80,80,80)";
+            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
+        }
+        canvasBox.appendChild(axisCanvas);
+
+        analyzeResultBox.appendChild(canvasBox);
 
         const startIndex = Math.floor(settings.minTime * audioBuffer.sampleRate);
         const endIndex = Math.floor(settings.maxTime * audioBuffer.sampleRate);
@@ -441,8 +464,8 @@ function insertTableData(table, values) {
 
     function drawWaveForm(data, context, start, count, width, height) {
         for (let i = 0; i < count; i++) {
-            const x = ((start + i) / data.length) * width;
-            const y = height * (1 - data[start + i]);
+            const x = Math.round(((start + i) / data.length) * width);
+            const y = Math.round(height * (1 - data[start + i]));
             context.fillRect(x, y, 1, 1);
         }
 
@@ -453,15 +476,44 @@ function insertTableData(table, values) {
     }
 
     function showSpectrogram(ch, settings) {
+        const width = 1800;
+        const height = 600;
+
+        const canvasBox = document.createElement("div");
+        canvasBox.className = "canvas-box";
+
         const canvas = document.createElement("canvas");
-        canvas.width = 4500;
-        canvas.height = 2000;
-        const context = canvas.getContext("2d");
-        context.fillStyle = "rgb(0,0,0)";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        analyzeResultBox.appendChild(canvas);
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d", { alpha: false });
+        canvasBox.appendChild(canvas);
         spectrogramCanvasList.push(canvas);
         spectrogramCanvasContexts.push(context);
+
+        const axisCanvas = document.createElement("canvas");
+        axisCanvas.className = "axis-canvas";
+        axisCanvas.width = width;
+        axisCanvas.height = height;
+        const axisContext = axisCanvas.getContext("2d");
+        axisContext.font = `18px Arial`;
+        for (let i = 0; i < 10; i++) {
+            axisContext.fillStyle = "white";
+            const x = Math.round(i * width / 10);
+            const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
+            axisContext.fillText(`${(t).toFixed(1)}`, x, 18);
+            const y = Math.round(i * height / 10);
+            const f = (10-i) * (settings.maxFrequency - settings.minFrequency) / 10 + settings.minFrequency;
+            axisContext.fillText(`${(f/1000).toFixed(1)}k`, 4, y-4);
+
+            axisContext.fillStyle = "rgb(80,80,80)";
+            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
+        }
+
+        canvasBox.appendChild(axisCanvas);
+
+        analyzeResultBox.appendChild(canvasBox);
+
         const startIndex = Math.floor(settings.minTime * audioBuffer.sampleRate);
         vscode.postMessage({ type: "spectrogram", channel: ch, start: startIndex, end: 10000, settings });
     }
@@ -477,14 +529,15 @@ function insertTableData(table, values) {
         const spectrogram = data.spectrogram;
         const wholeSampleNum = (data.settings.maxTime - data.settings.minTime) * audioBuffer.sampleRate;
         const blockSize = data.end - data.start;
-        const blockStart = data.start - Math.floor(data.settings.minTime*audioBuffer.sampleRate);
+        const blockStart = data.start - Math.floor(data.settings.minTime * audioBuffer.sampleRate);
         const hopSize = data.settings.windowSize / 2;
-        const rectWidth = width * (hopSize / blockSize);
+
+        const rectWidth = Math.round(width * (hopSize / blockSize));
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = width * ((i * hopSize + blockStart) / wholeSampleNum);
-            const rectHeight = (height / spectrogram[i].length);
+            const x = Math.round(width * ((i * hopSize + blockStart) / wholeSampleNum));
+            const rectHeight = Math.round(height / spectrogram[i].length);
             for (let j = 0; j < spectrogram[i].length; j++) {
-                const y = height * (1 - (j / spectrogram[i].length));
+                const y = Math.round(height * (1 - (j / spectrogram[i].length)));
 
                 const value = spectrogram[i][j];
                 if (value < 0.001) {

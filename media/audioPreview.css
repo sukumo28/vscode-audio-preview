@@ -101,7 +101,18 @@ select {
     position: relative;
 }
 
+.canvas-box {
+    position: relative;
+    padding: 0;
+}
+
 canvas {
     width: 100%;
     border: 1px solid var(--vscode-foreground);
+}
+
+canvas.axis-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
