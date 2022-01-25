@@ -387,6 +387,7 @@ function insertTableData(table, values) {
         const inputSeekbar = document.createElement("input");
         inputSeekbar.type = "range";
         inputSeekbar.className = "input-seek-bar";
+        inputSeekbar.step = "0.00001"
         analyzeResultBox.appendChild(inputSeekbar);
 
         player.registerSeekbar(
