@@ -144,7 +144,6 @@ function insertTableData(table, values) {
     const analyzeSettingButton = document.getElementById("analyze-setting-button");
     analyzeSettingButton.onclick = () => {
         const settings = document.getElementById("analyze-setting");
-        console.log(settings.style.display);
         if (settings.style.display !== "block") {
             settings.style.display = "block";
             analyzeSettingButton.textContent = "▲settings";
@@ -535,16 +534,15 @@ function insertTableData(table, values) {
         const spectrogram = data.spectrogram;
         const wholeSampleNum = (data.settings.maxTime - data.settings.minTime) * audioBuffer.sampleRate;
         const blockSize = data.end - data.start;
-        console.log(blockSize, data.start, data.end);
-        const blockStart = data.start - Math.floor(data.settings.minTime * audioBuffer.sampleRate);
+        const blockStart = data.start - data.settings.minTime * audioBuffer.sampleRate;
         const hopSize = data.settings.windowSize / 2;
+        const rectWidth = width * (hopSize / blockSize);
 
-        const rectWidth = Math.round(width * (hopSize / blockSize));
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = Math.round(width * ((i * hopSize + blockStart) / wholeSampleNum));
-            const rectHeight = Math.round(height / spectrogram[i].length);
+            const x = width * ((i * hopSize + blockStart) / wholeSampleNum);
+            const rectHeight = height / spectrogram[i].length;
             for (let j = 0; j < spectrogram[i].length; j++) {
-                const y = Math.round(height * (1 - (j / spectrogram[i].length)));
+                const y = height * (1 - (j / spectrogram[i].length));
 
                 const value = spectrogram[i][j];
                 if (value < 0.001) {
