@@ -1,11 +1,8 @@
-//@ts-check
-
 'use strict';
-
+const CopyPlugin = require("copy-webpack-plugin");
 const path = require('path');
 
-/**@type {import('webpack').Configuration}*/
-const config = {
+const extentionConfig = {
   target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
@@ -38,4 +35,40 @@ const config = {
     ]
   }
 };
-module.exports = config;
+
+const webviewConfig = {
+  target: 'web',
+
+  entry: './src/webview/index.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'audioPreview.js',
+  },
+  devtool: 'source-map',
+  resolve: {
+    extensions: ['.ts', '.js']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader'
+          }
+        ]
+      },
+    ],
+  },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        './src/webview/vscode.css',
+        './src/webview/audioPreview.css',
+      ]
+    })
+  ]
+}
+
+module.exports = [extentionConfig, webviewConfig];

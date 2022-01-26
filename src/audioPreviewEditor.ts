@@ -355,13 +355,13 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
     private getHtmlForWebview(webview: vscode.Webview): string {
         // Local path to script and css for the webview
         const scriptUri = webview.asWebviewUri(vscode.Uri.file(
-            path.join(this._context.extensionPath, 'media', 'audioPreview.js')
+            path.join(this._context.extensionPath, 'dist', 'audioPreview.js')
         ));
         const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.file(
-            path.join(this._context.extensionPath, 'media', 'vscode.css')
+            path.join(this._context.extensionPath, 'dist', 'vscode.css')
         ));
         const styleMainUri = webview.asWebviewUri(vscode.Uri.file(
-            path.join(this._context.extensionPath, 'media', 'audioPreview.css')
+            path.join(this._context.extensionPath, 'dist', 'audioPreview.css')
         ));
 
         // Use a nonce to whitelist which scripts can be run
