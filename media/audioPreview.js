@@ -137,10 +137,14 @@ function insertTableData(table, values) {
     table.appendChild(tr);
 }
 
+function showErrorMessage(msg) {
+    const message = document.getElementById("message");
+    message.textContent = msg;
+}
+
 (function () {
     const vscode = acquireVsCodeApi();
     let audioBuffer, player;
-    const message = document.getElementById("message");
     const decodeState = document.getElementById("decode-state");
 
     const analyzeSettingButton = document.getElementById("analyze-setting-button");
@@ -170,13 +174,13 @@ function insertTableData(table, values) {
         switch (type) {
             case "info":
                 if (!data) {
-                    message.textContent = "failed to decode header";
+                    showErrorMessage("failed to decode header");
                     break;
                 }
                 await showInfo(data);
                 // do not play audio in untrusted workspace 
                 if (isTrusted === false) {
-                    message.textContent = "Cannot play audio in untrusted workspaces";
+                    showErrorMessage("Cannot play audio in untrusted workspaces");
                     break;
                 }
                 vscode.postMessage({ type: 'prepare' });
@@ -184,7 +188,7 @@ function insertTableData(table, values) {
 
             case "prepare":
                 if (!data) {
-                    message.textContent = "failed to decode data";
+                    showErrorMessage("failed to decode data");
                     break;
                 }
                 await prepare(data);
@@ -193,7 +197,7 @@ function insertTableData(table, values) {
 
             case "data":
                 if (!data) {
-                    message.textContent = "failed to decode data: invalid";
+                    showErrorMessage("failed to decode data: invalid");
                     break;
                 }
                 await setData(data);
@@ -221,7 +225,7 @@ function insertTableData(table, values) {
 
             case "spectrogram":
                 if (!data) {
-                    message.textContent = "failed to draw spectrogram";
+                    showErrorMessage("failed to draw spectrogram");
                     break;
                 }
                 if (data.settings.analyzeID !== latestAnalyzeID) break; // cancel old analyze
@@ -292,7 +296,7 @@ function insertTableData(table, values) {
             clearAnalyzeResult();
 
         } catch (err) {
-            message.textContent = "failed to prepare: " + err;
+            showErrorMessage("failed to prepare: " + err);
             document.getElementById("listen-button").style.display = "none";
             return;
         }
@@ -315,7 +319,7 @@ function insertTableData(table, values) {
     }
 
     async function reload() {
-        message.textContent = "";
+        showErrorMessage("");
         decodeState.textContent = "";
         if (player) {
             player.dispose();
