@@ -142,10 +142,14 @@ function showErrorMessage(msg) {
     message.textContent = msg;
 }
 
+function updateDecdeState(v) {
+    const decodeState = document.getElementById("decode-state");
+    decodeState.textContent = v;
+}
+
 (function () {
     const vscode = acquireVsCodeApi();
     let audioBuffer, player;
-    const decodeState = document.getElementById("decode-state");
 
     const analyzeSettingButton = document.getElementById("analyze-setting-button");
     analyzeSettingButton.onclick = () => {
@@ -315,12 +319,12 @@ function showErrorMessage(msg) {
 
         // show progress
         const progress = Math.min(Math.floor(data.end * 100 / audioBuffer.length), 100);
-        decodeState.textContent = "decode: " + progress + "% done";
+        updateDecdeState("decode: " + progress + "% done");
     }
 
     async function reload() {
         showErrorMessage("");
-        decodeState.textContent = "";
+        updateDecdeState("");
         if (player) {
             player.dispose();
             player = undefined;
