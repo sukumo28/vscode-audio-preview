@@ -39,7 +39,7 @@ const extentionConfig = {
 const webviewConfig = {
   target: 'web',
 
-  entry: './src/webview/index.js',
+  entry: './src/webview/index.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'audioPreview.js',

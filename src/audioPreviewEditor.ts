@@ -52,8 +52,12 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public wavHeader(): any {
         if (!this._documentData) return;
 
+        const fmt = this._documentData.fmt;
         return {
-            fmt: this._documentData.fmt,
+            audioFormat: fmt.audioFormat,
+            numChannels: fmt.numChannels,
+            sampleRate: fmt.sampleRate,
+            bitsPerSample: fmt.bitsPerSample,
             chunkSize: this._documentData.chunkSize,
         };
     }
@@ -321,7 +325,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
                     // play audio automatically after first data message 
                     // if WapPreview.autoPlay is true
-                    if (e.start === 0){
+                    if (e.start === 0) {
                         const config = vscode.workspace.getConfiguration("WavPreview");
                         data.autoPlay = config.get("autoPlay");
                     }
