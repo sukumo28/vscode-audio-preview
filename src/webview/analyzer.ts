@@ -1,3 +1,6 @@
+import { Disposable } from "../dispose";
+import { EventType, Event } from "./events";
+
 interface AnalyzeSettings {
     windowSize: number,
     minFrequency: number,
@@ -7,7 +10,7 @@ interface AnalyzeSettings {
     analyzeID: number
 }
 
-export default class Analyzer {
+export default class Analyzer extends Disposable {
     audioBuffer: AudioBuffer;
     analyzeSettingButton: HTMLButtonElement;
     analyzeButton: HTMLButtonElement;
@@ -15,14 +18,45 @@ export default class Analyzer {
     spectrogramCanvasList: HTMLCanvasElement[] = [];
     spectrogramCanvasContexts: CanvasRenderingContext2D[] = [];
     latestAnalyzeID: number = 0;
-    registerSeekbar: Function;
-    postMessage: Function;
 
-    constructor (ab: AudioBuffer, registerSeekbar: Function, postMessage: Function) {
+    constructor (parentID: string, ab: AudioBuffer) {
+        super();
         this.audioBuffer = ab;
-        this.registerSeekbar = registerSeekbar;
-        this.postMessage = postMessage;
 
+        // init base html
+        const parent = document.getElementById(parentID);
+        parent.innerHTML = `
+            <div id="analyze-controller-buttons">
+                <div>analyze</div>
+                <button id="analyze-button" class="seek-bar-box">analyze</button>
+                <button id="analyze-setting-button">▼settings</button>
+            </div>
+            <div id="analyze-setting">
+                <div>
+                    window size:
+                    <select id="analyze-window-size">
+                        <option value="256">256</option>
+                        <option value="512">512</option>
+                        <option value="1024" selected>1024</option>
+                        <option value="2048">2048</option>
+                        <option value="4096">4096</option>
+                        <option value="8192">8192</option>
+                    </select>
+                </div>
+                <div>
+                    frequency range:
+                    <input id="analyze-min-frequency" type="number" value="0">Hz ~
+                    <input id="analyze-max-frequency" type="number" value="24000">Hz
+                </div>
+                <div>
+                    time range:
+                    <input id="analyze-min-time" type="number" value="0">s ~
+                    <input id="analyze-max-time" type="number" value="1000">s
+                </div>
+            </div>
+        `;
+
+        // init analyze setting button
         this.analyzeSettingButton = <HTMLButtonElement>document.getElementById("analyze-setting-button");
         this.analyzeSettingButton.style.display = "none";
         this.analyzeSettingButton.onclick = () => {
@@ -36,11 +70,16 @@ export default class Analyzer {
             }
         };
 
+        // init analyze button
         this.analyzeButton = <HTMLButtonElement>document.getElementById("analyze-button");
         this.analyzeButton.style.display = "none";
         this.analyzeButton.onclick = () => { this.analyze() };
 
+        // init analyze result box
         this.analyzeResultBox = document.getElementById("analyze-result-box");
+
+        // add eventlistener to get spectrogram data
+        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<any>) => this.onReceiveDate(e)));
     }
 
     clearAnalyzeResult() {
@@ -51,12 +90,40 @@ export default class Analyzer {
         this.spectrogramCanvasContexts = [];
     }
 
-    enable(autoAnalyze: boolean) {
+    activate(autoAnalyze: boolean) {
         this.analyzeSettingButton.style.display = "block";
         this.analyzeButton.style.display = "block";
         if (autoAnalyze) {
             this.analyzeButton.click();
         }
+    }
+
+    onReceiveDate(e: MessageEvent<any>) {
+        const { type, data } = e.data;
+            switch (type) {
+                case "data":
+                    if (data.wholeLength <= data.end) {
+                        this.activate(data.autoAnalyze);
+                    }
+                    break;
+
+                case "spectrogram":
+                    if (data.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
+                    this.drawSpectrogram(data);
+                    const endIndex = Math.round(data.settings.maxTime * this.audioBuffer.sampleRate);
+                    if (endIndex < data.end) break;
+                    const postMessageEvent = new CustomEvent(EventType.PostMessage, {detail: {
+                        message: { 
+                            type: "spectrogram", 
+                            channel: data.channel, 
+                            start: data.end, 
+                            end: data.end + 10000, 
+                            settings: data.settings 
+                        }
+                    }});
+                    window.dispatchEvent(postMessageEvent);
+                    break;
+            }
     }
 
     analyzeSettings(): AnalyzeSettings {
@@ -127,23 +194,25 @@ export default class Analyzer {
         inputSeekbar.step = "0.00001"
         this.analyzeResultBox.appendChild(inputSeekbar);
 
-        this.registerSeekbar(
-            "analyze-result-seekbar",
-            inputSeekbar,
-            (value) => {
-                const t = value * this.audioBuffer.duration / 100;
-                const v = ((t - settings.minTime) / (settings.maxTime - settings.minTime)) * 100;
-                const vv = v < 0 ? 0 : 100 < v ? 100 : v;
-                visibleBar.style.width = `${vv}%`;
-                return 100 < v;
-            },
-            (e) => {
-                const rv = e.target.value;
-                const nv = ((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / this.audioBuffer.duration) * 100;
-                e.target.value = nv;
-                return e;
-            }
-        );
+        this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {
+            const value = e.detail.value;
+            const t = value * this.audioBuffer.duration / 100;
+            const v = ((t - settings.minTime) / (settings.maxTime - settings.minTime)) * 100;
+            const vv = v < 0 ? 0 : 100 < v ? 100 : v;
+            visibleBar.style.width = `${vv}%`;
+            return 100 < v;
+        }));
+        this._register(new Event(inputSeekbar, EventType.OnChange, () => {
+            const rv = Number(inputSeekbar.value);
+            const nv = ((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / this.audioBuffer.duration) * 100;
+            const inputSeekbarEvent = new CustomEvent(EventType.InputSeekbar, {
+                detail: {
+                    value: nv
+                }
+            });
+            window.dispatchEvent(inputSeekbarEvent);
+            inputSeekbar.value = "100";
+        }));
 
         this.analyzeButton.style.display = "block";
     }
@@ -255,7 +324,13 @@ export default class Analyzer {
         const startIndex = Math.round(settings.minTime * this.audioBuffer.sampleRate);
         const endIndex = Math.round(settings.maxTime * this.audioBuffer.sampleRate);
         const end = startIndex + 10000 < endIndex ? startIndex + 10000 : endIndex;
-        this.postMessage({ type: "spectrogram", channel: ch, start: startIndex, end, settings });
+
+        const postMessageEvent = new CustomEvent(EventType.PostMessage, {
+            detail: {
+                message: { type: "spectrogram", channel: ch, start: startIndex, end, settings }
+            }
+        });
+        window.dispatchEvent(postMessageEvent);
     }
 
     drawSpectrogram(data) {

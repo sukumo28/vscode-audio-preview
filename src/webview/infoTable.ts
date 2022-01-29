@@ -1,3 +1,6 @@
+import { Disposable } from "../dispose";
+import { EventType, Event } from "./events";
+
 interface WavInfo {
     audioFormat: string;
     numChannels: number;
@@ -6,15 +9,21 @@ interface WavInfo {
     chunkSize: number;
 }
 
-export default class InfoTable {
+export default class InfoTable extends Disposable {
     infoTable: HTMLTableElement;
-    decodeState: HTMLElement;
 
-    constructor () {
-        this.infoTable = <HTMLTableElement>document.getElementById("info-table");
-        this.decodeState = document.getElementById("decode-state");
-        this.updateDecdeState("");
-        this.showErrorMessage("");
+    constructor (parentID: string) {
+        super();
+        const parent = document.getElementById(parentID);
+        this.infoTable = document.createElement("table");
+        parent.appendChild(this.infoTable);
+
+        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<any>) => {
+            const { type, data } = e.data;
+            if (type !== "prepare") return;
+            // insert additional data to infoTable
+            this.insertTableData(["duration", data.duration + "s"]);
+        }));
     }
 
     showInfo(data: WavInfo) {
@@ -57,14 +66,5 @@ export default class InfoTable {
             tr.appendChild(td);
         }
         this.infoTable.appendChild(tr);
-    }
-
-    updateDecdeState(v: string) {
-        this.decodeState.textContent = v;
-    }
-
-    showErrorMessage(msg: string) {
-        const message = document.getElementById("message");
-        message.textContent = msg;
     }
 }

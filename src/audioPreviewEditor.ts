@@ -135,7 +135,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 numberOfChannels: chNum,
                 start,
                 end,
-                isEnd: this._documentData.samples[0].length <= end
+                wholeLength: this._documentData.samples[0].length
             };
 
         } catch (err: any) {
@@ -331,7 +331,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     }
 
                     // analyze automatically
-                    if (data.isEnd) {
+                    if (data.wholeLength <= data.end) {
                         const config = vscode.workspace.getConfiguration("WavPreview");
                         data.autoAnalyze = config.get("autoAnalyze");
                     }
@@ -349,6 +349,9 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                         data: document.spectrogram(e.channel, e.start, e.end, e.settings)
                     });
                     break;
+
+                case "error":
+                    vscode.window.showErrorMessage(e.message);
             }
         });
     }
@@ -387,61 +390,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 <title>Wav Preview</title>
             </head>
             <body>
-                <div id="info-and-control">
-                    <div>
-                        <table id="info-table"></table>
-                    </div>
-
-                    <div id="player-box">
-                        <div id="decode-state"></div>
-                        <button id="listen-button">play</button>
-
-                        <div>volume</div>
-                        <input type="range" id="volume-bar" value="100">
-                        
-                        <div>seekbar</div>
-                        <div class="seek-bar-box">
-                            <input type="range" id="seek-bar" value="0" />
-                            <input type="range" id="user-input-seek-bar" class="input-seek-bar" value="0" />
-                        </div>
-        
-                        <div id="message"></div>
-                    </div>
-                </div>
-
-                <div id="analyze-controller">
-                    <div id="analyze-controller-buttons">
-                        <div>analyze</div>
-                        <button id="analyze-button" class="seek-bar-box">analyze</button>
-                        <button id="analyze-setting-button">▼settings</button>
-                    </div>
-                    <div id="analyze-setting">
-                        <div>
-                            window size:
-                            <select id="analyze-window-size">
-                                <option value="256">256</option>
-                                <option value="512">512</option>
-                                <option value="1024" selected>1024</option>
-                                <option value="2048">2048</option>
-                                <option value="4096">4096</option>
-                                <option value="8192">8192</option>
-                            </select>
-                        </div>
-                        <div>
-                            frequency range:
-                            <input id="analyze-min-frequency" type="number" value="0">Hz ~
-                            <input id="analyze-max-frequency" type="number" value="24000">Hz
-                        </div>
-                        <div>
-                            time range:
-                            <input id="analyze-min-time" type="number" value="0">s ~
-                            <input id="analyze-max-time" type="number" value="1000">s
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="analyze-result-box"></div>
-
+                <div id="root"></div>
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>
 			</html>
