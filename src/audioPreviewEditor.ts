@@ -118,9 +118,11 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 samples[ch] = this._documentData.samples[ch].slice(start, end);
             }
 
-            // convert to [-1,1] float32
+            // convert pcm to float32
             if (this._documentData.fmt.audioFormat === 1) {
+                // 2 ^ (bitDepth - 1)
                 const max = 1 << (this._documentData.fmt.bitsPerSample - 1);
+                
                 for (let ch = 0; ch < chNum; ch++) {
                     for (let i = 0; i < samples[ch].length; i++) {
                         const v = samples[ch][i];

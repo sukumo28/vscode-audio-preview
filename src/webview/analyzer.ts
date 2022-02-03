@@ -7,6 +7,8 @@ interface AnalyzeSettings {
     maxFrequency: number,
     minTime: number,
     maxTime: number,
+    minAmplitude: number,
+    maxAmplitude: number,
     analyzeID: number
 }
 
@@ -52,6 +54,11 @@ export default class Analyzer extends Disposable {
                     time range:
                     <input id="analyze-min-time" type="number" value="0">s ~
                     <input id="analyze-max-time" type="number" value="1000">s
+                </div>
+                <div>
+                    waveform amplitude range:
+                    <input id="analyze-min-amplitude" type="number" value="-1"> ~
+                    <input id="analyze-max-amplitude" type="number" value="1">
                 </div>
             </div>
         `;
@@ -100,30 +107,32 @@ export default class Analyzer extends Disposable {
 
     onReceiveDate(e: MessageEvent<any>) {
         const { type, data } = e.data;
-            switch (type) {
-                case "data":
-                    if (data.wholeLength <= data.end) {
-                        this.activate(data.autoAnalyze);
-                    }
-                    break;
+        switch (type) {
+            case "data":
+                if (data.wholeLength <= data.end) {
+                    this.activate(data.autoAnalyze);
+                }
+                break;
 
-                case "spectrogram":
-                    if (data.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
-                    this.drawSpectrogram(data);
-                    const endIndex = Math.round(data.settings.maxTime * this.audioBuffer.sampleRate);
-                    if (endIndex < data.end) break;
-                    const postMessageEvent = new CustomEvent(EventType.PostMessage, {detail: {
-                        message: { 
-                            type: "spectrogram", 
-                            channel: data.channel, 
-                            start: data.end, 
-                            end: data.end + 10000, 
-                            settings: data.settings 
+            case "spectrogram":
+                if (data.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
+                this.drawSpectrogram(data);
+                const endIndex = Math.round(data.settings.maxTime * this.audioBuffer.sampleRate);
+                if (endIndex < data.end) break;
+                const postMessageEvent = new CustomEvent(EventType.PostMessage, {
+                    detail: {
+                        message: {
+                            type: "spectrogram",
+                            channel: data.channel,
+                            start: data.end,
+                            end: data.end + 10000,
+                            settings: data.settings
                         }
-                    }});
-                    window.dispatchEvent(postMessageEvent);
-                    break;
-            }
+                    }
+                });
+                window.dispatchEvent(postMessageEvent);
+                break;
+        }
     }
 
     analyzeSettings(): AnalyzeSettings {
@@ -148,11 +157,11 @@ export default class Analyzer extends Disposable {
         maxFreqInput.value = `${maxFrequency}`;
 
         const minTimeInput = <HTMLInputElement>document.getElementById("analyze-min-time");
-        let minTime = parseFloat(minTimeInput.value);
+        let minTime = Number(minTimeInput.value);
         if (isNaN(minTime) || minTime < 0) minTime = 0;
 
         const maxTimeInput = <HTMLInputElement>document.getElementById("analyze-max-time");
-        let maxTime = parseFloat(maxTimeInput.value);
+        let maxTime = Number(maxTimeInput.value);
         if (isNaN(maxTime) || this.audioBuffer.duration < maxTime) maxTime = this.audioBuffer.duration;
 
         if (maxTime <= minTime) {
@@ -162,12 +171,25 @@ export default class Analyzer extends Disposable {
         minTimeInput.value = `${minTime}`;
         maxTimeInput.value = `${maxTime}`;
 
+        const minAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-min-amplitude");
+        let minAmplitude = Number(minAmplitudeInput.value);
+        if (isNaN(minAmplitude)) minAmplitude = -1;
+        const maxAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-max-amplitude");
+        let maxAmplitude = Number(maxAmplitudeInput.value);
+        if (isNaN(maxAmplitude)) maxAmplitude = 1;
+        if (maxAmplitude <= minAmplitude) {
+            minAmplitude = -1;
+            maxAmplitude = 1;
+        }
+
         return {
             windowSize,
             minFrequency,
             maxFrequency,
             minTime,
             maxTime,
+            minAmplitude,
+            maxAmplitude,
             analyzeID: ++this.latestAnalyzeID
         };
     }
@@ -238,12 +260,13 @@ export default class Analyzer extends Disposable {
         const axisContext = axisCanvas.getContext("2d");
         axisContext.font = `10px Arial`;
         for (let i = 0; i < 10; i++) {
+            axisContext.fillStyle = "white";
             const x = Math.round(i * width / 10);
             const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-            const y = Math.round(i * height / 10);
-
-            axisContext.fillStyle = "white";
             axisContext.fillText(`${(t).toFixed(1)}`, x, 10);
+            const y = Math.round((i + 1) * height / 10);
+            const a = (i + 1) * (settings.minAmplitude - settings.maxAmplitude) / 10 + settings.maxAmplitude;
+            axisContext.fillText(`${(a).toFixed(1)}`, 4, y);
 
             axisContext.fillStyle = "rgb(80,80,80)";
             for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
@@ -256,13 +279,13 @@ export default class Analyzer extends Disposable {
         const startIndex = Math.floor(settings.minTime * this.audioBuffer.sampleRate);
         const endIndex = Math.floor(settings.maxTime * this.audioBuffer.sampleRate);
         const data = this.audioBuffer.getChannelData(ch).slice(startIndex, endIndex);
-        let maxValue = 0, minValue = Number.MAX_SAFE_INTEGER;
+        // convert data. 
+        // this is not a normalization because setting.maxAmplitude and setting.minAmplitude 
+        // is not a min and max of data, but a figure's Y axis range.
+        // data is converted to setting.maxAmplitude is 1 and setting.minAmplitude is 0 and
+        // samples out of range is not displayed. 
         for (let i = 0; i < data.length; i++) {
-            if (maxValue < data[i]) maxValue = data[i];
-            if (data[i] < minValue) minValue = data[i];
-        }
-        for (let i = 0; i < data.length; i++) {
-            data[i] = (data[i] - minValue) / (maxValue - minValue); // normalize to [0,1]
+            data[i] = (data[i] - settings.minAmplitude) / (settings.maxAmplitude - settings.minAmplitude);
         }
 
         // call draw in requestAnimationFrame not to block ui
@@ -272,7 +295,7 @@ export default class Analyzer extends Disposable {
     drawWaveForm(data, context, start, count, width, height, analyzeID) {
         for (let i = 0; i < count; i++) {
             const x = Math.round(((start + i) / data.length) * width);
-            const y = Math.round(height * (1 - data[start + i]));
+            const y = Math.round(height * (1 - (data[start + i] + 1) / 2));
             context.fillRect(x, y, 1, 1);
         }
 
