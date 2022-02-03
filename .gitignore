@@ -2,3 +2,4 @@
 /out
 *.vsix
 /dist
+.vscode-test
