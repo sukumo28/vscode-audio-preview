@@ -28,6 +28,8 @@ export default class Analyzer extends Disposable {
         this.audioBuffer = ab;
 
         // init base html
+        // setting's default amplitude will be updated by activate(), 
+        // because it needs all waveform data but audiobuffer is blank at this time.
         const parent = document.getElementById(parentID);
         parent.innerHTML = `
             <div id="analyze-controller-buttons">
@@ -45,17 +47,19 @@ export default class Analyzer extends Disposable {
                         <option value="2048">2048</option>
                         <option value="4096">4096</option>
                         <option value="8192">8192</option>
+                        <option value="16384">16384</option>
+                        <option value="32768">32768</option>
                     </select>
                 </div>
                 <div>
                     frequency range:
                     <input id="analyze-min-frequency" type="number" value="0" step="1000">Hz ~
-                    <input id="analyze-max-frequency" type="number" value="24000" step="1000">Hz
+                    <input id="analyze-max-frequency" type="number" value="${this.audioBuffer.sampleRate / 2}" step="1000">Hz
                 </div>
                 <div>
                     time range:
                     <input id="analyze-min-time" type="number" value="0" step="0.1">s ~
-                    <input id="analyze-max-time" type="number" value="1000" step="0.1">s
+                    <input id="analyze-max-time" type="number" value="${this.audioBuffer.duration}" step="0.1">s
                 </div>
                 <div>
                     waveform amplitude range:
@@ -184,7 +188,7 @@ export default class Analyzer extends Disposable {
         const [minFrequency, maxFrequency] = this.getRangeValuesFromInput(
             minFreqInput.value, maxFreqInput.value,
             0, this.audioBuffer.sampleRate / 2, 
-            0, 30000
+            0, this.audioBuffer.sampleRate / 2
         );
         minFreqInput.value = `${minFrequency}`;
         maxFreqInput.value = `${maxFrequency}`;
