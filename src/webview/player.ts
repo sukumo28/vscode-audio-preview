@@ -106,7 +106,7 @@ export default class Player extends Disposable {
         if (data.end < data.wholeLength) {
             const postMessageEvent = new CustomEvent(EventType.PostMessage, {
                 detail: {
-                    message: { type: 'data', start: data.end, end: data.end + 10000 }
+                    message: { type: 'data', start: data.end, end: data.end + 100000 }
                 }
             });
             window.dispatchEvent(postMessageEvent);

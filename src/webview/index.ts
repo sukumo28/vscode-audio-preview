@@ -70,7 +70,7 @@ window.addEventListener('message', e => {
                 break;
             }
 
-            vscode.postMessage({ type: 'data', start: 0, end: 10000 });
+            vscode.postMessage({ type: 'data', start: 0, end: 100000 });
             break;
 
         case "reload":
