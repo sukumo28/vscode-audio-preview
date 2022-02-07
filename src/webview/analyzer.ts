@@ -149,7 +149,7 @@ export default class Analyzer extends Disposable {
                             type: "spectrogram",
                             channel: data.channel,
                             start: data.end,
-                            end: data.end + 10000,
+                            end: data.end + 20000,
                             settings: data.settings
                         }
                     }
@@ -379,7 +379,7 @@ export default class Analyzer extends Disposable {
 
         const startIndex = Math.round(settings.minTime * this.audioBuffer.sampleRate);
         const endIndex = Math.round(settings.maxTime * this.audioBuffer.sampleRate);
-        const end = startIndex + 10000 < endIndex ? startIndex + 10000 : endIndex;
+        const end = startIndex + 20000 < endIndex ? startIndex + 20000 : endIndex;
 
         const postMessageEvent = new CustomEvent(EventType.PostMessage, {
             detail: {
@@ -412,11 +412,11 @@ export default class Analyzer extends Disposable {
                 const y = height * (1 - (j / spectrogram[i].length));
 
                 const value = spectrogram[i][j];
-                if (value < 0.001) {
+                if (value < 0.4) {
                     continue;
-                } else if (value < 0.5) {
+                } else if (value < 0.6) {
                     context.fillStyle = `rgb(0,0,${Math.floor(value * 255)})`;
-                } else if (value < 0.7) {
+                } else if (value < 0.8) {
                     context.fillStyle = `rgb(0,${Math.floor(value * 255)},255)`;
                 } else {
                     context.fillStyle = `rgb(${Math.floor(value * 255)},255,255)`;
