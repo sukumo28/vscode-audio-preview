@@ -412,14 +412,16 @@ export default class Analyzer extends Disposable {
                 const y = height * (1 - (j / spectrogram[i].length));
 
                 const value = spectrogram[i][j];
-                if (value < 0.4) {
+                if (value < -80) {
                     continue;
-                } else if (value < 0.6) {
-                    context.fillStyle = `rgb(0,0,${Math.floor(value * 255)})`;
-                } else if (value < 0.8) {
-                    context.fillStyle = `rgb(0,${Math.floor(value * 255)},255)`;
+                } else if (value < -60) {
+                    context.fillStyle = `rgb(0,0,${Math.floor(value/-60 * 255)})`;
+                } else if (value < -40) {
+                    context.fillStyle = `rgb(0,${Math.floor(value/-40 * 255)},255)`;
+                } else if (value < -20) {
+                    context.fillStyle = `rgb(${Math.floor(value/-20 * 255)},255,255)`;
                 } else {
-                    context.fillStyle = `rgb(${Math.floor(value * 255)},255,255)`;
+                    context.fillStyle = `rgb(255,255,255)`;
                 }
 
                 context.fillRect(x, y, rectWidth, rectHeight);
