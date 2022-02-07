@@ -281,7 +281,7 @@ export default class Analyzer extends Disposable {
         canvas.width = width;
         canvas.height = height;
         const context = canvas.getContext("2d", { alpha: false });
-        context.fillStyle = "rgb(91,252,91)";
+        context.fillStyle = "rgb(90,200,90)";
         canvasBox.appendChild(canvas);
 
         const axisCanvas = document.createElement("canvas");
@@ -291,7 +291,7 @@ export default class Analyzer extends Disposable {
         const axisContext = axisCanvas.getContext("2d");
         axisContext.font = `12px Arial`;
         for (let i = 0; i < 10; i++) {
-            axisContext.fillStyle = "white";
+            axisContext.fillStyle = "rgb(255,200,180)";
             const x = Math.round(i * width / 10);
             const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
             if(i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 10); // skip first label
@@ -299,9 +299,9 @@ export default class Analyzer extends Disposable {
             const a = (i + 1) * (settings.minAmplitude - settings.maxAmplitude) / 10 + settings.maxAmplitude;
             axisContext.fillText(`${(a).toFixed(2)}`, 4, y - 2);
 
-            axisContext.fillStyle = "rgb(80,80,80)";
+            axisContext.fillStyle = "rgb(180,110,110)";
             for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-            for (let j = 12; j < width; j++) axisContext.fillRect(j, y, 1, 1);
+            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
         }
         canvasBox.appendChild(axisCanvas);
 
@@ -309,7 +309,9 @@ export default class Analyzer extends Disposable {
 
         const startIndex = Math.floor(settings.minTime * this.audioBuffer.sampleRate);
         const endIndex = Math.floor(settings.maxTime * this.audioBuffer.sampleRate);
-        const data = this.audioBuffer.getChannelData(ch).slice(startIndex, endIndex);
+        // limit data size around 200000
+        const step = Math.ceil((endIndex - startIndex)/200000);
+        const data = this.audioBuffer.getChannelData(ch).slice(startIndex, endIndex).filter((_,i) => i%step===0);
         // convert data. 
         // this is not a normalization because setting.maxAmplitude and setting.minAmplitude 
         // is not a min and max of data, but a figure's Y axis range.
@@ -356,19 +358,19 @@ export default class Analyzer extends Disposable {
         axisCanvas.width = width;
         axisCanvas.height = height;
         const axisContext = axisCanvas.getContext("2d");
-        axisContext.font = `18px Arial`;
+        axisContext.font = `20px Arial`;
         for (let i = 0; i < 10; i++) {
-            axisContext.fillStyle = "white";
+            axisContext.fillStyle = "rgb(245,130,32)";
             const x = Math.round(i * width / 10);
             const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
             if(i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18);
             const y = Math.round(i * height / 10);
             const f = (10 - i) * (settings.maxFrequency - settings.minFrequency) / 10 + settings.minFrequency;
-            axisContext.fillText(`${(f / 1000).toFixed(2)}k`, 4, y - 4);
+            axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
 
-            axisContext.fillStyle = "rgb(80,80,80)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
+            axisContext.fillStyle = "rgb(180,120,20)";
+            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 2, 2);
+            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
         }
 
         canvasBox.appendChild(axisCanvas);
@@ -398,9 +400,10 @@ export default class Analyzer extends Disposable {
         const spectrogram = data.spectrogram;
         const wholeSampleNum = (data.settings.maxTime - data.settings.minTime) * this.audioBuffer.sampleRate;
         const blockSize = data.end - data.start;
+        const blockNum = wholeSampleNum / blockSize;
         const blockStart = data.start - data.settings.minTime * this.audioBuffer.sampleRate;
         const hopSize = data.settings.windowSize / 2;
-        const rectWidth = width * (hopSize / blockSize);
+        const rectWidth = (width / blockNum) * (hopSize / blockSize);
 
         for (let i = 0; i < spectrogram.length; i++) {
             const x = width * ((i * hopSize + blockStart) / wholeSampleNum);
@@ -411,10 +414,12 @@ export default class Analyzer extends Disposable {
                 const value = spectrogram[i][j];
                 if (value < 0.001) {
                     continue;
-                } else if (value < 0.7) {
+                } else if (value < 0.5) {
                     context.fillStyle = `rgb(0,0,${Math.floor(value * 255)})`;
-                } else {
+                } else if (value < 0.7) {
                     context.fillStyle = `rgb(0,${Math.floor(value * 255)},255)`;
+                } else {
+                    context.fillStyle = `rgb(${Math.floor(value * 255)},255,255)`;
                 }
 
                 context.fillRect(x, y, rectWidth, rectHeight);
