@@ -50,3 +50,8 @@ You can configure default value of analyze settings like below.
 ## Known Issues
 
 Feel free to report isuues on github.  
+
+## References
+
+Custom Editor: https://code.visualstudio.com/api/extension-guides/custom-editors  
+Cutrom Editor Example: https://github.com/microsoft/vscode-extension-samples/tree/main/custom-editor-sample  

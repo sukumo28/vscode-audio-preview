@@ -15,7 +15,7 @@ describe("webview", () => {
 
     describe("handle normal file", () => {
         before(async () => {
-            // open normal wavfile
+            // open normal wavfile: https://code.visualstudio.com/api/references/commands
             const uri = Uri.file(path.join(__dirname, "..", "..", "..", "src", "test", "testdata", "sample.wav"));
             await commands.executeCommand("vscode.open", uri);
 
