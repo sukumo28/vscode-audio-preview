@@ -87,20 +87,27 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
             }
 
             // load 
-            const chNum = this._documentData.fmt.numChannels;
+            const numberOfChannels = this._documentData.fmt.numChannels;
             let samples = this._documentData.getSamples(false, Float32Array);
-            if (chNum === 1) {
+            if (numberOfChannels === 1) {
                 samples = [samples];
             }
             this._documentData.samples = samples;
 
+            // calc duration
             const sampleRate = this._documentData.fmt.sampleRate;
             const length = samples[0].length;
+            const duration = length / sampleRate;
+
+            const config = vscode.workspace.getConfiguration("WavPreview");
+            const analyzeDefault = config.get("analyzeDefault");
+
             return {
                 sampleRate,
-                numberOfChannels: chNum,
+                numberOfChannels,
                 length,
-                duration: length / sampleRate
+                duration,
+                analyzeDefault
             };
 
         } catch (err: any) {

@@ -63,7 +63,7 @@ window.addEventListener('message', e => {
                 disposable.push(player);
 
                 // init analyzer
-                const analyzer = new Analyzer("analyzer", audioBuffer);
+                const analyzer = new Analyzer("analyzer", audioBuffer, data.analyzeDefault);
                 disposable.push(analyzer);
             } catch (err) {
                 vscode.postMessage({ type: 'error', message: "failed to prepare:" + err });

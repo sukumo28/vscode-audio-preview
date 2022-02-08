@@ -1,5 +1,6 @@
 import { Disposable } from "../dispose";
 import { EventType, Event } from "./events";
+import { AnalyzeDefault } from "../message";
 
 interface AnalyzeSettings {
     windowSize: number,
@@ -20,16 +21,14 @@ export default class Analyzer extends Disposable {
     spectrogramCanvasList: HTMLCanvasElement[] = [];
     spectrogramCanvasContexts: CanvasRenderingContext2D[] = [];
     latestAnalyzeID: number = 0;
-    defaultAmplitudeMin: number;
-    defaultAmplitudeMax: number;
+    defaultSetting: AnalyzeDefault;
 
-    constructor (parentID: string, ab: AudioBuffer) {
+    constructor (parentID: string, ab: AudioBuffer, defaultSetting: AnalyzeDefault) {
         super();
         this.audioBuffer = ab;
+        this.defaultSetting = defaultSetting;
 
         // init base html
-        // setting's default amplitude will be updated by activate(), 
-        // because it needs all waveform data but audiobuffer is blank at this time.
         const parent = document.getElementById(parentID);
         parent.innerHTML = `
             <div id="analyze-controller-buttons">
@@ -43,7 +42,7 @@ export default class Analyzer extends Disposable {
                     <select id="analyze-window-size">
                         <option value="256">256</option>
                         <option value="512">512</option>
-                        <option value="1024" selected>1024</option>
+                        <option value="1024">1024</option>
                         <option value="2048">2048</option>
                         <option value="4096">4096</option>
                         <option value="8192">8192</option>
@@ -53,18 +52,18 @@ export default class Analyzer extends Disposable {
                 </div>
                 <div>
                     frequency range:
-                    <input id="analyze-min-frequency" type="number" value="0" step="1000">Hz ~
-                    <input id="analyze-max-frequency" type="number" value="${this.audioBuffer.sampleRate / 2}" step="1000">Hz
+                    <input id="analyze-min-frequency" type="number" step="1000">Hz ~
+                    <input id="analyze-max-frequency" type="number" step="1000">Hz
                 </div>
                 <div>
                     time range:
-                    <input id="analyze-min-time" type="number" value="0" step="0.1">s ~
-                    <input id="analyze-max-time" type="number" value="${this.audioBuffer.duration}" step="0.1">s
+                    <input id="analyze-min-time" type="number" step="0.1">s ~
+                    <input id="analyze-max-time" type="number" step="0.1">s
                 </div>
                 <div>
                     waveform amplitude range:
-                    <input id="analyze-min-amplitude" type="number" value="-1" step="0.1"> ~
-                    <input id="analyze-max-amplitude" type="number" value="1" step="0.1">
+                    <input id="analyze-min-amplitude" type="number" step="0.1"> ~
+                    <input id="analyze-max-amplitude" type="number" step="0.1">
                 </div>
             </div>
         `;
@@ -104,23 +103,9 @@ export default class Analyzer extends Disposable {
     }
 
     activate(autoAnalyze: boolean) {
-        // calc default amplitude
-        let min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;
-        for (let ch = 0; ch < this.audioBuffer.numberOfChannels; ch++) {
-            const chData = this.audioBuffer.getChannelData(ch);
-            for (let i=0; i < chData.length; i++) {
-                const v = chData[i];
-                if (v < min) min = v;
-                if (max < v) max = v;
-            }
-        }
-        this.defaultAmplitudeMax = max;
-        this.defaultAmplitudeMin = min;
-        const minAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-min-amplitude");
-        minAmplitudeInput.value = `${this.defaultAmplitudeMin}`;
-        const maxAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-max-amplitude");
-        maxAmplitudeInput.value = `${this.defaultAmplitudeMax}`;
-        
+        // init default analyze settings
+        this.initAnalyzeSettings();
+
         // enable analyze button
         this.analyzeSettingButton.style.display = "block";
         this.analyzeButton.style.display = "block";
@@ -159,45 +144,105 @@ export default class Analyzer extends Disposable {
         }
     }
 
-    getRangeValuesFromInput(minInputVal: string, maxInputVal: string, minDefault: number, maxDefault: number, min: number, max: number): number[] {
-        let minValue = Number(minInputVal);
-        if (!Number.isFinite(minValue) || minValue < min) { 
-            minValue = minDefault; 
+    validateRangeValues(
+        targetMin: number, targetMax: number,
+        validMin: number, validMax: number,
+        defaultMin: number, defaultMax: number
+    ): number[] {
+        let minValue = targetMin, maxValue = targetMax;
+        if (!Number.isFinite(minValue) || minValue < validMin) {
+            minValue = defaultMin;
         }
 
-        let maxValue = Number(maxInputVal);
-        if (!Number.isFinite(maxValue) || max < maxValue) {
-            maxValue = maxDefault;
+        if (!Number.isFinite(maxValue) || validMax < maxValue) {
+            maxValue = defaultMax;
         }
 
         if (maxValue <= minValue) {
-            minValue = minDefault;
-            maxValue = maxDefault;
+            minValue = defaultMin;
+            maxValue = defaultMax;
         }
 
         return [minValue, maxValue];
     }
 
-    analyzeSettings(): AnalyzeSettings {
+    initAnalyzeSettings() {
+        // init fft window size
+        const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
+        let defaultWindowSizeIndex = this.defaultSetting.windowSizeIndex;
+        if (defaultWindowSizeIndex === undefined || defaultWindowSizeIndex < 0 || 7 < defaultWindowSizeIndex) {
+            defaultWindowSizeIndex = 2; // 2:1024
+        }
+        windowSizeSelect.selectedIndex = defaultWindowSizeIndex;
+        // update default
+        this.defaultSetting.windowSizeIndex = defaultWindowSizeIndex;
+
+        // init default frequency
+        const [minFrequency, maxFrequency] = this.validateRangeValues(
+            this.defaultSetting.minFrequency, this.defaultSetting.maxFrequency,
+            0, this.audioBuffer.sampleRate / 2,
+            0, this.audioBuffer.sampleRate / 2
+        );
+        const minFreqInput = <HTMLInputElement>document.getElementById("analyze-min-frequency");
+        const maxFreqInput = <HTMLInputElement>document.getElementById("analyze-max-frequency");
+        minFreqInput.value = `${minFrequency}`;
+        maxFreqInput.value = `${maxFrequency}`;
+        // update default
+        this.defaultSetting.minFrequency = minFrequency;
+        this.defaultSetting.maxFrequency = maxFrequency;
+
+        // init default time range
+        const minTime = 0, maxTime = this.audioBuffer.duration;
+        const minTimeInput = <HTMLInputElement>document.getElementById("analyze-min-time");
+        const maxTimeInput = <HTMLInputElement>document.getElementById("analyze-max-time");
+        minTimeInput.value = `${minTime}`;
+        maxTimeInput.value = `${maxTime}`;
+
+        // calc min & max amplitude
+        let min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;
+        for (let ch = 0; ch < this.audioBuffer.numberOfChannels; ch++) {
+            const chData = this.audioBuffer.getChannelData(ch);
+            for (let i = 0; i < chData.length; i++) {
+                const v = chData[i];
+                if (v < min) min = v;
+                if (max < v) max = v;
+            }
+        }
+        // init default amplitude
+        const [minAmplitude, maxAmplitude] = this.validateRangeValues(
+            this.defaultSetting.minAmplitude, this.defaultSetting.maxAmplitude,
+            -100, 100,
+            min, max 
+        );
+        const minAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-min-amplitude");
+        const maxAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-max-amplitude");
+        minAmplitudeInput.value = `${minAmplitude}`;
+        maxAmplitudeInput.value = `${maxAmplitude}`;
+        // update default
+        this.defaultSetting.minAmplitude = minAmplitude;
+        this.defaultSetting.maxAmplitude = maxAmplitude;
+    }
+
+    getAnalyzeSettings(): AnalyzeSettings {
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
         const windowSize = Number(windowSizeSelect.value);
         windowSizeSelect.value = `${windowSize}`;
 
         const minFreqInput = <HTMLInputElement>document.getElementById("analyze-min-frequency");
         const maxFreqInput = <HTMLInputElement>document.getElementById("analyze-max-frequency");
-        const [minFrequency, maxFrequency] = this.getRangeValuesFromInput(
-            minFreqInput.value, maxFreqInput.value,
-            0, this.audioBuffer.sampleRate / 2, 
-            0, this.audioBuffer.sampleRate / 2
+        const [minFrequency, maxFrequency] = this.validateRangeValues(
+            Number(minFreqInput.value), Number(maxFreqInput.value),
+            0, this.audioBuffer.sampleRate / 2,
+            this.defaultSetting.minFrequency, this.defaultSetting.maxFrequency
         );
         minFreqInput.value = `${minFrequency}`;
         maxFreqInput.value = `${maxFrequency}`;
 
         const minTimeInput = <HTMLInputElement>document.getElementById("analyze-min-time");
         const maxTimeInput = <HTMLInputElement>document.getElementById("analyze-max-time");
-        const [minTime, maxTime] = this.getRangeValuesFromInput(
-            minTimeInput.value, maxTimeInput.value,
-            0, this.audioBuffer.duration, 
+        const [minTime, maxTime] = this.validateRangeValues(
+            Number(minTimeInput.value), Number(maxTimeInput.value),
+            0, this.audioBuffer.duration,
             0, this.audioBuffer.duration
         );
         minTimeInput.value = `${minTime}`;
@@ -205,10 +250,10 @@ export default class Analyzer extends Disposable {
 
         const minAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-min-amplitude");
         const maxAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-max-amplitude");
-        const [minAmplitude, maxAmplitude] = this.getRangeValuesFromInput(
-            minAmplitudeInput.value, maxAmplitudeInput.value,
-            this.defaultAmplitudeMin, this.defaultAmplitudeMax, 
-            -1000, 1000
+        const [minAmplitude, maxAmplitude] = this.validateRangeValues(
+            Number(minAmplitudeInput.value), Number(maxAmplitudeInput.value),
+            -1000, 1000,
+            this.defaultSetting.minAmplitude, this.defaultSetting.maxAmplitude
         );
         minAmplitudeInput.value = `${minAmplitude}`;
         maxAmplitudeInput.value = `${maxAmplitude}`;
@@ -229,7 +274,7 @@ export default class Analyzer extends Disposable {
         this.analyzeButton.style.display = "none";
         this.clearAnalyzeResult();
 
-        const settings = this.analyzeSettings();
+        const settings = this.getAnalyzeSettings();
 
         for (let ch = 0; ch < this.audioBuffer.numberOfChannels; ch++) {
             this.showWaveForm(ch, settings);
@@ -294,7 +339,7 @@ export default class Analyzer extends Disposable {
             axisContext.fillStyle = "rgb(255,200,180)";
             const x = Math.round(i * width / 10);
             const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-            if(i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 10); // skip first label
+            if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 10); // skip first label
             const y = Math.round((i + 1) * height / 10);
             const a = (i + 1) * (settings.minAmplitude - settings.maxAmplitude) / 10 + settings.maxAmplitude;
             axisContext.fillText(`${(a).toFixed(2)}`, 4, y - 2);
@@ -310,8 +355,8 @@ export default class Analyzer extends Disposable {
         const startIndex = Math.floor(settings.minTime * this.audioBuffer.sampleRate);
         const endIndex = Math.floor(settings.maxTime * this.audioBuffer.sampleRate);
         // limit data size around 200000
-        const step = Math.ceil((endIndex - startIndex)/200000);
-        const data = this.audioBuffer.getChannelData(ch).slice(startIndex, endIndex).filter((_,i) => i%step===0);
+        const step = Math.ceil((endIndex - startIndex) / 200000);
+        const data = this.audioBuffer.getChannelData(ch).slice(startIndex, endIndex).filter((_, i) => i % step === 0);
         // convert data. 
         // this is not a normalization because setting.maxAmplitude and setting.minAmplitude 
         // is not a min and max of data, but a figure's Y axis range.
@@ -363,7 +408,7 @@ export default class Analyzer extends Disposable {
             axisContext.fillStyle = "rgb(245,130,32)";
             const x = Math.round(i * width / 10);
             const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-            if(i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18);
+            if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18);
             const y = Math.round(i * height / 10);
             const f = (10 - i) * (settings.maxFrequency - settings.minFrequency) / 10 + settings.minFrequency;
             axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
@@ -415,11 +460,11 @@ export default class Analyzer extends Disposable {
                 if (value < -80) {
                     continue;
                 } else if (value < -60) {
-                    context.fillStyle = `rgb(0,0,${Math.floor(value/-60 * 255)})`;
+                    context.fillStyle = `rgb(0,0,${Math.floor(value / -60 * 255)})`;
                 } else if (value < -40) {
-                    context.fillStyle = `rgb(0,${Math.floor(value/-40 * 255)},255)`;
+                    context.fillStyle = `rgb(0,${Math.floor(value / -40 * 255)},255)`;
                 } else if (value < -20) {
-                    context.fillStyle = `rgb(${Math.floor(value/-20 * 255)},255,255)`;
+                    context.fillStyle = `rgb(${Math.floor(value / -20 * 255)},255,255)`;
                 } else {
                     context.fillStyle = `rgb(255,255,255)`;
                 }
