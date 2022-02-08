@@ -6,6 +6,7 @@ import {
     AnalyzeDefault,
     ExtDataData,
     ExtInfoData,
+    ExtMessage,
     ExtMessageType, ExtPrepareData, ExtSpectrogramData, WebviewDataData,
     WebviewErrorData,
     WebviewMessage, WebviewMessageType, WebviewSpectrogramData,
@@ -293,8 +294,8 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
         listeners.push(document.onDidChange(async (e) => {
             await document.reload();
             for (const webviewPanel of this.webviews.get(document.uri)) {
-                webviewPanel.webview.postMessage({
-                    type: "reload"
+                this.postMessage(webviewPanel.webview, {
+                    type: ExtMessageType.Reload
                 });
             }
         }));
@@ -322,17 +323,19 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
         webviewPanel.webview.onDidReceiveMessage((e: WebviewMessage) => {
             switch (e.type) {
                 case WebviewMessageType.Ready: {
-                    webviewPanel.webview.postMessage({
-                        type: "info",
-                        data: document.wavHeader(),
-                        isTrusted: vscode.workspace.isTrusted
+                    this.postMessage(webviewPanel.webview, {
+                        type: ExtMessageType.Info,
+                        data: {
+                            ...document.wavHeader(),
+                            isTrusted: vscode.workspace.isTrusted
+                        },
                     });
                     break;
                 }
 
                 case WebviewMessageType.Prepare: {
-                    webviewPanel.webview.postMessage({
-                        type: "prepare",
+                    this.postMessage(webviewPanel.webview, {
+                        type: ExtMessageType.Prepare,
                         data: document.prepareData()
                     });
                     break;
@@ -355,8 +358,8 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                         data.autoAnalyze = config.get("autoAnalyze");
                     }
 
-                    webviewPanel.webview.postMessage({
-                        type: "data",
+                    this.postMessage(webviewPanel.webview, {
+                        type: ExtMessageType.Data,
                         data: data
                     });
 
@@ -365,8 +368,8 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
                 case WebviewMessageType.Spectrogram: {
                     const webviewData = e.data as WebviewSpectrogramData;
-                    webviewPanel.webview.postMessage({
-                        type: "spectrogram",
+                    this.postMessage(webviewPanel.webview, {
+                        type: ExtMessageType.Spectrogram,
                         data: document.spectrogram(webviewData.channel, webviewData.start, webviewData.end, webviewData.settings)
                     });
                     break;
@@ -378,6 +381,10 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
             }
         });
+    }
+
+    private postMessage(webview: vscode.Webview, message: ExtMessage) {
+        webview.postMessage(message);
     }
 
     /**

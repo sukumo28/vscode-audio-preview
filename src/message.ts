@@ -28,7 +28,7 @@ export type ExtMessageType = typeof ExtMessageType[keyof typeof ExtMessageType];
 
 export class ExtMessage {
     type: ExtMessageType;
-    data: ExtInfoData | ExtPrepareData | ExtDataData | ExtSpectrogramData;
+    data?: ExtInfoData | ExtPrepareData | ExtDataData | ExtSpectrogramData;
 }
 
 export interface ExtInfoData {

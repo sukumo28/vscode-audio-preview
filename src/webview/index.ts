@@ -2,7 +2,7 @@ import Player from "./player";
 import InfoTable from "./infoTable";
 import Analyzer from "./analyzer";
 import { EventType } from "./events";
-import { ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, WebviewMessage, WebviewMessageType } from "../message";
+import { ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, WebviewMessageType } from "../message";
 import { Disposable, disposeAll } from "../dispose";
 import { postMessage } from "./vscode";
 

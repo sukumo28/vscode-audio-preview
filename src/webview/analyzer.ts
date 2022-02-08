@@ -118,7 +118,7 @@ export default class Analyzer extends Disposable {
             case ExtMessageType.Spectrogram: {
                 const extData = data as ExtSpectrogramData;
                 if (extData.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
-                this.drawSpectrogram(data);
+                this.drawSpectrogram(extData);
                 const endIndex = Math.round(extData.settings.maxTime * this.audioBuffer.sampleRate);
                 if (endIndex < extData.end) break;
                 postMessage({
@@ -361,7 +361,10 @@ export default class Analyzer extends Disposable {
         requestAnimationFrame(() => this.drawWaveForm(data, context, 0, 10000, width, height, settings.analyzeID));
     }
 
-    drawWaveForm(data, context, start, count, width, height, analyzeID) {
+    drawWaveForm(
+        data: Float32Array, context: CanvasRenderingContext2D, 
+        start: number, count: number, width: number, height: number, analyzeID: number
+    ) {
         for (let i = 0; i < count; i++) {
             const x = Math.round(((start + i) / data.length) * width);
             const y = Math.round(height * (1 - data[start + i]));
@@ -424,7 +427,7 @@ export default class Analyzer extends Disposable {
         });
     }
 
-    drawSpectrogram(data) {
+    drawSpectrogram(data: ExtSpectrogramData) {
         const ch = data.channel;
         const canvas = this.spectrogramCanvasList[ch];
         const context = this.spectrogramCanvasContexts[ch];
