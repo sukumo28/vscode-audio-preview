@@ -1,17 +1,7 @@
 import { Disposable } from "../dispose";
 import { EventType, Event } from "./events";
-import { AnalyzeDefault } from "../message";
-
-interface AnalyzeSettings {
-    windowSize: number,
-    minFrequency: number,
-    maxFrequency: number,
-    minTime: number,
-    maxTime: number,
-    minAmplitude: number,
-    maxAmplitude: number,
-    analyzeID: number
-}
+import { AnalyzeDefault, AnalyzeSettings, ExtDataData, ExtMessage, ExtMessageType, ExtSpectrogramData, WebviewMessage, WebviewMessageType, WebviewSpectrogramData } from "../message";
+import { postMessage } from "./vscode";
 
 export default class Analyzer extends Disposable {
     audioBuffer: AudioBuffer;
@@ -114,33 +104,34 @@ export default class Analyzer extends Disposable {
         }
     }
 
-    onReceiveDate(e: MessageEvent<any>) {
+    onReceiveDate(e: MessageEvent<ExtMessage>) {
         const { type, data } = e.data;
         switch (type) {
-            case "data":
-                if (data.wholeLength <= data.end) {
-                    this.activate(data.autoAnalyze);
+            case ExtMessageType.Data: {
+                const extData = data as ExtDataData;
+                if (extData.wholeLength <= extData.end) {
+                    this.activate(extData.autoAnalyze);
                 }
                 break;
+            }
 
-            case "spectrogram":
-                if (data.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
+            case ExtMessageType.Spectrogram: {
+                const extData = data as ExtSpectrogramData;
+                if (extData.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
                 this.drawSpectrogram(data);
-                const endIndex = Math.round(data.settings.maxTime * this.audioBuffer.sampleRate);
-                if (endIndex < data.end) break;
-                const postMessageEvent = new CustomEvent(EventType.PostMessage, {
-                    detail: {
-                        message: {
-                            type: "spectrogram",
-                            channel: data.channel,
-                            start: data.end,
-                            end: data.end + 20000,
-                            settings: data.settings
-                        }
+                const endIndex = Math.round(extData.settings.maxTime * this.audioBuffer.sampleRate);
+                if (endIndex < extData.end) break;
+                postMessage({
+                    type: WebviewMessageType.Spectrogram,
+                    data: {
+                        channel: extData.channel,
+                        start: extData.end,
+                        end: extData.end + 20000,
+                        settings: extData.settings
                     }
                 });
-                window.dispatchEvent(postMessageEvent);
                 break;
+            }
         }
     }
 
@@ -212,7 +203,7 @@ export default class Analyzer extends Disposable {
         const [minAmplitude, maxAmplitude] = this.validateRangeValues(
             this.defaultSetting.minAmplitude, this.defaultSetting.maxAmplitude,
             -100, 100,
-            min, max 
+            min, max
         );
         const minAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-min-amplitude");
         const maxAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-max-amplitude");
@@ -426,12 +417,11 @@ export default class Analyzer extends Disposable {
         const endIndex = Math.round(settings.maxTime * this.audioBuffer.sampleRate);
         const end = startIndex + 20000 < endIndex ? startIndex + 20000 : endIndex;
 
-        const postMessageEvent = new CustomEvent(EventType.PostMessage, {
-            detail: {
-                message: { type: "spectrogram", channel: ch, start: startIndex, end, settings }
+        postMessage({
+            type: WebviewMessageType.Spectrogram, data: {
+                channel: ch, start: startIndex, end, settings
             }
         });
-        window.dispatchEvent(postMessageEvent);
     }
 
     drawSpectrogram(data) {

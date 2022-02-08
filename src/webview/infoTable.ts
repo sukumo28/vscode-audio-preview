@@ -1,13 +1,6 @@
 import { Disposable } from "../dispose";
+import { ExtInfoData, ExtMessage, ExtPrepareData } from "../message";
 import { EventType, Event } from "./events";
-
-interface WavInfo {
-    audioFormat: string;
-    numChannels: number;
-    sampleRate: number;
-    bitsPerSample: number;
-    chunkSize: number;
-}
 
 export default class InfoTable extends Disposable {
     infoTable: HTMLTableElement;
@@ -18,15 +11,16 @@ export default class InfoTable extends Disposable {
         this.infoTable = document.createElement("table");
         parent.appendChild(this.infoTable);
 
-        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<any>) => {
+        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => {
             const { type, data } = e.data;
             if (type !== "prepare") return;
+            const extData = data as ExtPrepareData;
             // insert additional data to infoTable
-            this.insertTableData(["duration", data.duration + "s"]);
+            this.insertTableData(["duration", extData.duration + "s"]);
         }));
     }
 
-    showInfo(data: WavInfo) {
+    showInfo(data: ExtInfoData) {
         const compressFormat = {
             0: "unknown", 1: "uncompressed PCM", 2: "Microsoft ADPCM",
             3: "IEEE Float", 6: "a-law", 7: "mu-law",

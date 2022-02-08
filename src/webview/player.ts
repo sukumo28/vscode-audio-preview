@@ -1,5 +1,7 @@
 import { Disposable } from "../dispose";
+import { ExtDataData, ExtMessage, WebviewMessage, WebviewMessageType } from "../message";
 import { EventType, Event } from "./events";
+import { postMessage } from "./vscode";
 
 export default class Player extends Disposable {
     ac: AudioContext;
@@ -81,35 +83,33 @@ export default class Player extends Disposable {
         this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<any>) => this.onReceiveData(e)));
     }
 
-    onReceiveData(e: MessageEvent<any>) {
+    onReceiveData(e: MessageEvent<ExtMessage>) {
         const { type, data } = e.data;
         if (type !== "data") return;
+        const extData = data as ExtDataData;
 
-        if (data.autoPlay) {
+        if (extData.autoPlay) {
             this.playButton.click();
         }
 
         // copy passed data.samples into audioBuffer manually, because it is once stringified, 
         // and its children are not recognised as Float32Array
-        for (let ch = 0; ch < data.numberOfChannels; ch++) {
-            const f32a = new Float32Array(data.length);
+        for (let ch = 0; ch < extData.numberOfChannels; ch++) {
+            const f32a = new Float32Array(extData.length);
             for (let i = 0; i < f32a.length; i++) {
-                f32a[i] = data.samples[ch][i];
+                f32a[i] = extData.samples[ch][i];
             }
-            this.ab.copyToChannel(f32a, ch, data.start);
+            this.ab.copyToChannel(f32a, ch, extData.start);
         }
 
         // update progress
-        const progress = Math.min(Math.floor(data.end * 100 / data.wholeLength), 100);
+        const progress = Math.min(Math.floor(extData.end * 100 / extData.wholeLength), 100);
         this.updateDecdeState("decode: " + progress + "% done");
 
-        if (data.end < data.wholeLength) {
-            const postMessageEvent = new CustomEvent(EventType.PostMessage, {
-                detail: {
-                    message: { type: 'data', start: data.end, end: data.end + 100000 }
-                }
-            });
-            window.dispatchEvent(postMessageEvent);
+        if (extData.end < extData.wholeLength) {
+            postMessage({
+                type: WebviewMessageType.Data, data: { start: extData.end, end: extData.end + 100000 }
+            })
         }
     }
 
