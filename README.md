@@ -9,8 +9,12 @@ How to preview wav.
 ![how-to-use](https://github.com/sukumo28/wav-preview/blob/main/images/how-to-use.gif?raw=true)  
 Note: You can play audio without waiting for finish decoding.
 
-If this extension is not open by default, please follow movie below.
-![how-to-set-default](https://github.com/sukumo28/wav-preview/blob/main/images/how-to-set-default.gif?raw=true)  
+If this extension is not open by default, edit `settings.json` like below.  
+```json
+"workbench.editorAssociations": {
+    "*.wav": "wavPreview.wavPreview"
+},
+```
 
 ## Settings  
 You can configure these options in `settings.json` or VS Code's GUI.  
