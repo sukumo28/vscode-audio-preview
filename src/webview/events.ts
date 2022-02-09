@@ -6,8 +6,9 @@ export const EventType = {
     PostMessage: "post-message",
     VSCodeMessage: "message", 
 
-    OnClick: "click",
-    OnChange: "change",
+    Click: "click",
+    Change: "change",
+    KeyDown: "keydown"
 };
 
 export class Event extends Disposable {

@@ -52,7 +52,7 @@ export default class Player extends Disposable {
         }));
         // init main seekbar event
         const userinputSeekbar = <HTMLInputElement>document.getElementById("user-input-seek-bar");
-        this._register(new Event(userinputSeekbar, EventType.OnChange, () => {
+        this._register(new Event(userinputSeekbar, EventType.Change, () => {
             this.onSeekbarInput(Number(userinputSeekbar.value));
             userinputSeekbar.value = "100";
         }));
@@ -65,11 +65,11 @@ export default class Player extends Disposable {
         this.gainNode = this.ac.createGain();
         this.gainNode.connect(this.ac.destination);
         this.volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
-        this._register(new Event(this.volumeBar, EventType.OnChange, () => this.onVolumeChange()));
+        this._register(new Event(this.volumeBar, EventType.Change, () => this.onVolumeChange()));
 
         // init play button
         this.playButton = <HTMLButtonElement>document.getElementById("listen-button");
-        this._register(new Event(this.playButton, EventType.OnClick, () => {
+        this._register(new Event(this.playButton, EventType.Click, () => {
             if (this.isPlaying) this.stop();
             else this.play();
         }));
@@ -81,6 +81,16 @@ export default class Player extends Disposable {
         this.updateDecdeState("");
         // add eventlistener to get audio data
         this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<any>) => this.onReceiveData(e)));
+
+        // register keyboard shortcuts
+        // don't use command.register at audioPreviewEditorProvider.openCustomDocument due to command confliction
+        this._register(new Event(window, EventType.KeyDown, (e: KeyboardEvent) => {
+            if (e.isComposing || e.code !== "Space") {
+                return;
+            }
+            e.preventDefault();
+            this.playButton.click();
+        }));
     }
 
     onReceiveData(e: MessageEvent<ExtMessage>) {

@@ -302,7 +302,7 @@ export default class Analyzer extends Disposable {
             visibleBar.style.width = `${vv}%`;
             return 100 < v;
         }));
-        this._register(new Event(inputSeekbar, EventType.OnChange, () => {
+        this._register(new Event(inputSeekbar, EventType.Change, () => {
             const rv = Number(inputSeekbar.value);
             const nv = ((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / this.audioBuffer.duration) * 100;
             const inputSeekbarEvent = new CustomEvent(EventType.InputSeekbar, {
