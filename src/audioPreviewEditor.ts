@@ -4,6 +4,7 @@ import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
 import {
     AnalyzeDefault,
+    AnalyzeSettings,
     ExtDataData,
     ExtInfoData,
     ExtMessage,
@@ -162,7 +163,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         }
     }
 
-    public spectrogram(ch: number, start: number, end: number, settings: any): ExtSpectrogramData {
+    public spectrogram(ch: number, start: number, end: number, settings: AnalyzeSettings): ExtSpectrogramData {
         try {
             const spectrogram = [];
             const fs = this._documentData.fmt.sampleRate;
@@ -181,7 +182,8 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
             const data = this._documentData.samples[ch];
             const loopEnd = end < data.length ? end : data.length;
-            for (let i = start; i < loopEnd; i += windowSize / 2) {
+            for (let i = start; i < loopEnd; i += settings.hopSize) {
+                // i is center of the window
                 const s = i - windowSize / 2, t = i + windowSize / 2;
                 const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
                 const sg = ss - s, tg = t - tt;

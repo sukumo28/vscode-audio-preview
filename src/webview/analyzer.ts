@@ -215,10 +215,12 @@ export default class Analyzer extends Disposable {
     }
 
     getAnalyzeSettings(): AnalyzeSettings {
+        // get windowsize
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
         const windowSize = Number(windowSizeSelect.value);
         windowSizeSelect.value = `${windowSize}`;
 
+        // get frequency range
         const minFreqInput = <HTMLInputElement>document.getElementById("analyze-min-frequency");
         const maxFreqInput = <HTMLInputElement>document.getElementById("analyze-max-frequency");
         const [minFrequency, maxFrequency] = this.validateRangeValues(
@@ -229,6 +231,7 @@ export default class Analyzer extends Disposable {
         minFreqInput.value = `${minFrequency}`;
         maxFreqInput.value = `${maxFrequency}`;
 
+        // get time range
         const minTimeInput = <HTMLInputElement>document.getElementById("analyze-min-time");
         const maxTimeInput = <HTMLInputElement>document.getElementById("analyze-max-time");
         const [minTime, maxTime] = this.validateRangeValues(
@@ -239,6 +242,7 @@ export default class Analyzer extends Disposable {
         minTimeInput.value = `${minTime}`;
         maxTimeInput.value = `${maxTime}`;
 
+        // get amplitude range
         const minAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-min-amplitude");
         const maxAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-max-amplitude");
         const [minAmplitude, maxAmplitude] = this.validateRangeValues(
@@ -249,6 +253,12 @@ export default class Analyzer extends Disposable {
         minAmplitudeInput.value = `${minAmplitude}`;
         maxAmplitudeInput.value = `${maxAmplitude}`;
 
+        // calc hopsize
+        // this value fix rectWidth around 5 for every duration of input
+        // thus, spectrogram of long duration input can be drawn faster
+        let hopSize = Math.trunc(5 * (maxTime - minTime) * this.audioBuffer.sampleRate / 1800);
+        if (hopSize < windowSize / 8) hopSize = windowSize / 8;
+
         return {
             windowSize,
             minFrequency,
@@ -257,6 +267,7 @@ export default class Analyzer extends Disposable {
             maxTime,
             minAmplitude,
             maxAmplitude,
+            hopSize,
             analyzeID: ++this.latestAnalyzeID
         };
     }
@@ -345,7 +356,8 @@ export default class Analyzer extends Disposable {
 
         const startIndex = Math.floor(settings.minTime * this.audioBuffer.sampleRate);
         const endIndex = Math.floor(settings.maxTime * this.audioBuffer.sampleRate);
-        // limit data size around 200000
+        // limit data size
+        // thus, drawing waveform of long duration input can be done in about the same amount of time as short input
         const step = Math.ceil((endIndex - startIndex) / 200000);
         const data = this.audioBuffer.getChannelData(ch).slice(startIndex, endIndex).filter((_, i) => i % step === 0);
         // convert data. 
@@ -440,11 +452,10 @@ export default class Analyzer extends Disposable {
         const blockSize = data.end - data.start;
         const blockNum = wholeSampleNum / blockSize;
         const blockStart = data.start - data.settings.minTime * this.audioBuffer.sampleRate;
-        const hopSize = data.settings.windowSize / 2;
-        const rectWidth = (width / blockNum) * (hopSize / blockSize);
+        const rectWidth = (width / blockNum) * (data.settings.hopSize / blockSize);
 
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = width * ((i * hopSize + blockStart) / wholeSampleNum);
+            const x = width * ((i * data.settings.hopSize + blockStart) / wholeSampleNum);
             const rectHeight = height / spectrogram[i].length;
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height * (1 - (j / spectrogram[i].length));

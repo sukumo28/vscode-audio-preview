@@ -8,6 +8,7 @@ export interface AnalyzeDefault {
 
 export interface AnalyzeSettings {
     windowSize: number,
+    hopSize: number,
     minFrequency: number,
     maxFrequency: number,
     minTime: number,
