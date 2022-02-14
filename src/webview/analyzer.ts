@@ -197,7 +197,7 @@ export default class Analyzer extends Disposable {
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
         let defaultWindowSizeIndex = this.defaultSetting.windowSizeIndex;
         if (defaultWindowSizeIndex === undefined || defaultWindowSizeIndex < 0 || 7 < defaultWindowSizeIndex) {
-            defaultWindowSizeIndex = 2; // 2:1024
+            defaultWindowSizeIndex = 4; // 2:4096
         }
         windowSizeSelect.selectedIndex = defaultWindowSizeIndex;
         // update default
@@ -252,7 +252,7 @@ export default class Analyzer extends Disposable {
         const [spectrogramAmplitudeRange, _] = this.validateRangeValues(
             this.defaultSetting.spectrogramAmplitudeRange, 0,
             -200, 0,
-            -90, 0
+            -120, 0
         );
         const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
         spectrogramAmplitudeRangeInput.value = `${spectrogramAmplitudeRange}`;
@@ -330,7 +330,7 @@ export default class Analyzer extends Disposable {
         const [spectrogramAmplitudeRange, _] = this.validateRangeValues(
             Number(spectrogramAmplitudeRangeInput.value), 0,
             -200, 0,
-            -90, 0
+            -120, 0
         );
         spectrogramAmplitudeRangeInput.value = `${spectrogramAmplitudeRange}`;
         // update color bar
