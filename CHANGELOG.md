@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.12.0 - 2022-02-14   
+### Added  
+- Spectrogram amplitude range settings  
+
 ## 1.11.0 - 2022-01-23  
 ### Added  
 - AutoAnalyze option  
