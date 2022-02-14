@@ -55,6 +55,17 @@ export default class Analyzer extends Disposable {
                     <input id="analyze-min-amplitude" type="number" step="0.1"> ~
                     <input id="analyze-max-amplitude" type="number" step="0.1">
                 </div>
+                <div>
+                    <div>
+                        spectrogram amplitude range:
+                        <input id="analyze-spectrogram-amplitude-range" type="number" step="1000">dB ~ 0dB
+                    </div>
+                    <div>
+                        color:
+                        <canvas id="analyze-spectrogram-color-axis" width="800px" height="40px"></canvas>
+                        <canvas id="analyze-spectrogram-color" width="100px" height="5px"></canvas>
+                    </div>
+                </div>
             </div>
         `;
 
@@ -157,6 +168,30 @@ export default class Analyzer extends Disposable {
         return [minValue, maxValue];
     }
 
+    getSpectrogramColor(amp: number, range: number): string {
+        const classNum = 6;
+        const classWidth = range / classNum;
+        const ampClass = Math.floor(amp / classWidth);
+        const classMinAmp = (ampClass + 1) * classWidth;
+        const value = (amp - classMinAmp) / -classWidth;
+        switch (ampClass) {
+            case 0:
+                return `rgb(250,250,${125+Math.floor(value * 125)})`;
+            case 1:
+                return `rgb(250,${125 + Math.floor(value * 125)},125)`;
+            case 2:
+                return `rgb(250,${Math.floor(value * 125)},125)`;
+            case 3:
+                return `rgb(${125+Math.floor(value * 125)},0,125)`;
+            case 4:
+                return `rgb(${Math.floor(value * 125)},0,125)`;
+            case 5:
+                return `rgb(0,0,${Math.floor(value * 125)})`;
+            default:
+                return `rgb(0,0,0)`;
+        }
+    }
+
     initAnalyzeSettings() {
         // init fft window size
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
@@ -212,6 +247,37 @@ export default class Analyzer extends Disposable {
         // update default
         this.defaultSetting.minAmplitude = minAmplitude;
         this.defaultSetting.maxAmplitude = maxAmplitude;
+
+        // init spectrogram amplitude range
+        const [spectrogramAmplitudeRange, _] = this.validateRangeValues(
+            this.defaultSetting.spectrogramAmplitudeRange, 0,
+            -200, 0,
+            -90, 0
+        );
+        const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
+        spectrogramAmplitudeRangeInput.value = `${spectrogramAmplitudeRange}`;
+        // update default
+        this.defaultSetting.spectrogramAmplitudeRange = spectrogramAmplitudeRange;
+        // init default color bar
+        const colorCanvas = <HTMLCanvasElement>document.getElementById("analyze-spectrogram-color");
+        const colorAxisCanvas = <HTMLCanvasElement>document.getElementById("analyze-spectrogram-color-axis");
+        const colorContext = colorCanvas.getContext("2d", { alpha: false });
+        const colorAxisContext = colorAxisCanvas.getContext("2d", { alpha: false });
+        // draw axis label
+        colorAxisContext.font = `15px Arial`;
+        colorAxisContext.fillStyle = "white";
+        for (let i = 0; i < 10; i++) {
+            const amp = i * spectrogramAmplitudeRange / 10;
+            const x = i * colorAxisCanvas.width / 10;
+            colorAxisContext.fillText(`${amp}dB`, x, colorAxisCanvas.height);
+        }
+        // draw color
+        for (let i = 0; i < 100; i++) {
+            const amp = i * spectrogramAmplitudeRange / 100;
+            const x = i * colorCanvas.width / 100;
+            colorContext.fillStyle = this.getSpectrogramColor(amp, spectrogramAmplitudeRange);
+            colorContext.fillRect(x, 0, colorCanvas.width / 100, colorCanvas.height);
+        }
     }
 
     getAnalyzeSettings(): AnalyzeSettings {
@@ -259,6 +325,37 @@ export default class Analyzer extends Disposable {
         let hopSize = Math.trunc(5 * (maxTime - minTime) * this.audioBuffer.sampleRate / 1800);
         if (hopSize < windowSize / 8) hopSize = windowSize / 8;
 
+        // get spectrogram amplitude range
+        const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
+        const [spectrogramAmplitudeRange, _] = this.validateRangeValues(
+            Number(spectrogramAmplitudeRangeInput.value), 0,
+            -200, 0,
+            -90, 0
+        );
+        spectrogramAmplitudeRangeInput.value = `${spectrogramAmplitudeRange}`;
+        // update color bar
+        const colorCanvas = <HTMLCanvasElement>document.getElementById("analyze-spectrogram-color");
+        const colorAxisCanvas = <HTMLCanvasElement>document.getElementById("analyze-spectrogram-color-axis");
+        const colorContext = colorCanvas.getContext("2d", { alpha: false });
+        const colorAxisContext = colorAxisCanvas.getContext("2d", { alpha: false });
+        // draw axis label
+        colorAxisContext.fillStyle = "black";
+        colorAxisContext.fillRect(0, 0, colorAxisCanvas.width, colorAxisCanvas.height);
+        colorAxisContext.font = `15px Arial`;
+        colorAxisContext.fillStyle = "white";
+        for (let i = 0; i < 10; i++) {
+            const amp = i * spectrogramAmplitudeRange / 10;
+            const x = i * colorAxisCanvas.width / 10;
+            colorAxisContext.fillText(`${amp}dB`, x, colorAxisCanvas.height);
+        }
+        // draw color
+        colorContext.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+        for (let i = 0; i < 100; i++) {
+            const amp = i * spectrogramAmplitudeRange / 100;
+            const x = i * colorCanvas.width / 100;
+            colorContext.fillStyle = this.getSpectrogramColor(amp, spectrogramAmplitudeRange);
+            colorContext.fillRect(x, 0, colorCanvas.width / 100, colorCanvas.height);
+        }
         return {
             windowSize,
             minFrequency,
@@ -268,6 +365,7 @@ export default class Analyzer extends Disposable {
             minAmplitude,
             maxAmplitude,
             hopSize,
+            spectrogramAmplitudeRange,
             analyzeID: ++this.latestAnalyzeID
         };
     }
@@ -374,7 +472,7 @@ export default class Analyzer extends Disposable {
     }
 
     drawWaveForm(
-        data: Float32Array, context: CanvasRenderingContext2D, 
+        data: Float32Array, context: CanvasRenderingContext2D,
         start: number, count: number, width: number, height: number, analyzeID: number
     ) {
         for (let i = 0; i < count; i++) {
@@ -461,18 +559,10 @@ export default class Analyzer extends Disposable {
                 const y = height * (1 - (j / spectrogram[i].length));
 
                 const value = spectrogram[i][j];
-                if (value < -80) {
+                if (value < data.settings.spectrogramAmplitudeRange) {
                     continue;
-                } else if (value < -60) {
-                    context.fillStyle = `rgb(0,0,${Math.floor(value / -60 * 255)})`;
-                } else if (value < -40) {
-                    context.fillStyle = `rgb(0,${Math.floor(value / -40 * 255)},255)`;
-                } else if (value < -20) {
-                    context.fillStyle = `rgb(${Math.floor(value / -20 * 255)},255,255)`;
-                } else {
-                    context.fillStyle = `rgb(255,255,255)`;
                 }
-
+                context.fillStyle = this.getSpectrogramColor(value, data.settings.spectrogramAmplitudeRange);
                 context.fillRect(x, y, rectWidth, rectHeight);
             }
         }

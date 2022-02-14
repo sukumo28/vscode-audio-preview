@@ -4,6 +4,7 @@ export interface AnalyzeDefault {
     maxAmplitude: number,
     minFrequency: number,
     maxFrequency: number,
+    spectrogramAmplitudeRange: number,
 }
 
 export interface AnalyzeSettings {
@@ -15,6 +16,7 @@ export interface AnalyzeSettings {
     maxTime: number,
     minAmplitude: number,
     maxAmplitude: number,
+    spectrogramAmplitudeRange: number,
     analyzeID: number
 }
 
