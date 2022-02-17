@@ -426,7 +426,7 @@ export default class Analyzer extends Disposable {
         canvas.width = width;
         canvas.height = height;
         const context = canvas.getContext("2d", { alpha: false });
-        context.fillStyle = "rgb(90,200,90)";
+        context.fillStyle = "rgb(160,60,200)";
         canvasBox.appendChild(canvas);
 
         const axisCanvas = document.createElement("canvas");
@@ -436,7 +436,7 @@ export default class Analyzer extends Disposable {
         const axisContext = axisCanvas.getContext("2d");
         axisContext.font = `12px Arial`;
         for (let i = 0; i < 10; i++) {
-            axisContext.fillStyle = "rgb(255,200,180)";
+            axisContext.fillStyle = "rgb(245,130,32)";
             const x = Math.round(i * width / 10);
             const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
             if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 10); // skip first label
@@ -444,7 +444,7 @@ export default class Analyzer extends Disposable {
             const a = (i + 1) * (settings.minAmplitude - settings.maxAmplitude) / 10 + settings.maxAmplitude;
             axisContext.fillText(`${(a).toFixed(2)}`, 4, y - 2);
 
-            axisContext.fillStyle = "rgb(180,110,110)";
+            axisContext.fillStyle = "rgb(180,120,20)";
             for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
             for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
         }
