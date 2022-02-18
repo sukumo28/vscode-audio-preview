@@ -323,7 +323,7 @@ export default class Analyzer extends Disposable {
         // this value fix rectWidth around 5 for every duration of input
         // thus, spectrogram of long duration input can be drawn faster
         let hopSize = Math.trunc(5 * (maxTime - minTime) * this.audioBuffer.sampleRate / 1800);
-        if (hopSize < windowSize / 8) hopSize = windowSize / 8;
+        if (hopSize < windowSize / 4) hopSize = windowSize / 4;
 
         // get spectrogram amplitude range
         const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
