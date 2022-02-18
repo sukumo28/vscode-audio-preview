@@ -58,7 +58,7 @@ export default class Analyzer extends Disposable {
                 <div>
                     <div>
                         spectrogram amplitude range:
-                        <input id="analyze-spectrogram-amplitude-range" type="number" step="1000">dB ~ 0dB
+                        <input id="analyze-spectrogram-amplitude-range" type="number" step="10">dB ~ 0dB
                     </div>
                     <div>
                         color:
@@ -251,8 +251,8 @@ export default class Analyzer extends Disposable {
         // init spectrogram amplitude range
         const [spectrogramAmplitudeRange, _] = this.validateRangeValues(
             this.defaultSetting.spectrogramAmplitudeRange, 0,
-            -200, 0,
-            -120, 0
+            -1000, 0,
+            -90, 0
         );
         const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
         spectrogramAmplitudeRangeInput.value = `${spectrogramAmplitudeRange}`;
@@ -329,8 +329,8 @@ export default class Analyzer extends Disposable {
         const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
         const [spectrogramAmplitudeRange, _] = this.validateRangeValues(
             Number(spectrogramAmplitudeRangeInput.value), 0,
-            -200, 0,
-            -120, 0
+            -1000, 0,
+            -90, 0
         );
         spectrogramAmplitudeRangeInput.value = `${spectrogramAmplitudeRange}`;
         // update color bar
