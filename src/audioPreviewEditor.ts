@@ -169,9 +169,9 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
             const fs = this._documentData.fmt.sampleRate;
 
             const windowSize = settings.windowSize;
-            const window = [];
+            const window = new Float32Array(windowSize);
             for (let i = 0; i < windowSize; i++) {
-                window.push(0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize));
+                window[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize);
             }
 
             const df = fs / windowSize;
@@ -186,11 +186,12 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 // i is center of the window
                 const s = i - windowSize / 2, t = i + windowSize / 2;
                 const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
-                const sg = ss - s, tg = t - tt;
-                const d = [];
-                d.push(...new Array(sg).fill(0));
-                d.push(...data.slice(ss, tt));
-                d.push(...new Array(tg).fill(0));
+                const d = ooura.scalarArrayFactory();
+                for (let j=0; j<d.length; j++) {
+                    if (s+j < ss) continue;
+                    if (tt < s+j) continue;
+                    d[j] = data[s+j] * window[j];
+                }
 
                 // don't execute fft to 0
                 const dMax = Math.max(...d);
@@ -199,14 +200,9 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                     continue;
                 }
 
-                const dd = ooura.scalarArrayFactory();
-                for (let j = 0; j < dd.length; j++) {
-                    dd[j] = d[j] * window[j];
-                }
-
                 const re = ooura.vectorArrayFactory();
                 const im = ooura.vectorArrayFactory();
-                ooura.fft(dd.buffer, re.buffer, im.buffer);
+                ooura.fft(d.buffer, re.buffer, im.buffer);
 
                 const ps = [];
                 let maxValue = Number.EPSILON;
