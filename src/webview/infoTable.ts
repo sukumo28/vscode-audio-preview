@@ -16,7 +16,7 @@ export default class InfoTable extends Disposable {
             if (type !== "prepare") return;
             const extData = data as ExtPrepareData;
             // insert additional data to infoTable
-            this.insertTableData(["duration", extData.duration + "s"]);
+            this.insertTableData("duration", extData.duration + "s");
         }));
     }
 
@@ -35,10 +35,10 @@ export default class InfoTable extends Disposable {
 
         const info = [
             { name: "format", value: `${data.audioFormat} (${compressFormat})` },
-            { name: "number of channel", value: `${data.numChannels} (${channels})` },
-            { name: "sampleRate", value: `${data.sampleRate}` },
-            { name: "bitsPerSample (bit depth)", value: `${data.bitsPerSample}` },
-            { name: "fileSize", value: `${data.chunkSize + 8} byte` },
+            { name: "number_of_channel", value: `${data.numChannels} (${channels})` },
+            { name: "sample_rate", value: `${data.sampleRate}` },
+            { name: "bit_depth", value: `${data.bitsPerSample}` },
+            { name: "file_size", value: `${data.chunkSize + 8} byte` },
         ];
 
         // clear info table
@@ -48,17 +48,19 @@ export default class InfoTable extends Disposable {
         })
         // insert datas to info table
         for (const i of info) {
-            this.insertTableData([i.name, i.value]);
+            this.insertTableData(i.name, i.value);
         }
     }
 
-    insertTableData(values: string[]) {
+    insertTableData(name: string, value: string) {
         const tr = document.createElement("tr");
-        for (const v of values) {
-            const td = document.createElement("td");
-            td.textContent = v;
-            tr.appendChild(td);
-        }
+        const nameTd = document.createElement("td");
+        nameTd.textContent = name;
+        tr.appendChild(nameTd);
+        const valueTd = document.createElement("td");
+        valueTd.textContent = value;
+        valueTd.id = `info-table-${name}`;
+        tr.appendChild(valueTd);
         this.infoTable.appendChild(tr);
     }
 }

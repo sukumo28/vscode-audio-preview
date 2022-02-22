@@ -78,6 +78,7 @@
 		"vscode:prepublish": "webpack --mode production",
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./",
 		"test": "tsc -p ./ && node ./out/test/runTest.js"
 	},
 	"devDependencies": {
