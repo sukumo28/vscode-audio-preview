@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.13.0 - 2022-02-23  
+### Added  
+- Support VS Code for Web  
+  
 ## 1.12.0 - 2022-02-14   
 ### Added  
 - Spectrogram amplitude range settings  

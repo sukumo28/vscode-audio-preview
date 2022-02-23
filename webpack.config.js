@@ -1,8 +1,9 @@
 'use strict';
 const CopyPlugin = require("copy-webpack-plugin");
 const path = require('path');
+const webpack = require("webpack");
 
-const extentionConfig = {
+const extensionConfig = {
   target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
@@ -71,4 +72,53 @@ const webviewConfig = {
   ]
 }
 
-module.exports = [extentionConfig, webviewConfig];
+const webExtensionConfig = {
+  mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+  target: 'webworker', // extensions run in a webworker context
+  entry: {
+    extension: './src/extension.ts', // source of the web extension main file
+  },
+  output: {
+    filename: '[name].js',
+    path: path.join(__dirname, './dist/web'),
+    libraryTarget: 'commonjs',
+    devtoolModuleFilenameTemplate: '../../[resource-path]'
+  },
+  resolve: {
+    mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
+    extensions: ['.ts', '.js'], // support ts-files and js-files
+    fallback: {
+      // Webpack 5 no longer polyfills Node.js core modules automatically.
+      // see https://webpack.js.org/configuration/resolve/#resolvefallback
+      // for the list of Node.js core module polyfills.
+      assert: require.resolve('assert'),
+    }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader'
+          }
+        ]
+      }
+    ]
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process/browser' // provide a shim for the global `process` variable
+    })
+  ],
+  externals: {
+    vscode: 'commonjs vscode' // ignored because it doesn't exist
+  },
+  performance: {
+    hints: false
+  },
+  devtool: 'nosources-source-map' // create a source map that points to the original source file
+};
+
+module.exports = [extensionConfig, webviewConfig, webExtensionConfig];

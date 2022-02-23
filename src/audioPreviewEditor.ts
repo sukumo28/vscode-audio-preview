@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
 import {
@@ -398,14 +397,14 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
      */
     private getHtmlForWebview(webview: vscode.Webview): string {
         // Local path to script and css for the webview
-        const scriptUri = webview.asWebviewUri(vscode.Uri.file(
-            path.join(this._context.extensionPath, 'dist', 'audioPreview.js')
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
+            this._context.extensionUri, 'dist', 'audioPreview.js'
         ));
-        const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.file(
-            path.join(this._context.extensionPath, 'dist', 'vscode.css')
+        const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
+            this._context.extensionUri, 'dist', 'vscode.css'
         ));
-        const styleMainUri = webview.asWebviewUri(vscode.Uri.file(
-            path.join(this._context.extensionPath, 'dist', 'audioPreview.css')
+        const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(
+            this._context.extensionUri, 'dist', 'audioPreview.css'
         ));
 
         // Use a nonce to whitelist which scripts can be run

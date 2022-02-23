@@ -2,7 +2,7 @@
 	"name": "wav-preview",
 	"displayName": "wav-preview",
 	"description": "preview and play wav file in VS Code",
-	"version": "1.12.1",
+	"version": "1.13.0",
 	"engines": {
 		"vscode": "^1.59.1"
 	},
@@ -34,6 +34,7 @@
 		"onCustomEditor:wavPreview.audioPreview"
 	],
 	"main": "./dist/extension.js",
+	"browser": "./dist/web/extension.js",
 	"contributes": {
 		"customEditors": [
 			{
@@ -75,13 +76,15 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "webpack --mode production",
+		"vscode:prepublish": "webpack --mode production --devtool hidden-source-map",
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
 		"test-compile": "tsc -p ./",
 		"test": "tsc -p ./ && node ./out/test/runTest.js"
 	},
 	"devDependencies": {
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.0",
 		"@types/node": "^16.11.7",
 		"@types/ooura": "^2.1.0",
 		"@types/vscode": "^1.59.1",
@@ -90,19 +93,19 @@
 		"@vscode/test-electron": "^2.1.1",
 		"copy-webpack-plugin": "^10.2.1",
 		"eslint": "^8.2.0",
+		"glob": "^7.2.0",
+		"mocha": "^9.2.0",
 		"puppeteer": "^13.1.3",
 		"ts-loader": "^9.2.6",
 		"typescript": "^4.4.4",
 		"vscode-test": "^1.6.1",
 		"webpack": "^5.64.0",
-		"webpack-cli": "^4.9.1",
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^9.1.0",
-		"glob": "^7.2.0",
-		"mocha": "^9.2.0"
+		"webpack-cli": "^4.9.1"
 	},
 	"dependencies": {
+		"assert": "^2.0.0",
 		"ooura": "^2.1.6",
+		"process": "^0.11.10",
 		"wavefile": "^11.0.0"
 	}
 }
