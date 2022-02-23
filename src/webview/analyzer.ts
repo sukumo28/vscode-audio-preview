@@ -197,7 +197,7 @@ export default class Analyzer extends Disposable {
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
         let defaultWindowSizeIndex = this.defaultSetting.windowSizeIndex;
         if (defaultWindowSizeIndex === undefined || defaultWindowSizeIndex < 0 || 7 < defaultWindowSizeIndex) {
-            defaultWindowSizeIndex = 4; // 2:4096
+            defaultWindowSizeIndex = 2; // 2:1024
         }
         windowSizeSelect.selectedIndex = defaultWindowSizeIndex;
         // update default

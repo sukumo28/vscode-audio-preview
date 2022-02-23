@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.13.1 - 2022-02-23  
+### Changed  
+- Default window size
+
 ## 1.13.0 - 2022-02-23  
 ### Added  
 - Support VS Code for Web  
