@@ -2,7 +2,7 @@
 	"name": "wav-preview",
 	"displayName": "audio-preview",
 	"description": "preview & play audio file in VS Code",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"engines": {
 		"vscode": "^1.59.1"
 	},
