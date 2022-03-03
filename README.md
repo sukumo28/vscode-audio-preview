@@ -8,7 +8,7 @@ Supported Audio Files: `wav`, `aac`, `mp3`, `ogg`, `flac`, ... :star2:
 ## Features
 
 How to preview wav.  
-![how-to-use](https://github.com/sukumo28/wav-preview/blob/main/images/how-to-use.gif?raw=true)  
+![how-to-use](https://github.com/sukumo28/vscode-audio-preview/blob/main/images/how-to-use.gif?raw=true)  
 Note: You can play audio without waiting for finish decoding.
 
 If this extension does not open by default, edit `settings.json` like below.  

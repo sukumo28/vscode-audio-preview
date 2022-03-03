@@ -23,10 +23,10 @@
 	"icon": "audio-preview.png",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/sukumo28/wav-preview.git"
+		"url": "https://github.com/sukumo28/vscode-audio-preview.git"
 	},
 	"bugs": {
-		"url": "https://github.com/sukumo28/wav-preview.git"
+		"url": "https://github.com/sukumo28/vscode-audio-preview.git"
 	},
 	"activationEvents": [
 		"onCustomEditor:wavPreview.audioPreview"
