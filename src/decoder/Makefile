@@ -1,7 +1,7 @@
 decoder.wasm.js:
 	em++ -Wall \
 	-L/opt/ffmpeg/lib -L/opt/ffmpeg/lib/opus \
-    -I/opt/ffmpeg/include/ -I/opt/ffmpeg/include/opus \
+	-I/opt/ffmpeg/include/ -I/opt/ffmpeg/include/opus \
 	-lavcodec -lavformat -lavutil -lopus \
 	-O3 \
 	--closure 1 \
