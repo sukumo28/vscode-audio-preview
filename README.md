@@ -1,7 +1,9 @@
-# wav-preview 
+# audio-preview 
 
-You can play your wav file and preview its info on VS Code with this extension.  
+You can play your audio file and preview its info on VS Code.  
 You can also check waveform and spectrogram.  
+
+Supported Audio Files: `wav`, `aac`, `mp3`, `ogg`, `flac`, ... :star2:  
 
 ## Features
 
@@ -9,10 +11,10 @@ How to preview wav.
 ![how-to-use](https://github.com/sukumo28/wav-preview/blob/main/images/how-to-use.gif?raw=true)  
 Note: You can play audio without waiting for finish decoding.
 
-If this extension is not open by default, edit `settings.json` like below.  
+If this extension does not open by default, edit `settings.json` like below.  
 ```json
 "workbench.editorAssociations": {
-    "*.wav": "wavPreview.wavPreview"
+    "*.wav": "wavPreview.audioPreview"
 },
 ```
 
@@ -47,11 +49,20 @@ You can configure default value of analyze settings like below.
 }
 ```
   
-## Known Issues
+## Development  
+
+### Issues  
 
 Feel free to report isuues on github.  
 
-## References
+### Build  
+* Clone this repo  
+* Install Dependencies: `npm install`  
+* Build Container for decoder: `docker build -t audio-decoder ./src/decoder/`  
+* Compile decoder.cpp to wasm: `docker run -v ${pwd}/src/decoder:/build -it audio-decoder make`  
+* Run Extension: f5  
+
+### References  
 
 Custom Editor: https://code.visualstudio.com/api/extension-guides/custom-editors  
 Cutrom Editor Example: https://github.com/microsoft/vscode-extension-samples/tree/main/custom-editor-sample  

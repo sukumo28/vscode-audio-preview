@@ -21,24 +21,16 @@ export default class InfoTable extends Disposable {
     }
 
     showInfo(data: ExtInfoData) {
-        const compressFormat = {
-            0: "unknown", 1: "uncompressed PCM", 2: "Microsoft ADPCM",
-            3: "IEEE Float", 6: "a-law", 7: "mu-law",
-            17: "IMA ADPCM", 20: "ITU G.723 ADPCM (Yamaha)", 49: "GSM 6.10",
-            64: "ITU G.721 ADPCM", 80: "MPEG",
-            65535: "Experimental"
-        }[data.audioFormat] || "unsupported";
-
         const channels = {
             1: "mono", 2: "stereo"
         }[data.numChannels] || "unsupported";
 
         const info = [
-            { name: "format", value: `${data.audioFormat} (${compressFormat})` },
+            { name: "encoding", value: `${data.encoding}`},
+            { name: "format", value: `${data.format}` },
             { name: "number_of_channel", value: `${data.numChannels} (${channels})` },
             { name: "sample_rate", value: `${data.sampleRate}` },
-            { name: "bit_depth", value: `${data.bitsPerSample}` },
-            { name: "file_size", value: `${data.chunkSize + 8} byte` },
+            { name: "file_size", value: `${data.fileSize} byte` },
         ];
 
         // clear info table

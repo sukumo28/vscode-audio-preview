@@ -35,11 +35,11 @@ export class ExtMessage {
 }
 
 export interface ExtInfoData {
-    audioFormat: string;
+    encoding: string;
+    format: string;
     numChannels: number;
     sampleRate: number;
-    bitsPerSample: number;
-    chunkSize: number;
+    fileSize: number;
     isTrusted?: boolean;
 }
 

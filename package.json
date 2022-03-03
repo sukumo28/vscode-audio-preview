@@ -1,8 +1,8 @@
 {
 	"name": "wav-preview",
-	"displayName": "wav-preview",
-	"description": "preview and play wav file in VS Code",
-	"version": "1.13.1",
+	"displayName": "audio-preview",
+	"description": "preview & play audio file in VS Code",
+	"version": "2.0.0",
 	"engines": {
 		"vscode": "^1.59.1"
 	},
@@ -11,15 +11,13 @@
 		"Other"
 	],
 	"keywords": [
-		"wav",
 		"audio",
 		"sound",
 		"music",
-		"viewer",
-		"preview",
 		"play",
 		"listen",
-		"waveform",
+		"wav",
+		"mp3",
 		"spectrogram"
 	],
 	"icon": "wav-preview.png",
@@ -43,6 +41,21 @@
 				"selector": [
 					{
 						"filenamePattern": "*.wav"
+					},
+					{
+						"filenamePattern": "*.mp3"
+					},
+					{
+						"filenamePattern": "*.aac"
+					},
+					{
+						"filenamePattern": "*.ogg"
+					},
+					{
+						"filenamePattern": "*.opus"
+					},
+					{
+						"filenamePattern": "*.flac"
 					}
 				],
 				"priority": "default"
@@ -99,13 +112,14 @@
 		"ts-loader": "^9.2.6",
 		"typescript": "^4.4.4",
 		"vscode-test": "^1.6.1",
+		"wavefile": "^11.0.0",
 		"webpack": "^5.64.0",
 		"webpack-cli": "^4.9.1"
 	},
 	"dependencies": {
 		"assert": "^2.0.0",
 		"ooura": "^2.1.6",
-		"process": "^0.11.10",
-		"wavefile": "^11.0.0"
+		"path-browserify": "^1.0.1",
+		"process": "^0.11.10"
 	}
 }

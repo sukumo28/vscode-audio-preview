@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.0 - 2022-03-03  
+### Added 
+- Support `mp3`, `aac`, `ogg`, `flac`, `opus` etc  
+
 ## 1.13.1 - 2022-02-23  
 ### Changed  
 - Default window size

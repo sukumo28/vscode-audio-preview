@@ -11,21 +11,21 @@ import {
     WebviewErrorData,
     WebviewMessage, WebviewMessageType, WebviewSpectrogramData,
 } from "./message";
-import { WaveFile } from 'wavefile';
+import AudioDecoder from "./decoder/decoder";
 import Ooura from "ooura";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
     static async create(
         uri: vscode.Uri,
-        backupId: string | undefined,
+        backupId: string | undefined
     ): Promise<AudioPreviewDocument | PromiseLike<AudioPreviewDocument>> {
         // If we have a backup, read that. Otherwise read the resource from the workspace
         const dataFile = typeof backupId === 'string' ? vscode.Uri.parse(backupId) : uri;
         const fileData = await AudioPreviewDocument.readFile(dataFile);
         try {
-            const wav = new WaveFile(fileData);
-            return new AudioPreviewDocument(uri, wav);
+            const decoder = await AudioDecoder.instanciate(fileData);
+            return new AudioPreviewDocument(uri, decoder);
         } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
             return new AudioPreviewDocument(uri, undefined);
@@ -40,7 +40,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     }
 
     private readonly _uri: vscode.Uri;
-    private _documentData: any;
+    private _documentData: AudioDecoder;
     private _fsWatcher: vscode.FileSystemWatcher;
 
     private constructor (
@@ -58,64 +58,38 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
     public onDidChange: vscode.Event<vscode.Uri>;
 
-    public wavHeader(): ExtInfoData {
+    public audioInfo(): ExtInfoData {
         if (!this._documentData) return;
 
-        const fmt = this._documentData.fmt;
-        return {
-            audioFormat: fmt.audioFormat,
-            numChannels: fmt.numChannels,
-            sampleRate: fmt.sampleRate,
-            bitsPerSample: fmt.bitsPerSample,
-            chunkSize: this._documentData.chunkSize,
-        };
+        try {
+            this._documentData.readAudioInfo();
+            return {
+                encoding: this._documentData.encoding,
+                format: this._documentData.format,
+                numChannels: this._documentData.numChannels,
+                sampleRate: this._documentData.sampleRate,
+                fileSize: this._documentData.fileSize,
+            };
+        } catch (err: any) {
+            vscode.window.showErrorMessage(err.message);
+            return;
+        }
     }
 
     public prepareData(): ExtPrepareData {
         try {
-            // decompose
-            switch (this._documentData.fmt.audioFormat) {
-                case 1:
-                case 3:
-                    break;
+            // execute decode
+            this._documentData.decode();
 
-                case 6:
-                    this._documentData.fromALaw();
-                    break;
-
-                case 7:
-                    this._documentData.fromMuLaw();
-                    break;
-
-                case 17:
-                    this._documentData.fromIMAADPCM();
-                    break;
-
-                default:
-                    throw new Error(`Unsupported audio format: ${this._documentData.fmt.audioFormat}`);
-            }
-
-            // load 
-            const numberOfChannels = this._documentData.fmt.numChannels;
-            let samples = this._documentData.getSamples(false, Float32Array);
-            if (numberOfChannels === 1) {
-                samples = [samples];
-            }
-            this._documentData.samples = samples;
-
-            // calc duration
-            const sampleRate = this._documentData.fmt.sampleRate;
-            const length = samples[0].length;
-            const duration = length / sampleRate;
-
+            // read config
             const config = vscode.workspace.getConfiguration("WavPreview");
             const analyzeDefault = config.get("analyzeDefault") as AnalyzeDefault;
 
             return {
-                sampleRate,
-                numberOfChannels,
-                length,
-                duration,
+                sampleRate: this._documentData.sampleRate,
+                numberOfChannels: this._documentData.numChannels,
+                length: this._documentData.length,
+                duration: this._documentData.duration,
                 analyzeDefault
             };
 
@@ -125,32 +99,17 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         }
     }
 
-    // you have to prepareData before calling wavData
-    public wavData(start: number, end: number): ExtDataData {
+    public audioData(start: number, end: number): ExtDataData {
         try {
-            const chNum = this._documentData.fmt.numChannels;
-            const samples = new Array(chNum);
-            for (let ch = 0; ch < chNum; ch++) {
+            const samples = new Array(this._documentData.numChannels);
+            for (let ch = 0; ch < this._documentData.numChannels; ch++) {
                 samples[ch] = this._documentData.samples[ch].slice(start, end);
-            }
-
-            // convert pcm to float32
-            if (this._documentData.fmt.audioFormat === 1) {
-                // 2 ^ (bitDepth - 1)
-                const max = 1 << (this._documentData.fmt.bitsPerSample - 1);
-
-                for (let ch = 0; ch < chNum; ch++) {
-                    for (let i = 0; i < samples[ch].length; i++) {
-                        const v = samples[ch][i];
-                        samples[ch][i] = v < 0 ? v / max : v / (max - 1);
-                    }
-                }
             }
 
             return {
                 samples,
                 length: samples[0].length,
-                numberOfChannels: chNum,
+                numberOfChannels: this._documentData.numChannels,
                 start,
                 end,
                 wholeLength: this._documentData.samples[0].length
@@ -165,7 +124,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public spectrogram(ch: number, start: number, end: number, settings: AnalyzeSettings): ExtSpectrogramData {
         try {
             const spectrogram = [];
-            const fs = this._documentData.fmt.sampleRate;
+            const fs = this._documentData.sampleRate;
 
             const windowSize = settings.windowSize;
             const window = new Float32Array(windowSize);
@@ -186,16 +145,16 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
                 const s = i - windowSize / 2, t = i + windowSize / 2;
                 const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
                 const d = ooura.scalarArrayFactory();
-                for (let j=0; j<d.length; j++) {
-                    if (s+j < ss) continue;
-                    if (tt < s+j) continue;
-                    d[j] = data[s+j] * window[j];
+                for (let j = 0; j < d.length; j++) {
+                    if (s + j < ss) continue;
+                    if (tt < s + j) continue;
+                    d[j] = data[s + j] * window[j];
                 }
 
                 // don't execute fft to 0
                 const dMax = Math.max(...d);
                 if (dMax === 0) {
-                    spectrogram.push(new Array(windowSize/2).fill(-1000));
+                    spectrogram.push(new Array(windowSize / 2).fill(-1000));
                     continue;
                 }
 
@@ -240,7 +199,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public async reload() {
         const fileData = await AudioPreviewDocument.readFile(this._uri);
         try {
-            this._documentData = new WaveFile(fileData);
+            this._documentData = await AudioDecoder.instanciate(fileData);
         } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
             this._documentData = undefined;
@@ -257,6 +216,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
      */
     dispose(): void {
         this._onDidDispose.fire();
+        this._documentData.dispose();
         super.dispose();
     }
 }
@@ -331,7 +291,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     this.postMessage(webviewPanel.webview, {
                         type: ExtMessageType.Info,
                         data: {
-                            ...document.wavHeader(),
+                            ...document.audioInfo(),
                             isTrusted: vscode.workspace.isTrusted
                         },
                     });
@@ -348,7 +308,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
                 case WebviewMessageType.Data: {
                     const webviewData = e.data as WebviewDataData;
-                    const data = document.wavData(webviewData.start, webviewData.end);
+                    const data = document.audioData(webviewData.start, webviewData.end);
 
                     // play audio automatically after first data message 
                     // if WapPreview.autoPlay is true
