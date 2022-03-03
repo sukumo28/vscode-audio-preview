@@ -20,7 +20,7 @@
 		"mp3",
 		"spectrogram"
 	],
-	"icon": "wav-preview.png",
+	"icon": "audio-preview.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/sukumo28/wav-preview.git"
