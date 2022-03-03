@@ -63,10 +63,16 @@ describe("webview", function() {
             assert.strictEqual(!!infoTable, true);
         });
 
-        it("should be wav whoes format is 1 (uncompressed PCM)", async function(){
+        it("should be wav whoes encoding is pcm_s16le", async function(){
+            const elem = await global.doc.$("#info-table-encoding");
+            const value = await (await elem.getProperty("textContent")).jsonValue();
+            assert.strictEqual(value, "pcm_s16le");
+        });
+
+        it("should be wav whoes format is s16", async function(){
             const elem = await global.doc.$("#info-table-format");
             const value = await (await elem.getProperty("textContent")).jsonValue();
-            assert.strictEqual(value, "1 (uncompressed PCM)");
+            assert.strictEqual(value, "s16");
         });
 
         it("should be wav whoes number_of_channel is 1", async function(){
@@ -81,16 +87,10 @@ describe("webview", function() {
             assert.strictEqual(value, "44100");
         });
 
-        it("should be wav whoes bit_depth is 16", async function(){
-            const elem = await global.doc.$("#info-table-bit_depth");
-            const value = await (await elem.getProperty("textContent")).jsonValue();
-            assert.strictEqual(value, "16");
-        });
-
-        it("should be wav whoes file_size is 264640 byte", async function(){
+        it("should be wav whoes file_size is 264644 byte", async function(){
             const elem = await global.doc.$("#info-table-file_size");
             const value = await (await elem.getProperty("textContent")).jsonValue();
-            assert.strictEqual(value, "264640 byte");
+            assert.strictEqual(value, "264644 byte");
         });
 
         it("should be wav whoes duration is 3s", async function(){
@@ -219,10 +219,16 @@ describe("webview", function() {
             assert.strictEqual(!!infoTable, true);
         });
 
-        it("should be wav whoes format is undefined (unsupported)", async function(){
+        it("should be wav whoes encoding is undefined", async function(){
+            const elem = await global.doc.$("#info-table-encoding");
+            const value = await (await elem.getProperty("textContent")).jsonValue();
+            assert.strictEqual(value, "undefined");
+        });
+
+        it("should be wav whoes format is undefined", async function(){
             const elem = await global.doc.$("#info-table-format");
             const value = await (await elem.getProperty("textContent")).jsonValue();
-            assert.strictEqual(value, "undefined (unsupported)");
+            assert.strictEqual(value, "undefined");
         });
 
         it("should be wav whoes number_of_channel is undefined (unsupported)", async function(){
@@ -237,16 +243,10 @@ describe("webview", function() {
             assert.strictEqual(value, "undefined");
         });
 
-        it("should be wav whoes bit_depth is undefined", async function(){
-            const elem = await global.doc.$("#info-table-bit_depth");
-            const value = await (await elem.getProperty("textContent")).jsonValue();
-            assert.strictEqual(value, "undefined");
-        });
-
-        it("should be wav whoes file_size is NaN byte", async function(){
+        it("should be wav whoes file_size is undefined byte", async function(){
             const elem = await global.doc.$("#info-table-file_size");
             const value = await (await elem.getProperty("textContent")).jsonValue();
-            assert.strictEqual(value, "NaN byte");
+            assert.strictEqual(value, "undefined byte");
         });
 
         it("should not show duration", async function(){
