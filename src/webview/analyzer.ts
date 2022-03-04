@@ -1,6 +1,7 @@
 import { Disposable } from "../dispose";
 import { EventType, Event } from "./events";
-import { AnalyzeDefault, AnalyzeSettings, ExtDataData, ExtMessage, ExtMessageType, ExtSpectrogramData, WebviewMessage, WebviewMessageType, WebviewSpectrogramData } from "../message";
+import { AnalyzeDefault, AnalyzeSettings } from "../analyzeSettings";
+import { ExtDataData, ExtMakeSpectrogramData, ExtMessage, ExtMessageType, ExtSpectrogramData, WebviewMessageType } from "../message";
 import { postMessage } from "./vscode";
 
 export default class Analyzer extends Disposable {
@@ -126,18 +127,31 @@ export default class Analyzer extends Disposable {
                 break;
             }
 
-            case ExtMessageType.Spectrogram: {
-                const extData = data as ExtSpectrogramData;
-                if (extData.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
-                this.drawSpectrogram(extData);
-                const endIndex = Math.round(extData.settings.maxTime * this.audioBuffer.sampleRate);
-                if (endIndex < extData.end) break;
+            case ExtMessageType.MakeSpectrogram: {
+                const extData = data as ExtMakeSpectrogramData;
                 postMessage({
                     type: WebviewMessageType.Spectrogram,
                     data: {
                         channel: extData.channel,
-                        start: extData.end,
-                        end: extData.end + 20000,
+                        startBlockIndex: 0,
+                        blockSize: 60,
+                        settings: extData.settings
+                    }
+                });
+                break;
+            }
+
+            case ExtMessageType.Spectrogram: {
+                const extData = data as ExtSpectrogramData;
+                if (extData.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
+                this.drawSpectrogram(extData);
+                if (extData.isEnd) break;
+                postMessage({
+                    type: WebviewMessageType.Spectrogram,
+                    data: {
+                        channel: extData.channel,
+                        startBlockIndex: extData.endBlockIndex,
+                        blockSize: 60,
                         settings: extData.settings
                     }
                 });
@@ -169,6 +183,7 @@ export default class Analyzer extends Disposable {
     }
 
     getSpectrogramColor(amp: number, range: number): string {
+        if (amp == null) return "rgb(0,0,0)";
         const classNum = 6;
         const classWidth = range / classNum;
         const ampClass = Math.floor(amp / classWidth);
@@ -176,13 +191,13 @@ export default class Analyzer extends Disposable {
         const value = (amp - classMinAmp) / -classWidth;
         switch (ampClass) {
             case 0:
-                return `rgb(250,250,${125+Math.floor(value * 125)})`;
+                return `rgb(255,255,${125+Math.floor(value * 130)})`;
             case 1:
-                return `rgb(250,${125 + Math.floor(value * 125)},125)`;
+                return `rgb(255,${125 + Math.floor(value * 130)},125)`;
             case 2:
-                return `rgb(250,${Math.floor(value * 125)},125)`;
+                return `rgb(255,${Math.floor(value * 125)},125)`;
             case 3:
-                return `rgb(${125+Math.floor(value * 125)},0,125)`;
+                return `rgb(${125+Math.floor(value * 130)},0,125)`;
             case 4:
                 return `rgb(${Math.floor(value * 125)},0,125)`;
             case 5:
@@ -319,11 +334,15 @@ export default class Analyzer extends Disposable {
         minAmplitudeInput.value = `${minAmplitude}`;
         maxAmplitudeInput.value = `${maxAmplitude}`;
 
-        // calc hopsize
-        // this value fix rectWidth around 5 for every duration of input
-        // thus, spectrogram of long duration input can be drawn faster
-        let hopSize = Math.trunc(5 * (maxTime - minTime) * this.audioBuffer.sampleRate / 1800);
-        if (hopSize < windowSize / 4) hopSize = windowSize / 4;
+        // Calc hopsize
+        // This hopSize make rectWidth greater then minRectWidth for every duration of input.
+        // Thus, spectrogram of long duration input can be drawn as faster as short duration one.
+        // But we use minimum hopSize not to be too small for shsort duration data
+        let minRectWidth = 4 * windowSize / 1024;
+        const hopSize = Math.max(
+            Math.trunc(minRectWidth * (maxTime - minTime) * this.audioBuffer.sampleRate / 1800), 
+            windowSize / 4
+        );
 
         // get spectrogram amplitude range
         const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
@@ -526,13 +545,9 @@ export default class Analyzer extends Disposable {
 
         this.analyzeResultBox.appendChild(canvasBox);
 
-        const startIndex = Math.round(settings.minTime * this.audioBuffer.sampleRate);
-        const endIndex = Math.round(settings.maxTime * this.audioBuffer.sampleRate);
-        const end = startIndex + 20000 < endIndex ? startIndex + 20000 : endIndex;
-
         postMessage({
-            type: WebviewMessageType.Spectrogram, data: {
-                channel: ch, start: startIndex, end, settings
+            type: WebviewMessageType.MakeSpectrogram, data: {
+                channel: ch, settings
             }
         });
     }
@@ -547,21 +562,15 @@ export default class Analyzer extends Disposable {
         const height = canvas.height;
         const spectrogram = data.spectrogram;
         const wholeSampleNum = (data.settings.maxTime - data.settings.minTime) * this.audioBuffer.sampleRate;
-        const blockSize = data.end - data.start;
-        const blockNum = wholeSampleNum / blockSize;
-        const blockStart = data.start - data.settings.minTime * this.audioBuffer.sampleRate;
-        const rectWidth = (width / blockNum) * (data.settings.hopSize / blockSize);
+        const rectWidth = width * data.settings.hopSize / wholeSampleNum;
 
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = width * ((i * data.settings.hopSize + blockStart) / wholeSampleNum);
+            const x = width * (((i + data.startBlockIndex) * data.settings.hopSize) / wholeSampleNum);
             const rectHeight = height / spectrogram[i].length;
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height * (1 - (j / spectrogram[i].length));
 
                 const value = spectrogram[i][j];
-                if (value < data.settings.spectrogramAmplitudeRange) {
-                    continue;
-                }
                 context.fillStyle = this.getSpectrogramColor(value, data.settings.spectrogramAmplitudeRange);
                 context.fillRect(x, y, rectWidth, rectHeight);
             }

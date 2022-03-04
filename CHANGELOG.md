@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.2 -
+### Changed  
+- change tag and description
+- change spectrogram
+
 ## 2.0.1 - 2022-03-03  
 ### Changed  
 - change icon 

@@ -1,18 +1,9 @@
 import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
-import {
-    AnalyzeDefault,
-    AnalyzeSettings,
-    ExtDataData,
-    ExtInfoData,
-    ExtMessage,
-    ExtMessageType, ExtPrepareData, ExtSpectrogramData, WebviewDataData,
-    WebviewErrorData,
-    WebviewMessage, WebviewMessageType, WebviewSpectrogramData,
-} from "./message";
-import AudioDecoder from "./decoder/decoder";
-import Ooura from "ooura";
+import { AnalyzeDefault, AnalyzeSettings } from "./analyzeSettings";
+import { ExtDataData, ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, ExtSpectrogramData, WebviewDataData, WebviewErrorData, WebviewMakeSpectrogramData, WebviewMessage, WebviewMessageType, WebviewSpectrogramData } from "./message";
+import documentData from "./documentData";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
@@ -24,7 +15,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         const dataFile = typeof backupId === 'string' ? vscode.Uri.parse(backupId) : uri;
         const fileData = await AudioPreviewDocument.readFile(dataFile);
         try {
-            const decoder = await AudioDecoder.instanciate(fileData);
+            const decoder = await documentData.create(fileData);
             return new AudioPreviewDocument(uri, decoder);
         } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
@@ -40,7 +31,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     }
 
     private readonly _uri: vscode.Uri;
-    private _documentData: AudioDecoder;
+    private _documentData: documentData;
     private _fsWatcher: vscode.FileSystemWatcher;
 
     private constructor (
@@ -121,66 +112,20 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
         }
     }
 
-    public spectrogram(ch: number, start: number, end: number, settings: AnalyzeSettings): ExtSpectrogramData {
+    public makeSpectrogram(ch: number, settings: AnalyzeSettings) {
+        this._documentData.makeSpectrogram(ch, settings);
+    }
+
+    public spectrogram(ch: number, startBlockIndex: number, blockSize: number, settings: AnalyzeSettings): ExtSpectrogramData {
         try {
-            const spectrogram = [];
-            const fs = this._documentData.sampleRate;
-
-            const windowSize = settings.windowSize;
-            const window = new Float32Array(windowSize);
-            for (let i = 0; i < windowSize; i++) {
-                window[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize);
-            }
-
-            const df = fs / windowSize;
-            const minIndex = Math.floor(settings.minFrequency / df);
-            const maxIndex = Math.floor(settings.maxFrequency / df);
-
-            const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
-
-            const data = this._documentData.samples[ch];
-            const loopEnd = end < data.length ? end : data.length;
-            for (let i = start; i < loopEnd; i += settings.hopSize) {
-                // i is center of the window
-                const s = i - windowSize / 2, t = i + windowSize / 2;
-                const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
-                const d = ooura.scalarArrayFactory();
-                for (let j = 0; j < d.length; j++) {
-                    if (s + j < ss) continue;
-                    if (tt < s + j) continue;
-                    d[j] = data[s + j] * window[j];
-                }
-
-                // don't execute fft to 0
-                const dMax = Math.max(...d);
-                if (dMax === 0) {
-                    spectrogram.push(new Array(windowSize / 2).fill(-1000));
-                    continue;
-                }
-
-                const re = ooura.vectorArrayFactory();
-                const im = ooura.vectorArrayFactory();
-                ooura.fft(d.buffer, re.buffer, im.buffer);
-
-                const ps = [];
-                let maxValue = Number.EPSILON;
-                for (let j = minIndex; j < maxIndex; j++) {
-                    const v = re[j] * re[j] + im[j] * im[j];
-                    ps.push(v);
-                    if (maxValue < v) maxValue = v;
-                }
-
-                for (let j = 0; j < ps.length; j++) {
-                    ps[j] = 10 * Math.log10(ps[j] / maxValue);
-                }
-                spectrogram.push(ps);
-            }
+            const spectrogram = this._documentData.spectrogram[ch].slice(startBlockIndex, startBlockIndex + blockSize);
 
             return {
                 channel: ch,
+                isEnd: this._documentData.spectrogram[ch].length <= startBlockIndex + blockSize,
+                startBlockIndex,
+                endBlockIndex: startBlockIndex + blockSize,
                 spectrogram,
-                start,
-                end,
                 settings
             };
 
@@ -188,9 +133,10 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
             vscode.window.showErrorMessage(err.message);
             return {
                 channel: ch,
+                isEnd: true,
+                startBlockIndex,
+                endBlockIndex: startBlockIndex + blockSize,
                 spectrogram: [[]],
-                start,
-                end,
                 settings
             };
         }
@@ -199,7 +145,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public async reload() {
         const fileData = await AudioPreviewDocument.readFile(this._uri);
         try {
-            this._documentData = await AudioDecoder.instanciate(fileData);
+            this._documentData = await documentData.create(fileData);
         } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
             this._documentData = undefined;
@@ -331,11 +277,21 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     break;
                 }
 
+                case WebviewMessageType.MakeSpectrogram: {
+                    const webviewData = e.data as WebviewMakeSpectrogramData;
+                    document.makeSpectrogram(webviewData.channel, webviewData.settings);
+                    this.postMessage(webviewPanel.webview, {
+                        type: ExtMessageType.MakeSpectrogram,
+                        data: { channel: webviewData.channel, settings: webviewData.settings }
+                    });
+                    break;
+                }
+
                 case WebviewMessageType.Spectrogram: {
                     const webviewData = e.data as WebviewSpectrogramData;
                     this.postMessage(webviewPanel.webview, {
                         type: ExtMessageType.Spectrogram,
-                        data: document.spectrogram(webviewData.channel, webviewData.start, webviewData.end, webviewData.settings)
+                        data: document.spectrogram(webviewData.channel, webviewData.startBlockIndex, webviewData.blockSize, webviewData.settings)
                     });
                     break;
                 }

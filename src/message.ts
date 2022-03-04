@@ -1,29 +1,10 @@
-export interface AnalyzeDefault {
-    windowSizeIndex: number,
-    minAmplitude: number,
-    maxAmplitude: number,
-    minFrequency: number,
-    maxFrequency: number,
-    spectrogramAmplitudeRange: number,
-}
-
-export interface AnalyzeSettings {
-    windowSize: number,
-    hopSize: number,
-    minFrequency: number,
-    maxFrequency: number,
-    minTime: number,
-    maxTime: number,
-    minAmplitude: number,
-    maxAmplitude: number,
-    spectrogramAmplitudeRange: number,
-    analyzeID: number
-}
+import { AnalyzeDefault, AnalyzeSettings } from "./analyzeSettings";
 
 export const ExtMessageType = {
     Info: "info",
     Prepare: "prepare",
     Data: "data",
+    MakeSpectrogram: "makeSpectrogram",
     Spectrogram: "spectrogram",
     Reload: "reload",
 } as const;
@@ -31,7 +12,7 @@ export type ExtMessageType = typeof ExtMessageType[keyof typeof ExtMessageType];
 
 export class ExtMessage {
     type: ExtMessageType;
-    data?: ExtInfoData | ExtPrepareData | ExtDataData | ExtSpectrogramData;
+    data?: ExtInfoData | ExtPrepareData | ExtDataData | ExtMakeSpectrogramData | ExtSpectrogramData;
 }
 
 export interface ExtInfoData {
@@ -62,18 +43,25 @@ export interface ExtDataData {
     wholeLength: number;
 }
 
+export interface ExtMakeSpectrogramData {
+    channel: number;
+    settings: AnalyzeSettings;
+}
+
 export interface ExtSpectrogramData {
     channel: number;
-    start: number;
-    end: number;
-    settings: AnalyzeSettings,
-    spectrogram: number[][],
+    startBlockIndex: number;
+    isEnd: boolean;
+    endBlockIndex: number;
+    spectrogram: number[][];
+    settings: AnalyzeSettings;
 }
 
 export const WebviewMessageType = {
     Ready: "ready",
     Prepare: "prepare",
     Data: "data",
+    MakeSpectrogram: "makeSpectrogram",
     Spectrogram: "spectrogram",
     Error: "error",
 } as const;
@@ -81,7 +69,7 @@ export type WebviewMessageType = typeof WebviewMessageType[keyof typeof WebviewM
 
 export interface WebviewMessage {
     type: WebviewMessageType;
-    data?: WebviewDataData | WebviewSpectrogramData | WebviewErrorData;
+    data?: WebviewDataData | WebviewMakeSpectrogramData | WebviewSpectrogramData | WebviewErrorData;
 }
 
 export interface WebviewDataData {
@@ -89,13 +77,18 @@ export interface WebviewDataData {
     end: number;
 }
 
+export interface WebviewMakeSpectrogramData {
+    channel: number;
+    settings: AnalyzeSettings;
+}
+
 export interface WebviewSpectrogramData {
     channel: number;
-    start: number;
-    end: number;
-    settings: AnalyzeSettings,
+    startBlockIndex: number;
+    blockSize: number;
+    settings: AnalyzeSettings;
 }
 
 export interface WebviewErrorData {
-    message: string
+    message: string;
 }
