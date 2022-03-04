@@ -1,6 +1,6 @@
 # Change Log
 
-## 2.0.2 -
+## 2.0.2 - 2022-03-04  
 ### Changed  
 - change tag and description
 - change spectrogram
