@@ -5,12 +5,16 @@ import { EventType } from "./events";
 import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../message";
 import { Disposable, disposeAll } from "../dispose";
 
+type createAudioContext = (sampleRate: number) => AudioContext;
+
 export default class WebView {
     disposables: Disposable[] = [];
     postMessage: postMessage;
+    createAudioContext: createAudioContext;
 
-    constructor (postMessage: postMessage) {
+    constructor (postMessage: postMessage, createAudioContext: createAudioContext) {
         this.postMessage = postMessage;
+        this.createAudioContext = createAudioContext;
         window.addEventListener(EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data));
         this.initWebviewLayout();
         this.postMessage({ type: WebviewMessageType.Ready });
@@ -52,7 +56,7 @@ export default class WebView {
             case ExtMessageType.Prepare: {
                 try {
                     // create AudioContext and AudioBuffer
-                    const ac = new AudioContext({ sampleRate: msg.data.sampleRate });
+                    const ac = this.createAudioContext(msg.data.sampleRate);
                     const audioBuffer = ac.createBuffer(msg.data.numberOfChannels, msg.data.length, msg.data.sampleRate);
                     for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
                         const f32a = new Float32Array(audioBuffer.length);

@@ -13,5 +13,9 @@ function postMessage (message: WebviewMessage) {
     vscode.postMessage(message);
 }
 
+function createAudioContext (sampleRate: number) {
+    return new AudioContext({ sampleRate });
+}
+
 // entry point
-new WebView(postMessage);
+new WebView(postMessage, createAudioContext);
