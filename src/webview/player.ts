@@ -1,11 +1,11 @@
 import { Disposable } from "../dispose";
-import { ExtMessage, ExtMessageType, WebviewMessageType } from "../message";
+import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../message";
 import { EventType, Event } from "./events";
-import { postMessage } from "./vscode";
 
 export default class Player extends Disposable {
     ac: AudioContext;
     ab: AudioBuffer;
+    postMessage: postMessage;
 
     // show decode state 
     decodeState: HTMLElement;
@@ -25,10 +25,11 @@ export default class Player extends Disposable {
     seekbarValue: number = 0;
     animationFrameID: number = 0;
 
-    constructor (parentID: string, audioContext: AudioContext, audioBuffer: AudioBuffer) {
+    constructor (parentID: string, audioContext: AudioContext, audioBuffer: AudioBuffer, postMessage: postMessage) {
         super();
         this.ac = audioContext;
         this.ab = audioBuffer;
+        this.postMessage = postMessage;
 
         // init base html
         const parent = document.getElementById(parentID);
@@ -115,9 +116,9 @@ export default class Player extends Disposable {
         this.updateDecdeState("decode: " + progress + "% done");
 
         if (msg.data.end < msg.data.wholeLength) {
-            postMessage({
+            this.postMessage({
                 type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end + 100000 }
-            })
+            });
         }
     }
 

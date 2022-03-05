@@ -1,8 +1,7 @@
 import { Disposable } from "../dispose";
 import { EventType, Event } from "./events";
 import { AnalyzeDefault, AnalyzeSettings } from "../analyzeSettings";
-import { ExtMessage, ExtMessageType, ExtSpectrogramMessage, WebviewMessageType } from "../message";
-import { postMessage } from "./vscode";
+import { ExtMessage, ExtMessageType, ExtSpectrogramMessage, postMessage, WebviewMessageType } from "../message";
 
 export default class Analyzer extends Disposable {
     audioBuffer: AudioBuffer;
@@ -13,11 +12,13 @@ export default class Analyzer extends Disposable {
     spectrogramCanvasContexts: CanvasRenderingContext2D[] = [];
     latestAnalyzeID: number = 0;
     defaultSetting: AnalyzeDefault;
+    postMessage: postMessage;
 
-    constructor (parentID: string, ab: AudioBuffer, defaultSetting: AnalyzeDefault) {
+    constructor (parentID: string, ab: AudioBuffer, defaultSetting: AnalyzeDefault, postMessage: postMessage) {
         super();
         this.audioBuffer = ab;
         this.defaultSetting = defaultSetting;
+        this.postMessage = postMessage;
 
         // init base html
         const parent = document.getElementById(parentID);
@@ -126,7 +127,7 @@ export default class Analyzer extends Disposable {
             }
 
             case ExtMessageType.MakeSpectrogram: {
-                postMessage({
+                this.postMessage({
                     type: WebviewMessageType.Spectrogram,
                     data: {
                         channel: msg.data.channel,
@@ -142,7 +143,7 @@ export default class Analyzer extends Disposable {
                 if (msg.data.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
                 this.drawSpectrogram(msg);
                 if (msg.data.isEnd) break;
-                postMessage({
+                this.postMessage({
                     type: WebviewMessageType.Spectrogram,
                     data: {
                         channel: msg.data.channel,
@@ -541,7 +542,7 @@ export default class Analyzer extends Disposable {
 
         this.analyzeResultBox.appendChild(canvasBox);
 
-        postMessage({
+        this.postMessage({
             type: WebviewMessageType.MakeSpectrogram, data: { channel: ch, settings }
         });
     }
