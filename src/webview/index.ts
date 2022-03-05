@@ -2,7 +2,7 @@ import Player from "./player";
 import InfoTable from "./infoTable";
 import Analyzer from "./analyzer";
 import { EventType } from "./events";
-import { ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, WebviewMessageType } from "../message";
+import { ExtMessage, ExtMessageType, WebviewMessageType } from "../message";
 import { Disposable, disposeAll } from "../dispose";
 import { postMessage } from "./vscode";
 
@@ -25,20 +25,17 @@ function initWebviewLayout() {
 }
 
 // handle messages from the extension
-window.addEventListener(EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => {
-    const { type, data } = e.data;
-
-    switch (type) {
+function onReceiveMessage(msg: ExtMessage) {
+    switch (msg.type) {
         case ExtMessageType.Info: {
-            const extData = data as ExtInfoData;
             const infoTable = new InfoTable("info-table");
             disposable.push(infoTable);
 
-            infoTable.showInfo(extData);
+            infoTable.showInfo(msg.data);
 
             // do not play audio in untrusted workspace 
-            if (extData.isTrusted === false) {
-                postMessage({ type: WebviewMessageType.Error, data: { message: "Cannot play audio in untrusted workspaces" }});
+            if (msg.data.isTrusted === false) {
+                postMessage({ type: WebviewMessageType.Error, data: { message: "Cannot play audio in untrusted workspaces" } });
                 break;
             }
 
@@ -47,11 +44,10 @@ window.addEventListener(EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) =
         }
 
         case ExtMessageType.Prepare: {
-            const extData = data as ExtPrepareData;
             try {
                 // create AudioContext and AudioBuffer
-                const ac = new AudioContext({ sampleRate: extData.sampleRate });
-                const audioBuffer = ac.createBuffer(extData.numberOfChannels, extData.length, extData.sampleRate);
+                const ac = new AudioContext({ sampleRate: msg.data.sampleRate });
+                const audioBuffer = ac.createBuffer(msg.data.numberOfChannels, msg.data.length, msg.data.sampleRate);
                 for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
                     const f32a = new Float32Array(audioBuffer.length);
                     audioBuffer.copyToChannel(f32a, ch);
@@ -62,7 +58,7 @@ window.addEventListener(EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) =
                 disposable.push(player);
 
                 // init analyzer
-                const analyzer = new Analyzer("analyzer", audioBuffer, extData.analyzeDefault);
+                const analyzer = new Analyzer("analyzer", audioBuffer, msg.data.analyzeDefault);
                 disposable.push(analyzer);
             } catch (err) {
                 postMessage({ type: WebviewMessageType.Error, data: { message: "failed to prepare:" + err } });
@@ -73,14 +69,17 @@ window.addEventListener(EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) =
             break;
         }
 
-        case ExtMessageType.Reload:
+        case ExtMessageType.Reload: {
             disposeAll(disposable);
             initWebviewLayout();
             postMessage({ type: WebviewMessageType.Ready });
             break;
+        }
     }
-});
+}
 
-// Signal to VS Code that the webview is initialized.
+// init webview
 initWebviewLayout();
+window.addEventListener(EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => onReceiveMessage(e.data));
+// Signal to VS Code that the webview is initialized.
 postMessage({ type: WebviewMessageType.Ready });

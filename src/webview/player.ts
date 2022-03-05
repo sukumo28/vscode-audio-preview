@@ -1,5 +1,5 @@
 import { Disposable } from "../dispose";
-import { ExtDataData, ExtMessage, WebviewMessage, WebviewMessageType } from "../message";
+import { ExtMessage, ExtMessageType, WebviewMessageType } from "../message";
 import { EventType, Event } from "./events";
 import { postMessage } from "./vscode";
 
@@ -80,7 +80,7 @@ export default class Player extends Disposable {
         this.decodeState = document.getElementById("decode-state");
         this.updateDecdeState("");
         // add eventlistener to get audio data
-        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<any>) => this.onReceiveData(e)));
+        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveData(e.data)));
 
         // register keyboard shortcuts
         // don't use command.register at audioPreviewEditorProvider.openCustomDocument due to command confliction
@@ -93,32 +93,30 @@ export default class Player extends Disposable {
         }));
     }
 
-    onReceiveData(e: MessageEvent<ExtMessage>) {
-        const { type, data } = e.data;
-        if (type !== "data") return;
-        const extData = data as ExtDataData;
+    onReceiveData(msg: ExtMessage) {
+        if (msg.type !== ExtMessageType.Data) return;
 
-        if (extData.autoPlay) {
+        if (msg.data.autoPlay) {
             this.playButton.click();
         }
 
         // copy passed data.samples into audioBuffer manually, because it is once stringified, 
         // and its children are not recognised as Float32Array
-        for (let ch = 0; ch < extData.numberOfChannels; ch++) {
-            const f32a = new Float32Array(extData.length);
+        for (let ch = 0; ch < msg.data.numberOfChannels; ch++) {
+            const f32a = new Float32Array(msg.data.length);
             for (let i = 0; i < f32a.length; i++) {
-                f32a[i] = extData.samples[ch][i];
+                f32a[i] = msg.data.samples[ch][i];
             }
-            this.ab.copyToChannel(f32a, ch, extData.start);
+            this.ab.copyToChannel(f32a, ch, msg.data.start);
         }
 
         // update progress
-        const progress = Math.min(Math.floor(extData.end * 100 / extData.wholeLength), 100);
+        const progress = Math.min(Math.floor(msg.data.end * 100 / msg.data.wholeLength), 100);
         this.updateDecdeState("decode: " + progress + "% done");
 
-        if (extData.end < extData.wholeLength) {
+        if (msg.data.end < msg.data.wholeLength) {
             postMessage({
-                type: WebviewMessageType.Data, data: { start: extData.end, end: extData.end + 100000 }
+                type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end + 100000 }
             })
         }
     }

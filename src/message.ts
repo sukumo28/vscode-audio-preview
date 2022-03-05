@@ -1,5 +1,6 @@
 import { AnalyzeDefault, AnalyzeSettings } from "./analyzeSettings";
 
+// Type of messages from Extension to Webview
 export const ExtMessageType = {
     Info: "info",
     Prepare: "prepare",
@@ -10,9 +11,11 @@ export const ExtMessageType = {
 } as const;
 export type ExtMessageType = typeof ExtMessageType[keyof typeof ExtMessageType];
 
-export class ExtMessage {
-    type: ExtMessageType;
-    data?: ExtInfoData | ExtPrepareData | ExtDataData | ExtMakeSpectrogramData | ExtSpectrogramData;
+export type ExtMessage = ExtInfoMessage | ExtPrepareMessage | ExtDataMessage | ExtMakeSpectrogramMessage | ExtSpectrogramMessage | ExtReloadMessage;
+
+export class ExtInfoMessage {
+    type = ExtMessageType.Info;
+    data: ExtInfoData;
 }
 
 export interface ExtInfoData {
@@ -24,12 +27,22 @@ export interface ExtInfoData {
     isTrusted?: boolean;
 }
 
+export class ExtPrepareMessage {
+    type = ExtMessageType.Prepare;
+    data: ExtPrepareData;
+}
+
 export interface ExtPrepareData {
     duration: number;
     sampleRate: number;
     numberOfChannels: number;
     length: number;
     analyzeDefault: AnalyzeDefault;
+}
+
+export class ExtDataMessage {
+    type = ExtMessageType.Data;
+    data: ExtDataData;
 }
 
 export interface ExtDataData {
@@ -43,9 +56,19 @@ export interface ExtDataData {
     wholeLength: number;
 }
 
+export class ExtMakeSpectrogramMessage {
+    type = ExtMessageType.MakeSpectrogram;
+    data: ExtMakeSpectrogramData;
+}
+
 export interface ExtMakeSpectrogramData {
     channel: number;
     settings: AnalyzeSettings;
+}
+
+export class ExtSpectrogramMessage {
+    type = ExtMessageType.Spectrogram;
+    data: ExtSpectrogramData;
 }
 
 export interface ExtSpectrogramData {
@@ -57,6 +80,11 @@ export interface ExtSpectrogramData {
     settings: AnalyzeSettings;
 }
 
+export class ExtReloadMessage {
+    type = ExtMessageType.Reload;
+}
+
+// Type of messages from Webview to Extension
 export const WebviewMessageType = {
     Ready: "ready",
     Prepare: "prepare",
@@ -67,14 +95,29 @@ export const WebviewMessageType = {
 } as const;
 export type WebviewMessageType = typeof WebviewMessageType[keyof typeof WebviewMessageType];
 
-export interface WebviewMessage {
-    type: WebviewMessageType;
-    data?: WebviewDataData | WebviewMakeSpectrogramData | WebviewSpectrogramData | WebviewErrorData;
+export type WebviewMessage = WebviewReadyMessage | WebviewPrepareMessage | WebviewDataMessage | WebviewMakeSpectrogramMessage | WebviewSpectrogramMessage | WebviewErrorMessage;
+
+export class WebviewReadyMessage {
+    type = WebviewMessageType.Ready;
 }
 
-export interface WebviewDataData {
+export class WebviewPrepareMessage {
+    type = WebviewMessageType.Prepare;
+}
+
+export class WebviewDataMessage {
+    type = WebviewMessageType.Data;
+    data: WebviewDataData;
+}
+
+export interface WebviewDataData { 
     start: number;
     end: number;
+}
+
+export class WebviewMakeSpectrogramMessage {
+    type = WebviewMessageType.MakeSpectrogram;
+    data: WebviewMakeSpectrogramData;
 }
 
 export interface WebviewMakeSpectrogramData {
@@ -82,11 +125,21 @@ export interface WebviewMakeSpectrogramData {
     settings: AnalyzeSettings;
 }
 
+export class WebviewSpectrogramMessage {
+    type = WebviewMessageType.Spectrogram;
+    data: WebviewSpectrogramData;
+}
+
 export interface WebviewSpectrogramData {
     channel: number;
     startBlockIndex: number;
     blockSize: number;
     settings: AnalyzeSettings;
+}
+
+export class WebviewErrorMessage {
+    type = WebviewMessageType.Error;
+    data: WebviewErrorData;
 }
 
 export interface WebviewErrorData {

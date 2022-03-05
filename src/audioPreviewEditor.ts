@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
 import { AnalyzeDefault, AnalyzeSettings } from "./analyzeSettings";
-import { ExtDataData, ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, ExtSpectrogramData, WebviewDataData, WebviewErrorData, WebviewMakeSpectrogramData, WebviewMessage, WebviewMessageType, WebviewSpectrogramData } from "./message";
+import { ExtDataData, ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, ExtSpectrogramData, WebviewMessage, WebviewMessageType } from "./message";
 import documentData from "./documentData";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
@@ -231,15 +231,15 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
         webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
         // Wait for the webview to be properly ready before we init
-        webviewPanel.webview.onDidReceiveMessage((e: WebviewMessage) => {
-            switch (e.type) {
+        webviewPanel.webview.onDidReceiveMessage((msg: WebviewMessage) => {
+            switch (msg.type) {
                 case WebviewMessageType.Ready: {
                     this.postMessage(webviewPanel.webview, {
                         type: ExtMessageType.Info,
                         data: {
+                            isTrusted: vscode.workspace.isTrusted,
                             ...document.audioInfo(),
-                            isTrusted: vscode.workspace.isTrusted
-                        },
+                        }
                     });
                     break;
                 }
@@ -253,12 +253,11 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
 
                 case WebviewMessageType.Data: {
-                    const webviewData = e.data as WebviewDataData;
-                    const data = document.audioData(webviewData.start, webviewData.end);
+                    const data = document.audioData(msg.data.start, msg.data.end);
 
                     // play audio automatically after first data message 
                     // if WapPreview.autoPlay is true
-                    if (webviewData.start === 0) {
+                    if (msg.data.start === 0) {
                         const config = vscode.workspace.getConfiguration("WavPreview");
                         data.autoPlay = config.get("autoPlay");
                     }
@@ -271,34 +270,31 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
                     this.postMessage(webviewPanel.webview, {
                         type: ExtMessageType.Data,
-                        data: data
+                        data
                     });
 
                     break;
                 }
 
                 case WebviewMessageType.MakeSpectrogram: {
-                    const webviewData = e.data as WebviewMakeSpectrogramData;
-                    document.makeSpectrogram(webviewData.channel, webviewData.settings);
+                    document.makeSpectrogram(msg.data.channel, msg.data.settings);
                     this.postMessage(webviewPanel.webview, {
                         type: ExtMessageType.MakeSpectrogram,
-                        data: { channel: webviewData.channel, settings: webviewData.settings }
+                        data: { channel: msg.data.channel, settings: msg.data.settings }
                     });
                     break;
                 }
 
                 case WebviewMessageType.Spectrogram: {
-                    const webviewData = e.data as WebviewSpectrogramData;
                     this.postMessage(webviewPanel.webview, {
                         type: ExtMessageType.Spectrogram,
-                        data: document.spectrogram(webviewData.channel, webviewData.startBlockIndex, webviewData.blockSize, webviewData.settings)
+                        data: document.spectrogram(msg.data.channel, msg.data.startBlockIndex, msg.data.blockSize, msg.data.settings)
                     });
                     break;
                 }
 
                 case WebviewMessageType.Error: {
-                    const webviewData = e.data as WebviewErrorData;
-                    vscode.window.showErrorMessage(webviewData.message);
+                    vscode.window.showErrorMessage(msg.data.message);
                 }
             }
         });

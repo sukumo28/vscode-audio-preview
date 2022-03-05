@@ -1,5 +1,5 @@
 import { Disposable } from "../dispose";
-import { ExtInfoData, ExtMessage, ExtPrepareData } from "../message";
+import { ExtInfoData, ExtInfoMessage, ExtMessage, ExtMessageType } from "../message";
 import { EventType, Event } from "./events";
 
 export default class InfoTable extends Disposable {
@@ -11,13 +11,13 @@ export default class InfoTable extends Disposable {
         this.infoTable = document.createElement("table");
         parent.appendChild(this.infoTable);
 
-        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => {
-            const { type, data } = e.data;
-            if (type !== "prepare") return;
-            const extData = data as ExtPrepareData;
-            // insert additional data to infoTable
-            this.insertTableData("duration", extData.duration + "s");
-        }));
+        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
+    }
+
+    onReceiveMessage(msg: ExtMessage) {
+        if (msg.type !== ExtMessageType.Prepare) return;
+        // insert additional data to infoTable
+        this.insertTableData("duration", msg.data.duration + "s");
     }
 
     showInfo(data: ExtInfoData) {
@@ -26,7 +26,7 @@ export default class InfoTable extends Disposable {
         }[data.numChannels] || "unsupported";
 
         const info = [
-            { name: "encoding", value: `${data.encoding}`},
+            { name: "encoding", value: `${data.encoding}` },
             { name: "format", value: `${data.format}` },
             { name: "number_of_channel", value: `${data.numChannels} (${channels})` },
             { name: "sample_rate", value: `${data.sampleRate}` },
