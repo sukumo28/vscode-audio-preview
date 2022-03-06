@@ -91,7 +91,12 @@
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
 		"test-compile": "tsc -p ./",
-		"test": "npm run test-compile && jest ./out"
+		"test": "npm run test-compile && jest"
+	},
+	"jest": {
+		"automock": false,
+		"rootDir": "out",
+		"testEnvironment": "jsdom"
 	},
 	"devDependencies": {
 		"@types/jest": "^27.4.1",

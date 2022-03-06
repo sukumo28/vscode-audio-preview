@@ -1,26 +1,25 @@
 import Player from "./player";
 import InfoTable from "./infoTable";
 import Analyzer from "./analyzer";
-import { EventType } from "./events";
+import { Event, EventType } from "./events";
 import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../message";
-import { Disposable, disposeAll } from "../dispose";
+import { Disposable } from "../dispose";
 
 type createAudioContext = (sampleRate: number) => AudioContext;
 
-export default class WebView {
-    disposables: Disposable[] = [];
+export default class WebView extends Disposable{
     postMessage: postMessage;
     createAudioContext: createAudioContext;
 
     constructor (postMessage: postMessage, createAudioContext: createAudioContext) {
+        super();
         this.postMessage = postMessage;
         this.createAudioContext = createAudioContext;
-        window.addEventListener(EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data));
-        this.initWebviewLayout();
-        this.postMessage({ type: WebviewMessageType.Ready });
+        this.initWebview();
     }
 
-    initWebviewLayout() {
+    initWebview() {
+        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
         const root = document.getElementById("root");
         root.innerHTML = `
         <div id="info-and-control">
@@ -33,13 +32,14 @@ export default class WebView {
         
         <div id="analyze-result-box"></div>
         `;
+        this.postMessage({ type: WebviewMessageType.Ready });
     };
 
     onReceiveMessage(msg: ExtMessage) {
         switch (msg.type) {
             case ExtMessageType.Info: {
                 const infoTable = new InfoTable("info-table");
-                this.disposables.push(infoTable);
+                this._register(infoTable);
     
                 infoTable.showInfo(msg.data);
     
@@ -56,6 +56,7 @@ export default class WebView {
             case ExtMessageType.Prepare: {
                 try {
                     // create AudioContext and AudioBuffer
+                    console.log(msg);
                     const ac = this.createAudioContext(msg.data.sampleRate);
                     const audioBuffer = ac.createBuffer(msg.data.numberOfChannels, msg.data.length, msg.data.sampleRate);
                     for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
@@ -65,11 +66,11 @@ export default class WebView {
     
                     // set player ui
                     const player = new Player("player", ac, audioBuffer, this.postMessage);
-                    this.disposables.push(player);
+                    this._register(player);
     
                     // init analyzer
                     const analyzer = new Analyzer("analyzer", audioBuffer, msg.data.analyzeDefault, this.postMessage);
-                    this.disposables.push(analyzer);
+                    this._register(analyzer);
                 } catch (err) {
                     this.postMessage({ type: WebviewMessageType.Error, data: { message: "failed to prepare:" + err } });
                     break;
@@ -80,9 +81,8 @@ export default class WebView {
             }
     
             case ExtMessageType.Reload: {
-                disposeAll(this.disposables);
-                this.initWebviewLayout();
-                this.postMessage({ type: WebviewMessageType.Ready });
+                this.dispose();
+                this.initWebview();
                 break;
             }
         }
