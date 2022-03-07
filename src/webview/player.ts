@@ -34,7 +34,6 @@ export default class Player extends Disposable {
         // init base html
         const parent = document.getElementById(parentID);
         parent.innerHTML = `
-            <div id="decode-state"></div>
             <button id="listen-button">play</button>
 
             <div>volume</div>
@@ -77,9 +76,6 @@ export default class Player extends Disposable {
         this.playButton.textContent = "play";
         this.playButton.style.display = "block";
 
-        // init decode state
-        this.decodeState = document.getElementById("decode-state");
-        this.updateDecdeState("");
         // add eventlistener to get audio data
         this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveData(e.data)));
 
@@ -110,10 +106,6 @@ export default class Player extends Disposable {
             }
             this.ab.copyToChannel(f32a, ch, msg.data.start);
         }
-
-        // update progress
-        const progress = Math.min(Math.floor(msg.data.end * 100 / msg.data.wholeLength), 100);
-        this.updateDecdeState("decode: " + progress + "% done");
 
         if (msg.data.end < msg.data.wholeLength) {
             this.postMessage({
@@ -185,10 +177,6 @@ export default class Player extends Disposable {
 
     onVolumeChange() {
         this.gainNode.gain.value = Number(this.volumeBar.value) / 100;
-    }
-
-    updateDecdeState(v: string) {
-        this.decodeState.textContent = v;
     }
 
     public dispose() {
