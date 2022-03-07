@@ -1,9 +1,9 @@
 import { Disposable } from "../dispose";
-import { ExtInfoData, ExtInfoMessage, ExtMessage, ExtMessageType } from "../message";
+import { ExtInfoData, ExtMessage, ExtMessageType } from "../message";
 import { EventType, Event } from "./events";
 
 export default class InfoTable extends Disposable {
-    infoTable: HTMLTableElement;
+    private infoTable: HTMLTableElement;
 
     constructor (parentID: string) {
         super();
@@ -14,13 +14,16 @@ export default class InfoTable extends Disposable {
         this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
     }
 
-    onReceiveMessage(msg: ExtMessage) {
-        if (msg.type !== ExtMessageType.Prepare) return;
+    private onReceiveMessage(msg: ExtMessage) {
+        if (!msg || msg.type !== ExtMessageType.Prepare) return;
+        if (!msg.data) return;
         // insert additional data to infoTable
         this.insertTableData("duration", msg.data.duration + "s");
     }
 
-    showInfo(data: ExtInfoData) {
+    public showInfo(data: ExtInfoData) {
+        if (!data) return;
+
         const channels = {
             1: "mono", 2: "stereo"
         }[data.numChannels] || "unsupported";
@@ -44,7 +47,7 @@ export default class InfoTable extends Disposable {
         }
     }
 
-    insertTableData(name: string, value: string) {
+    private insertTableData(name: string, value: string) {
         const tr = document.createElement("tr");
         const nameTd = document.createElement("td");
         nameTd.textContent = name;

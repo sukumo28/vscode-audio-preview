@@ -56,7 +56,6 @@ export default class WebView extends Disposable{
             case ExtMessageType.Prepare: {
                 try {
                     // create AudioContext and AudioBuffer
-                    console.log(msg);
                     const ac = this.createAudioContext(msg.data.sampleRate);
                     const audioBuffer = ac.createBuffer(msg.data.numberOfChannels, msg.data.length, msg.data.sampleRate);
                     for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
