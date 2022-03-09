@@ -92,7 +92,6 @@ describe("player normal flow", () => {
                     end: 44100,
                     wholeLength: 44100,
                     autoPlay: false,
-                    autoAnalyze: false
                 }
             });
         }, 200);
@@ -103,6 +102,10 @@ describe("player normal flow", () => {
                 message: "Timeout"
             }
         });
+    });
+
+    test("player doesn't start playing automatically if autoPlay=false", () => {
+        expect(player.isPlaying).toBe(false);
     });
 
     test("play button has text 'play'", () => {
@@ -199,5 +202,54 @@ describe("player normal flow", () => {
         }));
         await wait(10);
         expect(player.isPlaying).toBe(false);
+    });
+});
+
+describe("player with autoPlay", () => {
+    let player: Player;
+    let audioContext = createAudioContext(44100);
+    let audioBuffer = audioContext.createBuffer(2, 44100, 44100);
+
+    beforeAll(() => {
+        document.body.innerHTML = `<div id="root"></div>`;
+    });
+
+    afterAll(() => {
+        player.dispose();
+        player = undefined;
+    });
+
+    test("init", () => {
+        player = new Player("root", audioContext, audioBuffer, postMessageFromWebview);
+
+        expect(document.getElementById("listen-button")).not.toBe(null);
+    });
+
+    test("don't send message after end", async () => {
+        const msg = await receiveReaction(() => {
+            postMessageFromExt({
+                type: ExtMessageType.Data,
+                data: {
+                    samples: [[1,3,5,7],[0,2,4,6]],
+                    length: 4,
+                    numberOfChannels: 2,
+                    start: 34100,
+                    end: 44100,
+                    wholeLength: 44100,
+                    autoPlay: true, // use autoPlay option
+                }
+            });
+        }, 200);
+
+        expect(msg).toEqual({
+            type: WebviewMessageType.Error,
+            data: {
+                message: "Timeout"
+            }
+        });
+    });
+
+    test("start playing automatically if autoPlay=true", () => {
+        expect(player.isPlaying).toBe(true);
     });
 });
