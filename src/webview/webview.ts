@@ -8,8 +8,8 @@ import { Disposable } from "../dispose";
 type createAudioContext = (sampleRate: number) => AudioContext;
 
 export default class WebView extends Disposable{
-    postMessage: postMessage;
-    createAudioContext: createAudioContext;
+    private postMessage: postMessage;
+    private createAudioContext: createAudioContext;
 
     constructor (postMessage: postMessage, createAudioContext: createAudioContext) {
         super();
@@ -18,7 +18,7 @@ export default class WebView extends Disposable{
         this.initWebview();
     }
 
-    initWebview() {
+    private initWebview() {
         this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
         const root = document.getElementById("root");
         root.innerHTML = `
@@ -35,7 +35,7 @@ export default class WebView extends Disposable{
         this.postMessage({ type: WebviewMessageType.Ready });
     };
 
-    onReceiveMessage(msg: ExtMessage) {
+    private onReceiveMessage(msg: ExtMessage) {
         switch (msg.type) {
             case ExtMessageType.Info: {
                 const infoTable = new InfoTable("info-table");

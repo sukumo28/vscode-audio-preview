@@ -3,27 +3,32 @@ import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../
 import { EventType, Event } from "./events";
 
 export default class Player extends Disposable {
-    ac: AudioContext;
-    ab: AudioBuffer;
-    postMessage: postMessage;
-
-    // show decode state 
-    decodeState: HTMLElement;
+    private ac: AudioContext;
+    private ab: AudioBuffer;
+    private postMessage: postMessage;
 
     // play audio
-    playButton: HTMLButtonElement;
-    isPlaying: boolean = false;
-    lastStartAcTime: number = 0;
-    currentSec: number = 0;
-    source: AudioBufferSourceNode;
+    private playButton: HTMLButtonElement;
+    private _isPlaying: boolean = false;
+    private lastStartAcTime: number = 0;
+    private _currentSec: number = 0;
+    private source: AudioBufferSourceNode;
+
+    public get isPlaying() { return this._isPlaying; }
+    public get currentSec() { return this._currentSec; }
 
     // volumebar
-    gainNode: GainNode;
-    volumeBar: HTMLInputElement;
+    private _gainNode: GainNode;
+    private volumeBar: HTMLInputElement;
+
+    public get volume() { 
+        if (!this._gainNode) return 1;
+        return this._gainNode.gain.value;
+    }
 
     // seekbar
-    seekbarValue: number = 0;
-    animationFrameID: number = 0;
+    private seekbarValue: number = 0;
+    private animationFrameID: number = 0;
 
     constructor (parentID: string, audioContext: AudioContext, audioBuffer: AudioBuffer, postMessage: postMessage) {
         super();
@@ -62,15 +67,15 @@ export default class Player extends Disposable {
         }));
 
         // init volumebar
-        this.gainNode = this.ac.createGain();
-        this.gainNode.connect(this.ac.destination);
+        this._gainNode = this.ac.createGain();
+        this._gainNode.connect(this.ac.destination);
         this.volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
         this._register(new Event(this.volumeBar, EventType.Change, () => this.onVolumeChange()));
 
         // init play button
         this.playButton = <HTMLButtonElement>document.getElementById("listen-button");
         this._register(new Event(this.playButton, EventType.Click, () => {
-            if (this.isPlaying) this.stop();
+            if (this._isPlaying) this.stop();
             else this.play();
         }));
         this.playButton.textContent = "play";
@@ -90,7 +95,7 @@ export default class Player extends Disposable {
         }));
     }
 
-    onReceiveData(msg: ExtMessage) {
+    private onReceiveData(msg: ExtMessage) {
         if (msg.type !== ExtMessageType.Data) return;
 
         if (msg.data.autoPlay) {
@@ -114,24 +119,24 @@ export default class Player extends Disposable {
         }
     }
 
-    play() {
+    private play() {
         // create audio source node (you cannot call start more than once)
         this.source = this.ac.createBufferSource();
         this.source.buffer = this.ab;
-        this.source.connect(this.gainNode);
+        this.source.connect(this._gainNode);
 
         // play
-        this.isPlaying = true;
+        this._isPlaying = true;
         this.playButton.textContent = "stop";
         this.lastStartAcTime = this.ac.currentTime;
-        this.source.start(this.ac.currentTime, this.currentSec);
+        this.source.start(this.ac.currentTime, this._currentSec);
 
         // move seek bar
         this.animationFrameID = requestAnimationFrame(() => this.tick());
     }
 
-    tick() {
-        const current = this.currentSec + this.ac.currentTime - this.lastStartAcTime;
+    private tick() {
+        const current = this._currentSec + this.ac.currentTime - this.lastStartAcTime;
         this.seekbarValue = 100 * current / this.ab.duration;
 
         // update seek bar value
@@ -146,41 +151,41 @@ export default class Player extends Disposable {
         if (current > this.ab.duration) {
             this.stop();
             // reset current time
-            this.currentSec = 0;
+            this._currentSec = 0;
             this.seekbarValue = 0;
             return;
         }
 
-        if (this.isPlaying) {
+        if (this._isPlaying) {
             this.animationFrameID = requestAnimationFrame(() => this.tick());
         }
     }
 
-    stop() {
+    private stop() {
         cancelAnimationFrame(this.animationFrameID);
         this.source.stop();
-        this.currentSec += this.ac.currentTime - this.lastStartAcTime;
-        this.isPlaying = false;
+        this._currentSec += this.ac.currentTime - this.lastStartAcTime;
+        this._isPlaying = false;
         this.playButton.textContent = "play";
         this.source = undefined;
     }
 
-    onSeekbarInput(value: number) {
-        if (this.isPlaying) {
+    private onSeekbarInput(value: number) {
+        if (this._isPlaying) {
             this.stop();
         }
         // restart from selected place
-        this.currentSec = value * this.ab.duration / 100;
+        this._currentSec = value * this.ab.duration / 100;
         this.seekbarValue = value;
         this.play();
     }
 
-    onVolumeChange() {
-        this.gainNode.gain.value = Number(this.volumeBar.value) / 100;
+    private onVolumeChange() {
+        this._gainNode.gain.value = Number(this.volumeBar.value) / 100;
     }
 
     public dispose() {
-        if (this.isPlaying) this.stop();
+        if (this._isPlaying) this.stop();
         super.dispose();
     }
 }
