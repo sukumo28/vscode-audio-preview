@@ -29,8 +29,6 @@ export default class WebView extends Disposable{
         </div>
         
         <div id="analyzer"></div>
-        
-        <div id="analyze-result-box"></div>
         `;
         this.postMessage({ type: WebviewMessageType.Ready });
     };

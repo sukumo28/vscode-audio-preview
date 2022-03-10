@@ -69,6 +69,7 @@ export default class Analyzer extends Disposable {
                     </div>
                 </div>
             </div>
+            <div id="analyze-result-box"></div>
         `;
 
         // init analyze setting button
