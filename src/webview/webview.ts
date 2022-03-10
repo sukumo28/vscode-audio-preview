@@ -8,13 +8,13 @@ import { Disposable } from "../dispose";
 type createAudioContext = (sampleRate: number) => AudioContext;
 
 export default class WebView extends Disposable{
-    private postMessage: postMessage;
-    private createAudioContext: createAudioContext;
+    private _postMessage: postMessage;
+    private _createAudioContext: createAudioContext;
 
     constructor (postMessage: postMessage, createAudioContext: createAudioContext) {
         super();
-        this.postMessage = postMessage;
-        this.createAudioContext = createAudioContext;
+        this._postMessage = postMessage;
+        this._createAudioContext = createAudioContext;
         this.initWebview();
     }
 
@@ -30,7 +30,7 @@ export default class WebView extends Disposable{
         
         <div id="analyzer"></div>
         `;
-        this.postMessage({ type: WebviewMessageType.Ready });
+        this._postMessage({ type: WebviewMessageType.Ready });
     };
 
     private onReceiveMessage(msg: ExtMessage) {
@@ -43,18 +43,18 @@ export default class WebView extends Disposable{
     
                 // do not play audio in untrusted workspace 
                 if (msg.data.isTrusted === false) {
-                    this.postMessage({ type: WebviewMessageType.Error, data: { message: "Cannot play audio in untrusted workspaces" } });
+                    this._postMessage({ type: WebviewMessageType.Error, data: { message: "Cannot play audio in untrusted workspaces" } });
                     break;
                 }
     
-                this.postMessage({ type: WebviewMessageType.Prepare });
+                this._postMessage({ type: WebviewMessageType.Prepare });
                 break;
             }
     
             case ExtMessageType.Prepare: {
                 try {
                     // create AudioContext and AudioBuffer
-                    const ac = this.createAudioContext(msg.data.sampleRate);
+                    const ac = this._createAudioContext(msg.data.sampleRate);
                     const audioBuffer = ac.createBuffer(msg.data.numberOfChannels, msg.data.length, msg.data.sampleRate);
                     for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
                         const f32a = new Float32Array(audioBuffer.length);
@@ -62,18 +62,18 @@ export default class WebView extends Disposable{
                     }
     
                     // set player ui
-                    const player = new Player("player", ac, audioBuffer, this.postMessage);
+                    const player = new Player("player", ac, audioBuffer, this._postMessage);
                     this._register(player);
     
                     // init analyzer
-                    const analyzer = new Analyzer("analyzer", audioBuffer, msg.data.analyzeDefault, this.postMessage);
+                    const analyzer = new Analyzer("analyzer", audioBuffer, msg.data.analyzeDefault, this._postMessage);
                     this._register(analyzer);
                 } catch (err) {
-                    this.postMessage({ type: WebviewMessageType.Error, data: { message: "failed to prepare:" + err } });
+                    this._postMessage({ type: WebviewMessageType.Error, data: { message: "failed to prepare:" + err } });
                     break;
                 }
     
-                this.postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 100000 } });
+                this._postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 100000 } });
                 break;
             }
     

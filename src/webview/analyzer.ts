@@ -4,22 +4,27 @@ import { AnalyzeDefault, AnalyzeSettings } from "../analyzeSettings";
 import { ExtMessage, ExtMessageType, ExtSpectrogramMessage, postMessage, WebviewMessageType } from "../message";
 
 export default class Analyzer extends Disposable {
-    audioBuffer: AudioBuffer;
-    analyzeSettingButton: HTMLButtonElement;
-    analyzeButton: HTMLButtonElement;
-    analyzeResultBox: HTMLElement;
-    spectrogramCanvasList: HTMLCanvasElement[] = [];
-    spectrogramCanvasContexts: CanvasRenderingContext2D[] = [];
+    private _audioBuffer: AudioBuffer;
+
+    private _analyzeSettingButton: HTMLButtonElement;
+    private _analyzeButton: HTMLButtonElement;
+
+    private _spectrogramCanvasList: HTMLCanvasElement[] = [];
+    private _spectrogramCanvasContexts: CanvasRenderingContext2D[] = [];
+
+    private _analyzeResultBox: HTMLElement;
+
     private _latestAnalyzeID: number = 0;
     public get latestAnalyzeID() { return this._latestAnalyzeID; }
-    defaultSetting: AnalyzeDefault;
-    postMessage: postMessage;
+
+    private _defaultSetting: AnalyzeDefault;
+    private _postMessage: postMessage;
 
     constructor (parentID: string, ab: AudioBuffer, defaultSetting: AnalyzeDefault, postMessage: postMessage) {
         super();
-        this.audioBuffer = ab;
-        this.defaultSetting = defaultSetting;
-        this.postMessage = postMessage;
+        this._audioBuffer = ab;
+        this._defaultSetting = defaultSetting;
+        this._postMessage = postMessage;
 
         // init base html
         const parent = document.getElementById(parentID);
@@ -74,52 +79,52 @@ export default class Analyzer extends Disposable {
         `;
 
         // init analyze setting button
-        this.analyzeSettingButton = <HTMLButtonElement>document.getElementById("analyze-setting-button");
-        this.analyzeSettingButton.style.display = "none";
-        this.analyzeSettingButton.onclick = () => {
+        this._analyzeSettingButton = <HTMLButtonElement>document.getElementById("analyze-setting-button");
+        this._analyzeSettingButton.style.display = "none";
+        this._analyzeSettingButton.onclick = () => {
             const settings = document.getElementById("analyze-setting");
             if (settings.style.display !== "block") {
                 settings.style.display = "block";
-                this.analyzeSettingButton.textContent = "▲settings";
+                this._analyzeSettingButton.textContent = "▲settings";
             } else {
                 settings.style.display = "none";
-                this.analyzeSettingButton.textContent = "▼settings";
+                this._analyzeSettingButton.textContent = "▼settings";
             }
         };
 
         // init analyze button
-        this.analyzeButton = <HTMLButtonElement>document.getElementById("analyze-button");
-        this.analyzeButton.style.display = "none";
-        this.analyzeButton.onclick = () => { this.analyze() };
+        this._analyzeButton = <HTMLButtonElement>document.getElementById("analyze-button");
+        this._analyzeButton.style.display = "none";
+        this._analyzeButton.onclick = () => { this.analyze() };
 
         // init analyze result box
-        this.analyzeResultBox = document.getElementById("analyze-result-box");
+        this._analyzeResultBox = document.getElementById("analyze-result-box");
 
         // add eventlistener to get spectrogram data
         this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveDate(e.data)));
     }
 
-    clearAnalyzeResult() {
-        for (const c of Array.from(this.analyzeResultBox.children)) {
-            this.analyzeResultBox.removeChild(c);
+    private clearAnalyzeResult() {
+        for (const c of Array.from(this._analyzeResultBox.children)) {
+            this._analyzeResultBox.removeChild(c);
         }
-        this.spectrogramCanvasList = [];
-        this.spectrogramCanvasContexts = [];
+        this._spectrogramCanvasList = [];
+        this._spectrogramCanvasContexts = [];
     }
 
-    activate(autoAnalyze: boolean) {
+    private activate(autoAnalyze: boolean) {
         // init default analyze settings
         this.initAnalyzeSettings();
 
         // enable analyze button
-        this.analyzeSettingButton.style.display = "block";
-        this.analyzeButton.style.display = "block";
+        this._analyzeSettingButton.style.display = "block";
+        this._analyzeButton.style.display = "block";
         if (autoAnalyze) {
-            this.analyzeButton.click();
+            this._analyzeButton.click();
         }
     }
 
-    onReceiveDate(msg: ExtMessage) {
+    private onReceiveDate(msg: ExtMessage) {
         switch (msg.type) {
             case ExtMessageType.Data: {
                 if (msg.data.wholeLength <= msg.data.end) {
@@ -129,7 +134,7 @@ export default class Analyzer extends Disposable {
             }
 
             case ExtMessageType.MakeSpectrogram: {
-                this.postMessage({
+                this._postMessage({
                     type: WebviewMessageType.Spectrogram,
                     data: {
                         channel: msg.data.channel,
@@ -145,7 +150,7 @@ export default class Analyzer extends Disposable {
                 if (msg.data.settings.analyzeID !== this._latestAnalyzeID) break; // cancel old analyze
                 this.drawSpectrogram(msg);
                 if (msg.data.isEnd) break;
-                this.postMessage({
+                this._postMessage({
                     type: WebviewMessageType.Spectrogram,
                     data: {
                         channel: msg.data.channel,
@@ -159,7 +164,7 @@ export default class Analyzer extends Disposable {
         }
     }
 
-    validateRangeValues(
+    private validateRangeValues(
         targetMin: number, targetMax: number,
         validMin: number, validMax: number,
         defaultMin: number, defaultMax: number
@@ -181,7 +186,7 @@ export default class Analyzer extends Disposable {
         return [minValue, maxValue];
     }
 
-    getSpectrogramColor(amp: number, range: number): string {
+    private getSpectrogramColor(amp: number, range: number): string {
         if (amp == null) return "rgb(0,0,0)";
         const classNum = 6;
         const classWidth = range / classNum;
@@ -206,33 +211,33 @@ export default class Analyzer extends Disposable {
         }
     }
 
-    initAnalyzeSettings() {
+    private initAnalyzeSettings() {
         // init fft window size
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
-        let defaultWindowSizeIndex = this.defaultSetting.windowSizeIndex;
+        let defaultWindowSizeIndex = this._defaultSetting.windowSizeIndex;
         if (defaultWindowSizeIndex === undefined || defaultWindowSizeIndex < 0 || 7 < defaultWindowSizeIndex) {
             defaultWindowSizeIndex = 2; // 2:1024
         }
         windowSizeSelect.selectedIndex = defaultWindowSizeIndex;
         // update default
-        this.defaultSetting.windowSizeIndex = defaultWindowSizeIndex;
+        this._defaultSetting.windowSizeIndex = defaultWindowSizeIndex;
 
         // init default frequency
         const [minFrequency, maxFrequency] = this.validateRangeValues(
-            this.defaultSetting.minFrequency, this.defaultSetting.maxFrequency,
-            0, this.audioBuffer.sampleRate / 2,
-            0, this.audioBuffer.sampleRate / 2
+            this._defaultSetting.minFrequency, this._defaultSetting.maxFrequency,
+            0, this._audioBuffer.sampleRate / 2,
+            0, this._audioBuffer.sampleRate / 2
         );
         const minFreqInput = <HTMLInputElement>document.getElementById("analyze-min-frequency");
         const maxFreqInput = <HTMLInputElement>document.getElementById("analyze-max-frequency");
         minFreqInput.value = `${minFrequency}`;
         maxFreqInput.value = `${maxFrequency}`;
         // update default
-        this.defaultSetting.minFrequency = minFrequency;
-        this.defaultSetting.maxFrequency = maxFrequency;
+        this._defaultSetting.minFrequency = minFrequency;
+        this._defaultSetting.maxFrequency = maxFrequency;
 
         // init default time range
-        const minTime = 0, maxTime = this.audioBuffer.duration;
+        const minTime = 0, maxTime = this._audioBuffer.duration;
         const minTimeInput = <HTMLInputElement>document.getElementById("analyze-min-time");
         const maxTimeInput = <HTMLInputElement>document.getElementById("analyze-max-time");
         minTimeInput.value = `${minTime}`;
@@ -240,8 +245,8 @@ export default class Analyzer extends Disposable {
 
         // calc min & max amplitude
         let min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;
-        for (let ch = 0; ch < this.audioBuffer.numberOfChannels; ch++) {
-            const chData = this.audioBuffer.getChannelData(ch);
+        for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {
+            const chData = this._audioBuffer.getChannelData(ch);
             for (let i = 0; i < chData.length; i++) {
                 const v = chData[i];
                 if (v < min) min = v;
@@ -250,7 +255,7 @@ export default class Analyzer extends Disposable {
         }
         // init default amplitude
         const [minAmplitude, maxAmplitude] = this.validateRangeValues(
-            this.defaultSetting.minAmplitude, this.defaultSetting.maxAmplitude,
+            this._defaultSetting.minAmplitude, this._defaultSetting.maxAmplitude,
             -100, 100,
             min, max
         );
@@ -259,19 +264,19 @@ export default class Analyzer extends Disposable {
         minAmplitudeInput.value = `${minAmplitude}`;
         maxAmplitudeInput.value = `${maxAmplitude}`;
         // update default
-        this.defaultSetting.minAmplitude = minAmplitude;
-        this.defaultSetting.maxAmplitude = maxAmplitude;
+        this._defaultSetting.minAmplitude = minAmplitude;
+        this._defaultSetting.maxAmplitude = maxAmplitude;
 
         // init spectrogram amplitude range
         const [spectrogramAmplitudeRange, _] = this.validateRangeValues(
-            this.defaultSetting.spectrogramAmplitudeRange, 0,
+            this._defaultSetting.spectrogramAmplitudeRange, 0,
             -1000, 0,
             -90, 0
         );
         const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
         spectrogramAmplitudeRangeInput.value = `${spectrogramAmplitudeRange}`;
         // update default
-        this.defaultSetting.spectrogramAmplitudeRange = spectrogramAmplitudeRange;
+        this._defaultSetting.spectrogramAmplitudeRange = spectrogramAmplitudeRange;
         // init default color bar
         const colorCanvas = <HTMLCanvasElement>document.getElementById("analyze-spectrogram-color");
         const colorAxisCanvas = <HTMLCanvasElement>document.getElementById("analyze-spectrogram-color-axis");
@@ -294,7 +299,7 @@ export default class Analyzer extends Disposable {
         }
     }
 
-    getAnalyzeSettings(): AnalyzeSettings {
+    private getAnalyzeSettings(): AnalyzeSettings {
         // get windowsize
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
         const windowSize = Number(windowSizeSelect.value);
@@ -305,8 +310,8 @@ export default class Analyzer extends Disposable {
         const maxFreqInput = <HTMLInputElement>document.getElementById("analyze-max-frequency");
         const [minFrequency, maxFrequency] = this.validateRangeValues(
             Number(minFreqInput.value), Number(maxFreqInput.value),
-            0, this.audioBuffer.sampleRate / 2,
-            this.defaultSetting.minFrequency, this.defaultSetting.maxFrequency
+            0, this._audioBuffer.sampleRate / 2,
+            this._defaultSetting.minFrequency, this._defaultSetting.maxFrequency
         );
         minFreqInput.value = `${minFrequency}`;
         maxFreqInput.value = `${maxFrequency}`;
@@ -316,8 +321,8 @@ export default class Analyzer extends Disposable {
         const maxTimeInput = <HTMLInputElement>document.getElementById("analyze-max-time");
         const [minTime, maxTime] = this.validateRangeValues(
             Number(minTimeInput.value), Number(maxTimeInput.value),
-            0, this.audioBuffer.duration,
-            0, this.audioBuffer.duration
+            0, this._audioBuffer.duration,
+            0, this._audioBuffer.duration
         );
         minTimeInput.value = `${minTime}`;
         maxTimeInput.value = `${maxTime}`;
@@ -328,7 +333,7 @@ export default class Analyzer extends Disposable {
         const [minAmplitude, maxAmplitude] = this.validateRangeValues(
             Number(minAmplitudeInput.value), Number(maxAmplitudeInput.value),
             -1000, 1000,
-            this.defaultSetting.minAmplitude, this.defaultSetting.maxAmplitude
+            this._defaultSetting.minAmplitude, this._defaultSetting.maxAmplitude
         );
         minAmplitudeInput.value = `${minAmplitude}`;
         maxAmplitudeInput.value = `${maxAmplitude}`;
@@ -339,7 +344,7 @@ export default class Analyzer extends Disposable {
         // But we use minimum hopSize not to be too small for shsort duration data
         let minRectWidth = 4 * windowSize / 1024;
         const hopSize = Math.max(
-            Math.trunc(minRectWidth * (maxTime - minTime) * this.audioBuffer.sampleRate / 1800),
+            Math.trunc(minRectWidth * (maxTime - minTime) * this._audioBuffer.sampleRate / 1800),
             windowSize / 4
         );
 
@@ -388,13 +393,13 @@ export default class Analyzer extends Disposable {
         };
     }
 
-    analyze() {
-        this.analyzeButton.style.display = "none";
+    private analyze() {
+        this._analyzeButton.style.display = "none";
         this.clearAnalyzeResult();
 
         const settings = this.getAnalyzeSettings();
 
-        for (let ch = 0; ch < this.audioBuffer.numberOfChannels; ch++) {
+        for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {
             this.showWaveForm(ch, settings);
             this.showSpectrogram(ch, settings);
         }
@@ -402,17 +407,17 @@ export default class Analyzer extends Disposable {
         // register seekbar on figures
         const visibleBar = document.createElement("div");
         visibleBar.className = "seek-div";
-        this.analyzeResultBox.appendChild(visibleBar);
+        this._analyzeResultBox.appendChild(visibleBar);
 
         const inputSeekbar = document.createElement("input");
         inputSeekbar.type = "range";
         inputSeekbar.className = "input-seek-bar";
         inputSeekbar.step = "0.00001"
-        this.analyzeResultBox.appendChild(inputSeekbar);
+        this._analyzeResultBox.appendChild(inputSeekbar);
 
         this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {
             const value = e.detail.value;
-            const t = value * this.audioBuffer.duration / 100;
+            const t = value * this._audioBuffer.duration / 100;
             const v = ((t - settings.minTime) / (settings.maxTime - settings.minTime)) * 100;
             const vv = v < 0 ? 0 : 100 < v ? 100 : v;
             visibleBar.style.width = `${vv}%`;
@@ -420,7 +425,7 @@ export default class Analyzer extends Disposable {
         }));
         this._register(new Event(inputSeekbar, EventType.Change, () => {
             const rv = Number(inputSeekbar.value);
-            const nv = ((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / this.audioBuffer.duration) * 100;
+            const nv = ((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / this._audioBuffer.duration) * 100;
             const inputSeekbarEvent = new CustomEvent(EventType.InputSeekbar, {
                 detail: {
                     value: nv
@@ -430,10 +435,10 @@ export default class Analyzer extends Disposable {
             inputSeekbar.value = "100";
         }));
 
-        this.analyzeButton.style.display = "block";
+        this._analyzeButton.style.display = "block";
     }
 
-    showWaveForm(ch: number, settings: AnalyzeSettings) {
+    private showWaveForm(ch: number, settings: AnalyzeSettings) {
         const width = 1000;
         const height = 200;
 
@@ -468,14 +473,14 @@ export default class Analyzer extends Disposable {
         }
         canvasBox.appendChild(axisCanvas);
 
-        this.analyzeResultBox.appendChild(canvasBox);
+        this._analyzeResultBox.appendChild(canvasBox);
 
-        const startIndex = Math.floor(settings.minTime * this.audioBuffer.sampleRate);
-        const endIndex = Math.floor(settings.maxTime * this.audioBuffer.sampleRate);
+        const startIndex = Math.floor(settings.minTime * this._audioBuffer.sampleRate);
+        const endIndex = Math.floor(settings.maxTime * this._audioBuffer.sampleRate);
         // limit data size
         // thus, drawing waveform of long duration input can be done in about the same amount of time as short input
         const step = Math.ceil((endIndex - startIndex) / 200000);
-        const data = this.audioBuffer.getChannelData(ch).slice(startIndex, endIndex).filter((_, i) => i % step === 0);
+        const data = this._audioBuffer.getChannelData(ch).slice(startIndex, endIndex).filter((_, i) => i % step === 0);
         // convert data. 
         // this is not a normalization because setting.maxAmplitude and setting.minAmplitude 
         // is not a min and max of data, but a figure's Y axis range.
@@ -489,7 +494,7 @@ export default class Analyzer extends Disposable {
         requestAnimationFrame(() => this.drawWaveForm(data, context, 0, 10000, width, height, settings.analyzeID));
     }
 
-    drawWaveForm(
+    private drawWaveForm(
         data: Float32Array, context: CanvasRenderingContext2D,
         start: number, count: number, width: number, height: number, analyzeID: number
     ) {
@@ -499,13 +504,13 @@ export default class Analyzer extends Disposable {
             context.fillRect(x, y, 1, 1);
         }
 
-        if (start + count < this.audioBuffer.length && analyzeID === this._latestAnalyzeID) {
+        if (start + count < this._audioBuffer.length && analyzeID === this._latestAnalyzeID) {
             // call draw in requestAnimationFrame not to block ui
             requestAnimationFrame(() => this.drawWaveForm(data, context, start + count, count, width, height, analyzeID));
         }
     }
 
-    showSpectrogram(ch: number, settings: AnalyzeSettings) {
+    private showSpectrogram(ch: number, settings: AnalyzeSettings) {
         const width = 1800;
         const height = 600;
 
@@ -517,8 +522,8 @@ export default class Analyzer extends Disposable {
         canvas.height = height;
         const context = canvas.getContext("2d", { alpha: false });
         canvasBox.appendChild(canvas);
-        this.spectrogramCanvasList.push(canvas);
-        this.spectrogramCanvasContexts.push(context);
+        this._spectrogramCanvasList.push(canvas);
+        this._spectrogramCanvasContexts.push(context);
 
         const axisCanvas = document.createElement("canvas");
         axisCanvas.className = "axis-canvas";
@@ -542,23 +547,23 @@ export default class Analyzer extends Disposable {
 
         canvasBox.appendChild(axisCanvas);
 
-        this.analyzeResultBox.appendChild(canvasBox);
+        this._analyzeResultBox.appendChild(canvasBox);
 
-        this.postMessage({
+        this._postMessage({
             type: WebviewMessageType.MakeSpectrogram, data: { channel: ch, settings }
         });
     }
 
-    drawSpectrogram(msg: ExtSpectrogramMessage) {
+    private drawSpectrogram(msg: ExtSpectrogramMessage) {
         const ch = msg.data.channel;
-        const canvas = this.spectrogramCanvasList[ch];
-        const context = this.spectrogramCanvasContexts[ch];
+        const canvas = this._spectrogramCanvasList[ch];
+        const context = this._spectrogramCanvasContexts[ch];
         if (!canvas || !context) return;
 
         const width = canvas.width;
         const height = canvas.height;
         const spectrogram = msg.data.spectrogram;
-        const wholeSampleNum = (msg.data.settings.maxTime - msg.data.settings.minTime) * this.audioBuffer.sampleRate;
+        const wholeSampleNum = (msg.data.settings.maxTime - msg.data.settings.minTime) * this._audioBuffer.sampleRate;
         const rectWidth = width * msg.data.settings.hopSize / wholeSampleNum;
 
         for (let i = 0; i < spectrogram.length; i++) {

@@ -3,13 +3,13 @@ import { ExtInfoData, ExtMessage, ExtMessageType } from "../message";
 import { EventType, Event } from "./events";
 
 export default class InfoTable extends Disposable {
-    private infoTable: HTMLTableElement;
+    private _infoTable: HTMLTableElement;
 
     constructor (parentID: string) {
         super();
         const parent = document.getElementById(parentID);
-        this.infoTable = document.createElement("table");
-        parent.appendChild(this.infoTable);
+        this._infoTable = document.createElement("table");
+        parent.appendChild(this._infoTable);
 
         this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
     }
@@ -37,9 +37,9 @@ export default class InfoTable extends Disposable {
         ];
 
         // clear info table
-        const trList = this.infoTable.querySelectorAll("tr");
+        const trList = this._infoTable.querySelectorAll("tr");
         trList.forEach(tr => {
-            this.infoTable.removeChild(tr);
+            this._infoTable.removeChild(tr);
         })
         // insert datas to info table
         for (const i of info) {
@@ -56,6 +56,6 @@ export default class InfoTable extends Disposable {
         valueTd.textContent = value;
         valueTd.id = `info-table-${name}`;
         tr.appendChild(valueTd);
-        this.infoTable.appendChild(tr);
+        this._infoTable.appendChild(tr);
     }
 }

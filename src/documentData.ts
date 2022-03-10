@@ -29,62 +29,75 @@ interface DecodeAudioResult {
 }
 
 export default class documentData {
-    static audioFilePath = "audio";
+    private static _audioFilePath = "audio";
 
-    module: any;
+    private _module: any;
 
-    fileSize: number; // byte
+    private _fileSize: number; // byte
+    public get fileSize() { return this._fileSize; }
 
     constructor (module: any, fileSize: number) {
-        this.module = module;
-        this.fileSize = fileSize;
+        this._module = module;
+        this._fileSize = fileSize;
     }
 
-    static async create(data: Uint8Array): Promise<documentData> {
+    public static async create(data: Uint8Array): Promise<documentData> {
         const module = await Module();
-        module.FS.writeFile(documentData.audioFilePath, data);
+        module.FS.writeFile(documentData._audioFilePath, data);
         return new documentData(module, data.length);
     }
 
-    encoding: string;
-    sampleRate: number;
-    numChannels: number;
-    duration: number;
-    format: string;
+    private _encoding: string;
+    public get encoding() { return this._encoding; }
 
-    readAudioInfo() {
-        const { status, ...info }: AudioInfoResult = this.module.getAudioInfo(documentData.audioFilePath);
+    private _sampleRate: number;
+    public get sampleRate() { return this._sampleRate; }
+
+    private _numChannels: number;
+    public get numChannels() { return this._numChannels; }
+    
+    private _duration: number;
+    public get duration() { return this._duration; }
+    
+    private _format: string;
+    public get format() { return this._format; }
+
+    public readAudioInfo() {
+        const { status, ...info }: AudioInfoResult = this._module.getAudioInfo(documentData._audioFilePath);
         if (status.status < 0) {
             throw new Error(`failed to get audio info: ${status.status}: ${status.error}`);
         }
-        this.encoding = info.encoding;
-        this.sampleRate = info.sampleRate;
-        this.numChannels = info.numChannels;
-        this.duration = info.duration;
-        this.format = info.format;
+        this._encoding = info.encoding;
+        this._sampleRate = info.sampleRate;
+        this._numChannels = info.numChannels;
+        this._duration = info.duration;
+        this._format = info.format;
     }
 
-    length: number;
-    samples: Float32Array[];
+    private _length: number;
+    public get length() { return this._length; }
 
-    decode() {
-        const { status, samples }: DecodeAudioResult = this.module.decodeAudio(documentData.audioFilePath);
+    private _samples: Float32Array[];
+    public get samples() { return this._samples; }
+
+    public decode() {
+        const { status, samples }: DecodeAudioResult = this._module.decodeAudio(documentData._audioFilePath);
         if (status.status < 0) {
             samples.delete();
             throw new Error(`failed to decode audio: ${status.status}: ${status.error}`);
         }
 
-        this.length = samples.size() / this.numChannels;
-        this.duration = this.length / this.sampleRate;
+        this._length = samples.size() / this._numChannels;
+        this._duration = this._length / this._sampleRate;
 
-        this.samples = [];
-        for (let i = 0; i < this.numChannels; i++) {
-            this.samples[i] = new Float32Array(this.length);
+        this._samples = [];
+        for (let i = 0; i < this._numChannels; i++) {
+            this._samples[i] = new Float32Array(this._length);
         }
 
-        for (let i = 0; i < this.length; i++) {
-            for (let j = 0; j < this.numChannels; j++) {
-                this.samples[j][i] = samples.get(i * this.numChannels + j);
+        for (let i = 0; i < this._length; i++) {
+            for (let j = 0; j < this._numChannels; j++) {
+                this._samples[j][i] = samples.get(i * this._numChannels + j);
             }
         }
 
@@ -93,28 +106,29 @@ export default class documentData {
 
     // use number[] because this data is once stringified by postMessage() 
     // and TypedArray will be object like this: "{"0":"1.0106", "1":"0.0632", ...}"
-    spectrogram: number[][][] = [];
+    private _spectrogram: number[][][] = [];
+    public get spectrogram() { return this._spectrogram; }
 
-    makeSpectrogram(ch: number, settings: AnalyzeSettings) {
+    public makeSpectrogram(ch: number, settings: AnalyzeSettings) {
         const windowSize = settings.windowSize;
         const window = new Float32Array(windowSize);
         for (let i = 0; i < windowSize; i++) {
             window[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize);
         }
 
-        const startIndex = Math.floor(settings.minTime * this.sampleRate);
-        const endIndex = Math.floor(settings.maxTime * this.sampleRate);
+        const startIndex = Math.floor(settings.minTime * this._sampleRate);
+        const endIndex = Math.floor(settings.maxTime * this._sampleRate);
 
-        const df = this.sampleRate / settings.windowSize;
+        const df = this._sampleRate / settings.windowSize;
         const minFreqIndex = Math.floor(settings.minFrequency / df);
         const maxFreqIndex = Math.floor(settings.maxFrequency / df);
 
         const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
 
-        const data = this.samples[ch];
+        const data = this._samples[ch];
         let maxValue = Number.EPSILON;
 
-        this.spectrogram[ch] = [];
+        this._spectrogram[ch] = [];
         for (let i = startIndex; i < endIndex; i += settings.hopSize) {
             // i is center of the window
             const s = i - windowSize / 2, t = i + windowSize / 2;
@@ -137,17 +151,17 @@ export default class documentData {
                 if (maxValue < v) maxValue = v;
             }
 
-            this.spectrogram[ch].push(ps);
+            this._spectrogram[ch].push(ps);
         }
 
-        for (let i = 0; i < this.spectrogram[ch].length; i++) {
+        for (let i = 0; i < this._spectrogram[ch].length; i++) {
             for (let j = minFreqIndex; j < maxFreqIndex; j++) {
-                this.spectrogram[ch][i][j] = 10 * Math.log10(this.spectrogram[ch][i][j] / maxValue);
+                this._spectrogram[ch][i][j] = 10 * Math.log10(this._spectrogram[ch][i][j] / maxValue);
             }
         }
     }
 
-    dispose() {
-        this.module.FS.unlink(documentData.audioFilePath);
+    public dispose() {
+        this._module.FS.unlink(documentData._audioFilePath);
     }
 }

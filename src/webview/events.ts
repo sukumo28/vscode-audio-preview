@@ -12,19 +12,19 @@ export const EventType = {
 };
 
 export class Event extends Disposable {
-    target: EventTarget;
-    type:string; 
-    handler: EventListenerOrEventListenerObject;
+    private _target: EventTarget;
+    private _type:string; 
+    private _handler: EventListenerOrEventListenerObject;
 
     constructor(target: EventTarget, type: string, handler: EventListenerOrEventListenerObject) {
         super();
-        this.target = target;
-        this.type = type;
-        this.handler = handler;
-        this.target.addEventListener(this.type, this.handler);
+        this._target = target;
+        this._type = type;
+        this._handler = handler;
+        this._target.addEventListener(this._type, this._handler);
     }
 
     dispose() {
-        this.target.removeEventListener(this.type, this.handler);
+        this._target.removeEventListener(this._type, this._handler);
     }
 }
