@@ -79,6 +79,7 @@ select {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 #analyze-setting {
