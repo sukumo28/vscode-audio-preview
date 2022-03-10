@@ -10,7 +10,8 @@ export default class Analyzer extends Disposable {
     analyzeResultBox: HTMLElement;
     spectrogramCanvasList: HTMLCanvasElement[] = [];
     spectrogramCanvasContexts: CanvasRenderingContext2D[] = [];
-    latestAnalyzeID: number = 0;
+    private _latestAnalyzeID: number = 0;
+    public get latestAnalyzeID() { return this._latestAnalyzeID; }
     defaultSetting: AnalyzeDefault;
     postMessage: postMessage;
 
@@ -141,7 +142,7 @@ export default class Analyzer extends Disposable {
             }
 
             case ExtMessageType.Spectrogram: {
-                if (msg.data.settings.analyzeID !== this.latestAnalyzeID) break; // cancel old analyze
+                if (msg.data.settings.analyzeID !== this._latestAnalyzeID) break; // cancel old analyze
                 this.drawSpectrogram(msg);
                 if (msg.data.isEnd) break;
                 this.postMessage({
@@ -383,7 +384,7 @@ export default class Analyzer extends Disposable {
             maxAmplitude,
             hopSize,
             spectrogramAmplitudeRange,
-            analyzeID: ++this.latestAnalyzeID
+            analyzeID: ++this._latestAnalyzeID
         };
     }
 
@@ -498,7 +499,7 @@ export default class Analyzer extends Disposable {
             context.fillRect(x, y, 1, 1);
         }
 
-        if (start + count < this.audioBuffer.length && analyzeID === this.latestAnalyzeID) {
+        if (start + count < this.audioBuffer.length && analyzeID === this._latestAnalyzeID) {
             // call draw in requestAnimationFrame not to block ui
             requestAnimationFrame(() => this.drawWaveForm(data, context, start + count, count, width, height, analyzeID));
         }
