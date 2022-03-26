@@ -1,19 +1,7 @@
-#info-and-control {
+#root {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.5em;
-    margin-bottom: 0.5em;
-}
-
-#player {
-    border: 1px solid var(--vscode-foreground);
-    padding: 0.5em;
-}
-
-#listen-button {
-    display: none;
-    height: 60px;
-    margin: 1em auto;
 }
 
 table {
@@ -27,19 +15,14 @@ th, td {
     padding: 0.5em;
 }
 
-input[type="range"] {
-    padding: 0;
+#player {
+    border: 1px solid var(--vscode-foreground);
+    padding: 0.5em;
 }
 
-input[type="number"] {
-    border: solid 1px var(--vscode-foreground);
-    width: auto;
-    display: inline-block;
-    margin: 0.5em;
-}
-
-select {
-    margin: 0.5em;
+#listen-button {
+    height: 60px;
+    margin: 1em auto;
 }
 
 .seek-bar-box {
@@ -71,7 +54,8 @@ select {
 }
 
 #analyzer {
-    padding: 0.5em;
+    grid-column-start: 1;
+    grid-column-end: 3;
     border: 1px solid var(--vscode-foreground);
 }
 
@@ -79,25 +63,36 @@ select {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 0.5em;
-    margin-bottom: 0.5em;
+    margin: 0.5em;
 }
 
 #analyze-setting {
-    display: none;
+    margin: 0.5em;
 }
 
 #analyze-setting-button {
-    display: none;
     background: none;
     color: var(--vscode-foreground);
 }
 
-#analyze-button {
-    display: none;
+input[type="range"] {
+    padding: 0;
+}
+
+input[type="number"] {
+    border: solid 1px var(--vscode-foreground);
+    width: auto;
+    display: inline-block;
+    margin: 0.5em;
+}
+
+select {
+    margin: 0.5em;
 }
 
 #analyze-result-box {
     position: relative;
+    margin: 0.5em;
 }
 
 .canvas-box {

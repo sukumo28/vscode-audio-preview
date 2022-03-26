@@ -79,6 +79,7 @@ export default class Analyzer extends Disposable {
         `;
 
         // init analyze setting button
+        document.getElementById("analyze-setting").style.display = "none";
         this._analyzeSettingButton = <HTMLButtonElement>document.getElementById("analyze-setting-button");
         this._analyzeSettingButton.style.display = "none";
         this._analyzeSettingButton.onclick = () => {

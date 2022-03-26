@@ -22,11 +22,9 @@ export default class WebView extends Disposable{
         this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
         const root = document.getElementById("root");
         root.innerHTML = `
-        <div id="info-and-control">
-            <div id="info-table"></div>
+        <div id="info-table"></div>
         
-            <div id="player"></div>
-        </div>
+        <div id="player"></div>
         
         <div id="analyzer"></div>
         `;
