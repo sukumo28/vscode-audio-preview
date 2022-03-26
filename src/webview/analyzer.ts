@@ -482,10 +482,9 @@ export default class Analyzer extends Disposable {
         // thus, drawing waveform of long duration input can be done in about the same amount of time as short input
         const step = Math.ceil((endIndex - startIndex) / 200000);
         const data = this._audioBuffer.getChannelData(ch).slice(startIndex, endIndex).filter((_, i) => i % step === 0);
-        // convert data. 
-        // this is not a normalization because setting.maxAmplitude and setting.minAmplitude 
-        // is not a min and max of data, but a figure's Y axis range.
-        // data is converted to setting.maxAmplitude is 1 and setting.minAmplitude is 0 and
+        // convert data. this is not a normalization.
+        // setting.maxAmplitude and setting.minAmplitude is not a min and max of data, but a figure's Y axis range.
+        // data is converted to satisfy setting.maxAmplitude=1 and setting.minAmplitude=0
         // samples out of range is not displayed. 
         for (let i = 0; i < data.length; i++) {
             data[i] = (data[i] - settings.minAmplitude) / (settings.maxAmplitude - settings.minAmplitude);
