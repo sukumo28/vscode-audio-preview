@@ -3,11 +3,11 @@
 You can play your audio file and preview its info on VS Code.  
 You can also check waveform and spectrogram.  
 
-Supported Audio Files: `wav`, `aac`, `mp3`, `ogg`, `flac`, ... :star2:  
+Supported Audio Files: `wav`, `aac`, `mp3`, `ogg`, `flac`, ... etc.  
 
 ## Features
 
-How to preview wav.  
+How to preview audio.  
 ![how-to-use](https://github.com/sukumo28/vscode-audio-preview/blob/main/images/how-to-use.gif?raw=true)  
 Note: You can play audio without waiting for finish decoding.
 
