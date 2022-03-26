@@ -1,7 +1,7 @@
-import { Disposable } from "../dispose";
-import { EventType, Event } from "./events";
-import { AnalyzeDefault, AnalyzeSettings } from "../analyzeSettings";
-import { ExtMessage, ExtMessageType, ExtSpectrogramMessage, postMessage, WebviewMessageType } from "../message";
+import { Disposable } from "../../dispose";
+import { EventType, Event } from "../events";
+import { AnalyzeDefault, AnalyzeSettings } from "../../analyzeSettings";
+import { ExtMessage, ExtMessageType, ExtSpectrogramMessage, postMessage, WebviewMessageType } from "../../message";
 
 export default class Analyzer extends Disposable {
     private _audioBuffer: AudioBuffer;

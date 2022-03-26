@@ -1,6 +1,6 @@
-import { Disposable } from "../dispose";
-import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../message";
-import { EventType, Event } from "./events";
+import { Disposable } from "../../dispose";
+import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../../message";
+import { EventType, Event } from "../events";
 
 export default class Player extends Disposable {
     private _audioContext: AudioContext;

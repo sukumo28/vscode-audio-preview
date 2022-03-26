@@ -1,5 +1,5 @@
 import { WebviewMessage } from "../message";
-import WebView from "./webview";
+import WebView from "./ui/webview";
 
 export interface vscode {
     postMessage(message: any): void;

@@ -1,6 +1,6 @@
 import { ExtMessageType, WebviewMessageType } from "../message";
 import { postMessageFromExt, postMessageFromWebview, receiveReaction, createAudioContext } from "./helper";
-import WebView from "../webview/webview";
+import WebView from "../webview/ui/webview";
 
 describe("WebView normal flow", () => {
     let webView: WebView;

@@ -1,5 +1,5 @@
 import { postMessageFromExt, wait } from "./helper";
-import InfoTable from "../webview/infoTable";
+import InfoTable from "../webview/ui/infoTable";
 import { ExtMessageType } from "../message";
 
 describe("infoTable normal flow", () => {

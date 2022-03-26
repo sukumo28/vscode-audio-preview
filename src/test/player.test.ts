@@ -1,6 +1,6 @@
 import { ExtMessageType, WebviewMessageType } from "../message";
 import { EventType } from "../webview/events";
-import Player from "../webview/player";
+import Player from "../webview/ui/player";
 import { createAudioContext, postMessageFromExt, postMessageFromWebview, receiveReaction, wait } from "./helper";
 
 describe("player normal flow", () => {

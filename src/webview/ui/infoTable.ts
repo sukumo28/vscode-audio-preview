@@ -1,6 +1,6 @@
-import { Disposable } from "../dispose";
-import { ExtInfoData, ExtMessage, ExtMessageType } from "../message";
-import { EventType, Event } from "./events";
+import { Disposable } from "../../dispose";
+import { ExtInfoData, ExtMessage, ExtMessageType } from "../../message";
+import { EventType, Event } from "../events";
 
 export default class InfoTable extends Disposable {
     private _infoTable: HTMLTableElement;

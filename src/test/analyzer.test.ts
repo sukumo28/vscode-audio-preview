@@ -1,6 +1,6 @@
 import { AnalyzeDefault } from "../analyzeSettings";
 import { ExtMessageType, WebviewMessageType } from "../message";
-import Analyzer from "../webview/analyzer";
+import Analyzer from "../webview/ui/analyzer";
 import { createAudioContext, postMessageFromExt, postMessageFromWebview, receiveReaction, wait } from "./helper";
 
 describe("Analyzer normal flow", () => {

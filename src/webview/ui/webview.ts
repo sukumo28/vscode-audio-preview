@@ -1,9 +1,9 @@
 import Player from "./player";
 import InfoTable from "./infoTable";
 import Analyzer from "./analyzer";
-import { Event, EventType } from "./events";
-import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../message";
-import { Disposable } from "../dispose";
+import { Event, EventType } from "../events";
+import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../../message";
+import { Disposable } from "../../dispose";
 
 type createAudioContext = (sampleRate: number) => AudioContext;
 
