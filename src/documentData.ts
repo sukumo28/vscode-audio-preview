@@ -104,8 +104,7 @@ export default class documentData {
         samples.delete();
     }
 
-    // use number[] because this data is once stringified by postMessage() 
-    // and TypedArray will be object like this: "{"0":"1.0106", "1":"0.0632", ...}"
+    // use number[] because this data will be serialized by postMessage() 
     private _spectrogram: number[][][] = [];
     public get spectrogram() { return this._spectrogram; }
 

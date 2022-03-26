@@ -102,8 +102,7 @@ export default class Player extends Disposable {
             this._playButton.click();
         }
 
-        // copy passed data.samples into audioBuffer manually, because it is once stringified, 
-        // and its children are not recognised as Float32Array
+        // copy passed data.samples into audioBuffer manually, because it is once serialized (not recognised as Float32Array)
         for (let ch = 0; ch < msg.data.numberOfChannels; ch++) {
             const f32a = new Float32Array(msg.data.length);
             for (let i = 0; i < f32a.length; i++) {
@@ -120,7 +119,8 @@ export default class Player extends Disposable {
     }
 
     private play() {
-        // create audio source node (you cannot call start more than once)
+        // create audioBufferSourceNode (you cannot call start more than once)
+        // https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
         this._source = this._audioContext.createBufferSource();
         this._source.buffer = this._audioBuffer;
         this._source.connect(this._gainNode);
