@@ -65,8 +65,8 @@ const webviewConfig = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        './src/webview/vscode.css',
-        './src/webview/audioPreview.css',
+        './src/webview/css/vscode.css',
+        './src/webview/css/audioPreview.css',
       ]
     })
   ]
