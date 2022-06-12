@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.3 - 2022-06-12  
+### Changed  
+- fix reload bug  
+- reduce verbose error messages that appear when you open a broken file
+
 ## 2.0.2 - 2022-03-04  
 ### Changed  
 - change tag and description
