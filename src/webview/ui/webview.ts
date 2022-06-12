@@ -3,23 +3,25 @@ import InfoTable from "./infoTable";
 import Analyzer from "./analyzer";
 import { Event, EventType } from "../events";
 import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../../message";
-import { Disposable } from "../../dispose";
+import { Disposable, disposeAll } from "../../dispose";
 
 type createAudioContext = (sampleRate: number) => AudioContext;
 
-export default class WebView extends Disposable{
+export default class WebView {
     private _postMessage: postMessage;
     private _createAudioContext: createAudioContext;
+    private _disposables: Disposable[] = [];
 
     constructor (postMessage: postMessage, createAudioContext: createAudioContext) {
-        super();
         this._postMessage = postMessage;
         this._createAudioContext = createAudioContext;
         this.initWebview();
     }
 
     private initWebview() {
-        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
+        this._disposables.push(
+            new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data))
+        );
         const root = document.getElementById("root");
         root.innerHTML = `
         <div id="info-table"></div>
@@ -35,7 +37,7 @@ export default class WebView extends Disposable{
         switch (msg.type) {
             case ExtMessageType.Info: {
                 const infoTable = new InfoTable("info-table");
-                this._register(infoTable);
+                this._disposables.push(infoTable);
     
                 infoTable.showInfo(msg.data);
     
@@ -61,11 +63,11 @@ export default class WebView extends Disposable{
     
                     // set player ui
                     const player = new Player("player", ac, audioBuffer, this._postMessage);
-                    this._register(player);
+                    this._disposables.push(player);
     
                     // init analyzer
                     const analyzer = new Analyzer("analyzer", audioBuffer, msg.data.analyzeDefault, this._postMessage);
-                    this._register(analyzer);
+                    this._disposables.push(analyzer);
                 } catch (err) {
                     this._postMessage({ type: WebviewMessageType.Error, data: { message: "failed to prepare:" + err } });
                     break;
@@ -81,5 +83,9 @@ export default class WebView extends Disposable{
                 break;
             }
         }
+    }
+
+    public dispose() {
+        disposeAll(this._disposables);
     }
 }
