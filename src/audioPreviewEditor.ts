@@ -145,6 +145,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public async reload() {
         const fileData = await AudioPreviewDocument.readFile(this._uri);
         try {
+            this._documentData.dispose();
             this._documentData = await documentData.create(fileData);
         } catch (err: any) {
             vscode.window.showErrorMessage(err.message);
