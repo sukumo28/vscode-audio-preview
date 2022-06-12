@@ -50,66 +50,47 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     public onDidChange: vscode.Event<vscode.Uri>;
 
     public audioInfo(): ExtInfoData {
-        if (!this._documentData) return;
-
-        try {
-            this._documentData.readAudioInfo();
-            return {
-                encoding: this._documentData.encoding,
-                format: this._documentData.format,
-                numChannels: this._documentData.numChannels,
-                sampleRate: this._documentData.sampleRate,
-                fileSize: this._documentData.fileSize,
-            };
-        } catch (err: any) {
-            vscode.window.showErrorMessage(err.message);
-            return;
-        }
+        this._documentData.readAudioInfo();
+        return {
+            encoding: this._documentData.encoding,
+            format: this._documentData.format,
+            numChannels: this._documentData.numChannels,
+            sampleRate: this._documentData.sampleRate,
+            fileSize: this._documentData.fileSize,
+        };
     }
 
     public prepareData(): ExtPrepareData {
-        try {
-            // execute decode
-            this._documentData.decode();
+        // execute decode
+        this._documentData.decode();
 
-            // read config
-            const config = vscode.workspace.getConfiguration("WavPreview");
-            const analyzeDefault = config.get("analyzeDefault") as AnalyzeDefault;
+        // read config
+        const config = vscode.workspace.getConfiguration("WavPreview");
+        const analyzeDefault = config.get("analyzeDefault") as AnalyzeDefault;
 
-            return {
-                sampleRate: this._documentData.sampleRate,
-                numberOfChannels: this._documentData.numChannels,
-                length: this._documentData.length,
-                duration: this._documentData.duration,
-                analyzeDefault
-            };
-
-        } catch (err: any) {
-            vscode.window.showErrorMessage(err.message);
-            return;
-        }
+        return {
+            sampleRate: this._documentData.sampleRate,
+            numberOfChannels: this._documentData.numChannels,
+            length: this._documentData.length,
+            duration: this._documentData.duration,
+            analyzeDefault
+        };
     }
 
     public audioData(start: number, end: number): ExtDataData {
-        try {
-            const samples = new Array(this._documentData.numChannels);
-            for (let ch = 0; ch < this._documentData.numChannels; ch++) {
-                samples[ch] = this._documentData.samples[ch].slice(start, end);
-            }
-
-            return {
-                samples,
-                length: samples[0].length,
-                numberOfChannels: this._documentData.numChannels,
-                start,
-                end,
-                wholeLength: this._documentData.samples[0].length
-            };
-
-        } catch (err: any) {
-            vscode.window.showErrorMessage(err.message);
-            return;
+        const samples = new Array(this._documentData.numChannels);
+        for (let ch = 0; ch < this._documentData.numChannels; ch++) {
+            samples[ch] = this._documentData.samples[ch].slice(start, end);
         }
+
+        return {
+            samples,
+            length: samples[0].length,
+            numberOfChannels: this._documentData.numChannels,
+            start,
+            end,
+            wholeLength: this._documentData.samples[0].length
+        };
     }
 
     public makeSpectrogram(ch: number, settings: AnalyzeSettings) {
@@ -117,29 +98,16 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     }
 
     public spectrogram(ch: number, startBlockIndex: number, blockSize: number, settings: AnalyzeSettings): ExtSpectrogramData {
-        try {
-            const spectrogram = this._documentData.spectrogram[ch].slice(startBlockIndex, startBlockIndex + blockSize);
+        const spectrogram = this._documentData.spectrogram[ch].slice(startBlockIndex, startBlockIndex + blockSize);
 
-            return {
-                channel: ch,
-                isEnd: this._documentData.spectrogram[ch].length <= startBlockIndex + blockSize,
-                startBlockIndex,
-                endBlockIndex: startBlockIndex + blockSize,
-                spectrogram,
-                settings
-            };
-
-        } catch (err: any) {
-            vscode.window.showErrorMessage(err.message);
-            return {
-                channel: ch,
-                isEnd: true,
-                startBlockIndex,
-                endBlockIndex: startBlockIndex + blockSize,
-                spectrogram: [[]],
-                settings
-            };
-        }
+        return {
+            channel: ch,
+            isEnd: this._documentData.spectrogram[ch].length <= startBlockIndex + blockSize,
+            startBlockIndex,
+            endBlockIndex: startBlockIndex + blockSize,
+            spectrogram,
+            settings
+        };
     }
 
     public async reload() {
@@ -233,72 +201,80 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
         // Wait for the webview to be properly ready before we init
         webviewPanel.webview.onDidReceiveMessage((msg: WebviewMessage) => {
-            switch (msg.type) {
-                case WebviewMessageType.Ready: {
-                    this.postMessage(webviewPanel.webview, {
-                        type: ExtMessageType.Info,
-                        data: {
-                            isTrusted: vscode.workspace.isTrusted,
-                            ...document.audioInfo(),
-                        }
-                    });
-                    break;
-                }
-
-                case WebviewMessageType.Prepare: {
-                    this.postMessage(webviewPanel.webview, {
-                        type: ExtMessageType.Prepare,
-                        data: document.prepareData()
-                    });
-                    break;
-                }
-
-                case WebviewMessageType.Data: {
-                    const data = document.audioData(msg.data.start, msg.data.end);
-
-                    // play audio automatically after first data message 
-                    // if WapPreview.autoPlay is true
-                    if (msg.data.start === 0) {
-                        const config = vscode.workspace.getConfiguration("WavPreview");
-                        data.autoPlay = config.get("autoPlay");
-                    }
-
-                    // analyze automatically
-                    if (data.wholeLength <= data.end) {
-                        const config = vscode.workspace.getConfiguration("WavPreview");
-                        data.autoAnalyze = config.get("autoAnalyze");
-                    }
-
-                    this.postMessage(webviewPanel.webview, {
-                        type: ExtMessageType.Data,
-                        data
-                    });
-
-                    break;
-                }
-
-                case WebviewMessageType.MakeSpectrogram: {
-                    document.makeSpectrogram(msg.data.channel, msg.data.settings);
-                    this.postMessage(webviewPanel.webview, {
-                        type: ExtMessageType.MakeSpectrogram,
-                        data: { channel: msg.data.channel, settings: msg.data.settings }
-                    });
-                    break;
-                }
-
-                case WebviewMessageType.Spectrogram: {
-                    this.postMessage(webviewPanel.webview, {
-                        type: ExtMessageType.Spectrogram,
-                        data: document.spectrogram(msg.data.channel, msg.data.startBlockIndex, msg.data.blockSize, msg.data.settings)
-                    });
-                    break;
-                }
-
-                case WebviewMessageType.Error: {
-                    vscode.window.showErrorMessage(msg.data.message);
-                }
+            try {
+                this.onReceiveMessage(msg, webviewPanel, document)
+            } catch (err) {
+                vscode.window.showErrorMessage(err.message);
             }
         });
+    }
+
+    private onReceiveMessage(msg: WebviewMessage, webviewPanel: vscode.WebviewPanel, document: AudioPreviewDocument) {
+        switch (msg.type) {
+            case WebviewMessageType.Ready: {
+                this.postMessage(webviewPanel.webview, {
+                    type: ExtMessageType.Info,
+                    data: {
+                        isTrusted: vscode.workspace.isTrusted,
+                        ...document.audioInfo(),
+                    }
+                });
+                break;
+            }
+
+            case WebviewMessageType.Prepare: {
+                this.postMessage(webviewPanel.webview, {
+                    type: ExtMessageType.Prepare,
+                    data: document.prepareData()
+                });
+                break;
+            }
+
+            case WebviewMessageType.Data: {
+                const data = document.audioData(msg.data.start, msg.data.end);
+
+                // play audio automatically after first data message 
+                // if WapPreview.autoPlay is true
+                if (msg.data.start === 0) {
+                    const config = vscode.workspace.getConfiguration("WavPreview");
+                    data.autoPlay = config.get("autoPlay");
+                }
+
+                // analyze automatically
+                if (data.wholeLength <= data.end) {
+                    const config = vscode.workspace.getConfiguration("WavPreview");
+                    data.autoAnalyze = config.get("autoAnalyze");
+                }
+
+                this.postMessage(webviewPanel.webview, {
+                    type: ExtMessageType.Data,
+                    data
+                });
+
+                break;
+            }
+
+            case WebviewMessageType.MakeSpectrogram: {
+                document.makeSpectrogram(msg.data.channel, msg.data.settings);
+                this.postMessage(webviewPanel.webview, {
+                    type: ExtMessageType.MakeSpectrogram,
+                    data: { channel: msg.data.channel, settings: msg.data.settings }
+                });
+                break;
+            }
+
+            case WebviewMessageType.Spectrogram: {
+                this.postMessage(webviewPanel.webview, {
+                    type: ExtMessageType.Spectrogram,
+                    data: document.spectrogram(msg.data.channel, msg.data.startBlockIndex, msg.data.blockSize, msg.data.settings)
+                });
+                break;
+            }
+
+            case WebviewMessageType.Error: {
+                vscode.window.showErrorMessage(msg.data.message);
+            }
+        }
     }
 
     private postMessage(webview: vscode.Webview, message: ExtMessage) {
