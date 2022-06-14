@@ -1,7 +1,7 @@
 import { AnalyzeDefault } from "../analyzeSettings";
-import { ExtMessageType, WebviewMessageType } from "../message";
+import { ExtMessageType } from "../message";
 import Analyzer from "../webview/ui/analyzer";
-import { createAudioContext, postMessageFromExt, postMessageFromWebview, receiveReaction, wait } from "./helper";
+import { createAudioContext, postMessageFromExt, wait } from "./helper";
 
 describe("Analyzer normal flow", () => {
     let analyzer: Analyzer;
@@ -26,7 +26,7 @@ describe("Analyzer normal flow", () => {
             maxFrequency: 8000,
             spectrogramAmplitudeRange: -90,
         };
-        analyzer = new Analyzer("root", audioBuffer, ad, postMessageFromWebview);
+        analyzer = new Analyzer("root", audioBuffer, ad);
 
         expect(document.getElementById("analyze-controller-buttons")).not.toBe(null);
     });
@@ -68,146 +68,6 @@ describe("Analyzer normal flow", () => {
         await wait(50);
         expect(document.getElementById("analyze-button").style.display).toBe("block");
     });
-
-    test("send MakeSpectrogram message when user click analyze button", async () => {
-        const msg = await receiveReaction(() => {
-            document.getElementById("analyze-button").click();
-        });
-        expect(msg.type).toBe(WebviewMessageType.MakeSpectrogram);
-    });
-
-    test("send Spectrogram message after got MakeSpectrogram message", async () => {
-        const msg = await receiveReaction(() => {
-            postMessageFromExt({
-                type: ExtMessageType.MakeSpectrogram,
-                data: {
-                    channel: 0,
-                    settings: undefined
-                }
-            });
-        });
-
-        expect(msg).toEqual({
-            type: WebviewMessageType.Spectrogram,
-            data: {
-                channel: 0,
-                startBlockIndex: 0,
-                blockSize: 60,
-                settings: undefined
-            }
-        });
-    });
-
-    test("request next Spectrogram message after got Spectrogram message", async () => {
-        const setting = {
-            windowSize: 1024,
-            hopSize: 512,
-            minFrequency: 0,
-            maxFrequency: 8000,
-            minTime: 0,
-            maxTime: 1,
-            minAmplitude: -1,
-            maxAmplitude: 1,
-            spectrogramAmplitudeRange: -90,
-            analyzeID: 1
-        };
-        
-        const msg = await receiveReaction(() => {
-            postMessageFromExt({
-                type: ExtMessageType.Spectrogram,
-                data: {
-                    channel: 0,
-                    startBlockIndex: 0,
-                    isEnd: false,
-                    endBlockIndex: 1000,
-                    spectrogram: [[]],
-                    settings: setting
-                }
-            });
-        });
-
-        expect(msg).toEqual({
-            type: WebviewMessageType.Spectrogram,
-            data: {
-                channel: 0,
-                startBlockIndex: 1000,
-                blockSize: 60,
-                settings: setting
-            }
-        });
-    });
-
-    test("ignore Spectrogram message that has different analyzeID", async () => {
-        const setting = {
-            windowSize: 1024,
-            hopSize: 512,
-            minFrequency: 0,
-            maxFrequency: 8000,
-            minTime: 0,
-            maxTime: 1,
-            minAmplitude: -1,
-            maxAmplitude: 1,
-            spectrogramAmplitudeRange: -90,
-            analyzeID: 0
-        };
-        
-        const msg = await receiveReaction(() => {
-            postMessageFromExt({
-                type: ExtMessageType.Spectrogram,
-                data: {
-                    channel: 0,
-                    startBlockIndex: 0,
-                    isEnd: false,
-                    endBlockIndex: 1000,
-                    spectrogram: [[]],
-                    settings: setting
-                }
-            });
-        });
-
-        expect(msg).toEqual({
-            type: WebviewMessageType.Error,
-            data: {
-                message: "Timeout",
-            }
-        });
-    });
-
-    test("don't request next Spectrogram message if isEnd=true", async () => {
-        const setting = {
-            windowSize: 1024,
-            hopSize: 512,
-            minFrequency: 0,
-            maxFrequency: 8000,
-            minTime: 0,
-            maxTime: 1,
-            minAmplitude: -1,
-            maxAmplitude: 1,
-            spectrogramAmplitudeRange: -90,
-            analyzeID: 1
-        };
-        
-        const msg = await receiveReaction(() => {
-            postMessageFromExt({
-                type: ExtMessageType.Spectrogram,
-                data: {
-                    channel: 0,
-                    startBlockIndex: 0,
-                    isEnd: true,
-                    endBlockIndex: 1000,
-                    spectrogram: [[]],
-                    settings: setting
-                }
-            });
-        });
-
-        expect(msg).toEqual({
-            type: WebviewMessageType.Error,
-            data: {
-                message: "Timeout",
-            }
-        });
-    });
 });
 
 describe("Analyzer autoAnalyze", () => {
@@ -233,7 +93,7 @@ describe("Analyzer autoAnalyze", () => {
             maxFrequency: 8000,
             spectrogramAmplitudeRange: -90,
         };
-        analyzer = new Analyzer("root", audioBuffer, ad, postMessageFromWebview);
+        analyzer = new Analyzer("root", audioBuffer, ad);
 
         expect(document.getElementById("analyze-controller-buttons")).not.toBe(null);
     });

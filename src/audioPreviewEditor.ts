@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
-import { AnalyzeDefault, AnalyzeSettings } from "./analyzeSettings";
-import { ExtDataData, ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, ExtSpectrogramData, WebviewMessage, WebviewMessageType } from "./message";
+import { AnalyzeDefault } from "./analyzeSettings";
+import { ExtDataData, ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, WebviewMessage, WebviewMessageType } from "./message";
 import documentData from "./documentData";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
@@ -90,23 +90,6 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
             start,
             end,
             wholeLength: this._documentData.samples[0].length
-        };
-    }
-
-    public makeSpectrogram(ch: number, settings: AnalyzeSettings) {
-        this._documentData.makeSpectrogram(ch, settings);
-    }
-
-    public spectrogram(ch: number, startBlockIndex: number, blockSize: number, settings: AnalyzeSettings): ExtSpectrogramData {
-        const spectrogram = this._documentData.spectrogram[ch].slice(startBlockIndex, startBlockIndex + blockSize);
-
-        return {
-            channel: ch,
-            isEnd: this._documentData.spectrogram[ch].length <= startBlockIndex + blockSize,
-            startBlockIndex,
-            endBlockIndex: startBlockIndex + blockSize,
-            spectrogram,
-            settings
         };
     }
 
@@ -251,23 +234,6 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     data
                 });
 
-                break;
-            }
-
-            case WebviewMessageType.MakeSpectrogram: {
-                document.makeSpectrogram(msg.data.channel, msg.data.settings);
-                this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.MakeSpectrogram,
-                    data: { channel: msg.data.channel, settings: msg.data.settings }
-                });
-                break;
-            }
-
-            case WebviewMessageType.Spectrogram: {
-                this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Spectrogram,
-                    data: document.spectrogram(msg.data.channel, msg.data.startBlockIndex, msg.data.blockSize, msg.data.settings)
-                });
                 break;
             }
 

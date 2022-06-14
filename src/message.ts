@@ -5,13 +5,11 @@ export const ExtMessageType = {
     Info: "info",
     Prepare: "prepare",
     Data: "data",
-    MakeSpectrogram: "makeSpectrogram",
-    Spectrogram: "spectrogram",
     Reload: "reload",
 } as const;
 export type ExtMessageType = typeof ExtMessageType[keyof typeof ExtMessageType];
 
-export type ExtMessage = ExtInfoMessage | ExtPrepareMessage | ExtDataMessage | ExtMakeSpectrogramMessage | ExtSpectrogramMessage | ExtReloadMessage;
+export type ExtMessage = ExtInfoMessage | ExtPrepareMessage | ExtDataMessage | ExtReloadMessage;
 
 export class ExtInfoMessage {
     type = ExtMessageType.Info;
@@ -56,30 +54,6 @@ export interface ExtDataData {
     wholeLength: number;
 }
 
-export class ExtMakeSpectrogramMessage {
-    type = ExtMessageType.MakeSpectrogram;
-    data: ExtMakeSpectrogramData;
-}
-
-export interface ExtMakeSpectrogramData {
-    channel: number;
-    settings: AnalyzeSettings;
-}
-
-export class ExtSpectrogramMessage {
-    type = ExtMessageType.Spectrogram;
-    data: ExtSpectrogramData;
-}
-
-export interface ExtSpectrogramData {
-    channel: number;
-    startBlockIndex: number;
-    isEnd: boolean;
-    endBlockIndex: number;
-    spectrogram: number[][];
-    settings: AnalyzeSettings;
-}
-
 export class ExtReloadMessage {
     type = ExtMessageType.Reload;
 }
@@ -89,13 +63,11 @@ export const WebviewMessageType = {
     Ready: "ready",
     Prepare: "prepare",
     Data: "data",
-    MakeSpectrogram: "makeSpectrogram",
-    Spectrogram: "spectrogram",
     Error: "error",
 } as const;
 export type WebviewMessageType = typeof WebviewMessageType[keyof typeof WebviewMessageType];
 
-export type WebviewMessage = WebviewReadyMessage | WebviewPrepareMessage | WebviewDataMessage | WebviewMakeSpectrogramMessage | WebviewSpectrogramMessage | WebviewErrorMessage;
+export type WebviewMessage = WebviewReadyMessage | WebviewPrepareMessage | WebviewDataMessage | WebviewErrorMessage;
 
 export class WebviewReadyMessage {
     type = WebviewMessageType.Ready;
@@ -113,28 +85,6 @@ export class WebviewDataMessage {
 export interface WebviewDataData { 
     start: number;
     end: number;
-}
-
-export class WebviewMakeSpectrogramMessage {
-    type = WebviewMessageType.MakeSpectrogram;
-    data: WebviewMakeSpectrogramData;
-}
-
-export interface WebviewMakeSpectrogramData {
-    channel: number;
-    settings: AnalyzeSettings;
-}
-
-export class WebviewSpectrogramMessage {
-    type = WebviewMessageType.Spectrogram;
-    data: WebviewSpectrogramData;
-}
-
-export interface WebviewSpectrogramData {
-    channel: number;
-    startBlockIndex: number;
-    blockSize: number;
-    settings: AnalyzeSettings;
 }
 
 export class WebviewErrorMessage {

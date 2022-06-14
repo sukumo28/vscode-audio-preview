@@ -66,7 +66,7 @@ export default class WebView {
                     this._disposables.push(player);
     
                     // init analyzer
-                    const analyzer = new Analyzer("analyzer", audioBuffer, msg.data.analyzeDefault, this._postMessage);
+                    const analyzer = new Analyzer("analyzer", audioBuffer, msg.data.analyzeDefault);
                     this._disposables.push(analyzer);
                 } catch (err) {
                     this._postMessage({ type: WebviewMessageType.Error, data: { message: "failed to prepare:" + err } });

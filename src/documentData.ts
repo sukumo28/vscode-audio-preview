@@ -1,7 +1,5 @@
 // You should compile wasm before build extension
 import Module from "./decoder/wasm/decoder.js";
-import { AnalyzeSettings } from "./analyzeSettings";
-import Ooura from "ooura";
 
 interface Status {
     status: number;
@@ -102,62 +100,6 @@ export default class documentData {
         }
 
         samples.delete();
-    }
-
-    // use number[] because this data will be serialized by postMessage() 
-    private _spectrogram: number[][][] = [];
-    public get spectrogram() { return this._spectrogram; }
-
-    public makeSpectrogram(ch: number, settings: AnalyzeSettings) {
-        const windowSize = settings.windowSize;
-        const window = new Float32Array(windowSize);
-        for (let i = 0; i < windowSize; i++) {
-            window[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize);
-        }
-
-        const startIndex = Math.floor(settings.minTime * this._sampleRate);
-        const endIndex = Math.floor(settings.maxTime * this._sampleRate);
-
-        const df = this._sampleRate / settings.windowSize;
-        const minFreqIndex = Math.floor(settings.minFrequency / df);
-        const maxFreqIndex = Math.floor(settings.maxFrequency / df);
-
-        const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
-
-        const data = this._samples[ch];
-        let maxValue = Number.EPSILON;
-
-        this._spectrogram[ch] = [];
-        for (let i = startIndex; i < endIndex; i += settings.hopSize) {
-            // i is center of the window
-            const s = i - windowSize / 2, t = i + windowSize / 2;
-            const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
-            const d = ooura.scalarArrayFactory();
-            for (let j = 0; j < d.length; j++) {
-                if (s + j < ss) continue;
-                if (tt < s + j) continue;
-                d[j] = data[s + j] * window[j];
-            }
-
-            const re = ooura.vectorArrayFactory();
-            const im = ooura.vectorArrayFactory();
-            ooura.fft(d.buffer, re.buffer, im.buffer);
-
-            const ps = [];
-            for (let j = minFreqIndex; j < maxFreqIndex; j++) {
-                const v = re[j] * re[j] + im[j] * im[j];
-                ps.push(v);
-                if (maxValue < v) maxValue = v;
-            }
-
-            this._spectrogram[ch].push(ps);
-        }
-
-        for (let i = 0; i < this._spectrogram[ch].length; i++) {
-            for (let j = minFreqIndex; j < maxFreqIndex; j++) {
-                this._spectrogram[ch][i][j] = 10 * Math.log10(this._spectrogram[ch][i][j] / maxValue);
-            }
-        }
     }
 
     public dispose() {

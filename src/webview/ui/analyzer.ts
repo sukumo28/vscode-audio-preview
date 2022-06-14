@@ -1,7 +1,8 @@
 import { Disposable } from "../../dispose";
 import { EventType, Event } from "../events";
 import { AnalyzeDefault, AnalyzeSettings } from "../../analyzeSettings";
-import { ExtMessage, ExtMessageType, ExtSpectrogramMessage, postMessage, WebviewMessageType } from "../../message";
+import { ExtMessage, ExtMessageType} from "../../message";
+import Ooura from "ooura";
 
 export default class Analyzer extends Disposable {
     private _audioBuffer: AudioBuffer;
@@ -9,22 +10,17 @@ export default class Analyzer extends Disposable {
     private _analyzeSettingButton: HTMLButtonElement;
     private _analyzeButton: HTMLButtonElement;
 
-    private _spectrogramCanvasList: HTMLCanvasElement[] = [];
-    private _spectrogramCanvasContexts: CanvasRenderingContext2D[] = [];
-
     private _analyzeResultBox: HTMLElement;
 
     private _latestAnalyzeID: number = 0;
     public get latestAnalyzeID() { return this._latestAnalyzeID; }
 
     private _defaultSetting: AnalyzeDefault;
-    private _postMessage: postMessage;
 
-    constructor (parentID: string, ab: AudioBuffer, defaultSetting: AnalyzeDefault, postMessage: postMessage) {
+    constructor (parentID: string, ab: AudioBuffer, defaultSetting: AnalyzeDefault) {
         super();
         this._audioBuffer = ab;
         this._defaultSetting = defaultSetting;
-        this._postMessage = postMessage;
 
         // init base html
         const parent = document.getElementById(parentID);
@@ -109,8 +105,6 @@ export default class Analyzer extends Disposable {
         for (const c of Array.from(this._analyzeResultBox.children)) {
             this._analyzeResultBox.removeChild(c);
         }
-        this._spectrogramCanvasList = [];
-        this._spectrogramCanvasContexts = [];
     }
 
     private activate(autoAnalyze: boolean) {
@@ -131,35 +125,6 @@ export default class Analyzer extends Disposable {
                 if (msg.data.wholeLength <= msg.data.end) {
                     this.activate(msg.data.autoAnalyze);
                 }
-                break;
-            }
-
-            case ExtMessageType.MakeSpectrogram: {
-                this._postMessage({
-                    type: WebviewMessageType.Spectrogram,
-                    data: {
-                        channel: msg.data.channel,
-                        startBlockIndex: 0,
-                        blockSize: 60,
-                        settings: msg.data.settings
-                    }
-                });
-                break;
-            }
-
-            case ExtMessageType.Spectrogram: {
-                if (msg.data.settings.analyzeID !== this._latestAnalyzeID) break; // cancel old analyze
-                this.drawSpectrogram(msg);
-                if (msg.data.isEnd) break;
-                this._postMessage({
-                    type: WebviewMessageType.Spectrogram,
-                    data: {
-                        channel: msg.data.channel,
-                        startBlockIndex: msg.data.endBlockIndex,
-                        blockSize: 60,
-                        settings: msg.data.settings
-                    }
-                });
                 break;
             }
         }
@@ -510,6 +475,62 @@ export default class Analyzer extends Disposable {
         }
     }
 
+    private getSpectrogram(ch: number, settings: AnalyzeSettings) {
+        const data = this._audioBuffer.getChannelData(ch);
+        const sampleRate = this._audioBuffer.sampleRate;
+
+        const windowSize = settings.windowSize;
+        const window = new Float32Array(windowSize);
+        for (let i = 0; i < windowSize; i++) {
+            window[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize);
+        }
+
+        const startIndex = Math.floor(settings.minTime * sampleRate);
+        const endIndex = Math.floor(settings.maxTime * sampleRate);
+
+        const df = sampleRate / settings.windowSize;
+        const minFreqIndex = Math.floor(settings.minFrequency / df);
+        const maxFreqIndex = Math.floor(settings.maxFrequency / df);
+
+        const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
+
+        let maxValue = Number.EPSILON;
+
+        const spectrogram: number[][] = [];
+        for (let i = startIndex; i < endIndex; i += settings.hopSize) {
+            // i is center of the window
+            const s = i - windowSize / 2, t = i + windowSize / 2;
+            const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
+            const d = ooura.scalarArrayFactory();
+            for (let j = 0; j < d.length; j++) {
+                if (s + j < ss) continue;
+                if (tt < s + j) continue;
+                d[j] = data[s + j] * window[j];
+            }
+
+            const re = ooura.vectorArrayFactory();
+            const im = ooura.vectorArrayFactory();
+            ooura.fft(d.buffer, re.buffer, im.buffer);
+
+            const ps: number[] = [];
+            for (let j = minFreqIndex; j < maxFreqIndex; j++) {
+                const v = re[j] * re[j] + im[j] * im[j];
+                ps.push(v);
+                if (maxValue < v) maxValue = v;
+            }
+
+            spectrogram.push(ps);
+        }
+
+        for (let i = 0; i < spectrogram.length; i++) {
+            for (let j = minFreqIndex; j < maxFreqIndex; j++) {
+                spectrogram[i][j] = 10 * Math.log10(spectrogram[i][j] / maxValue);
+            }
+        }
+
+        return spectrogram;
+    }
+
     private showSpectrogram(ch: number, settings: AnalyzeSettings) {
         const width = 1800;
         const height = 600;
@@ -522,8 +543,6 @@ export default class Analyzer extends Disposable {
         canvas.height = height;
         const context = canvas.getContext("2d", { alpha: false });
         canvasBox.appendChild(canvas);
-        this._spectrogramCanvasList.push(canvas);
-        this._spectrogramCanvasContexts.push(context);
 
         const axisCanvas = document.createElement("canvas");
         axisCanvas.className = "axis-canvas";
@@ -549,31 +568,25 @@ export default class Analyzer extends Disposable {
 
         this._analyzeResultBox.appendChild(canvasBox);
 
-        this._postMessage({
-            type: WebviewMessageType.MakeSpectrogram, data: { channel: ch, settings }
-        });
+        const spectrogram = this.getSpectrogram(ch, settings);
+        requestAnimationFrame(() => this.drawSpectrogram(width, height, context, spectrogram, settings, 0));
     }
 
-    private drawSpectrogram(msg: ExtSpectrogramMessage) {
-        const ch = msg.data.channel;
-        const canvas = this._spectrogramCanvasList[ch];
-        const context = this._spectrogramCanvasContexts[ch];
-        if (!canvas || !context) return;
-
-        const width = canvas.width;
-        const height = canvas.height;
-        const spectrogram = msg.data.spectrogram;
-        const wholeSampleNum = (msg.data.settings.maxTime - msg.data.settings.minTime) * this._audioBuffer.sampleRate;
-        const rectWidth = width * msg.data.settings.hopSize / wholeSampleNum;
+    private drawSpectrogram(
+        width: number, height: number, context: CanvasRenderingContext2D,
+        spectrogram: number[][], settings: AnalyzeSettings, startBlockIndex: number,
+    ) {
+        const wholeSampleNum = (settings.maxTime - settings.minTime) * this._audioBuffer.sampleRate;
+        const rectWidth = width * settings.hopSize / wholeSampleNum;
 
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = width * (((i + msg.data.startBlockIndex) * msg.data.settings.hopSize) / wholeSampleNum);
+            const x = width * (((i + startBlockIndex) * settings.hopSize) / wholeSampleNum);
             const rectHeight = height / spectrogram[i].length;
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height * (1 - (j / spectrogram[i].length));
 
                 const value = spectrogram[i][j];
-                context.fillStyle = this.getSpectrogramColor(value, msg.data.settings.spectrogramAmplitudeRange);
+                context.fillStyle = this.getSpectrogramColor(value, settings.spectrogramAmplitudeRange);
                 context.fillRect(x, y, rectWidth, rectHeight);
             }
         }
