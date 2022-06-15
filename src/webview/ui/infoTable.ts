@@ -1,53 +1,32 @@
-import { Disposable } from "../../dispose";
-import { ExtInfoData, ExtMessage, ExtMessageType } from "../../message";
-import { EventType, Event } from "../events";
-
-export default class InfoTable extends Disposable {
-    private _infoTable: HTMLTableElement;
-
-    constructor (parentID: string) {
-        super();
+export default class InfoTable {
+    constructor (parentID: string, numChannels: number, encoding: string, format: string, sampleRate: number, fileSize: number) {
         const parent = document.getElementById(parentID);
-        this._infoTable = document.createElement("table");
-        parent.appendChild(this._infoTable);
+        const infoTable = document.createElement("table");
+        parent.appendChild(infoTable);
 
-        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
-    }
-
-    private onReceiveMessage(msg: ExtMessage) {
-        if (!msg || msg.type !== ExtMessageType.Prepare) return;
-        if (!msg.data) return;
-        // insert additional data to infoTable
-        this.insertTableData("duration", msg.data.duration + "s");
-    }
-
-    public showInfo(data: ExtInfoData) {
-        if (!data) return;
-
+        // insert data into table
         const channels = {
             1: "mono", 2: "stereo"
-        }[data.numChannels] || "unsupported";
-
+        }[numChannels] || "unsupported";
         const info = [
-            { name: "encoding", value: `${data.encoding}` },
-            { name: "format", value: `${data.format}` },
-            { name: "number_of_channel", value: `${data.numChannels} (${channels})` },
-            { name: "sample_rate", value: `${data.sampleRate}` },
-            { name: "file_size", value: `${data.fileSize} byte` },
+            { name: "encoding", value: `${encoding}` },
+            { name: "format", value: `${format}` },
+            { name: "number_of_channel", value: `${numChannels} (${channels})` },
+            { name: "sample_rate", value: `${sampleRate}` },
+            { name: "file_size", value: `${fileSize} byte` },
         ];
-
         // clear info table
-        const trList = this._infoTable.querySelectorAll("tr");
+        const trList = infoTable.querySelectorAll("tr");
         trList.forEach(tr => {
-            this._infoTable.removeChild(tr);
+            infoTable.removeChild(tr);
         })
         // insert datas to info table
         for (const i of info) {
-            this.insertTableData(i.name, i.value);
+            this.insertTableData(infoTable, i.name, i.value);
         }
     }
 
-    private insertTableData(name: string, value: string) {
+    private insertTableData(infoTable: HTMLTableElement, name: string, value: string) {
         const tr = document.createElement("tr");
         const nameTd = document.createElement("td");
         nameTd.textContent = name;
@@ -56,6 +35,6 @@ export default class InfoTable extends Disposable {
         valueTd.textContent = value;
         valueTd.id = `info-table-${name}`;
         tr.appendChild(valueTd);
-        this._infoTable.appendChild(tr);
+        infoTable.appendChild(tr);
     }
 }

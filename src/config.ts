@@ -1,4 +1,10 @@
-export interface AnalyzeDefault {
+export interface Config {
+    autoPlay: boolean;
+    autoAnalyze: boolean;
+    analyzeConfigDefault: AnalyzeConfigDefault;
+}
+
+export interface AnalyzeConfigDefault {
     windowSizeIndex: number,
     minAmplitude: number,
     maxAmplitude: number,
@@ -7,7 +13,7 @@ export interface AnalyzeDefault {
     spectrogramAmplitudeRange: number,
 }
 
-export interface AnalyzeSettings {
+export interface AnalyzeConfig {
     windowSize: number,
     hopSize: number,
     minFrequency: number,

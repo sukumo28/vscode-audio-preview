@@ -1,7 +1,6 @@
 import { Disposable } from "../../dispose";
 import { EventType, Event } from "../events";
-import { AnalyzeDefault, AnalyzeSettings } from "../../analyzeSettings";
-import { ExtMessage, ExtMessageType} from "../../message";
+import { AnalyzeConfigDefault, AnalyzeConfig } from "../../config";
 import Ooura from "ooura";
 
 export default class Analyzer extends Disposable {
@@ -15,9 +14,9 @@ export default class Analyzer extends Disposable {
     private _latestAnalyzeID: number = 0;
     public get latestAnalyzeID() { return this._latestAnalyzeID; }
 
-    private _defaultSetting: AnalyzeDefault;
+    private _defaultSetting: AnalyzeConfigDefault;
 
-    constructor (parentID: string, ab: AudioBuffer, defaultSetting: AnalyzeDefault) {
+    constructor (parentID: string, ab: AudioBuffer, defaultSetting: AnalyzeConfigDefault, autoAnalyze: boolean) {
         super();
         this._audioBuffer = ab;
         this._defaultSetting = defaultSetting;
@@ -77,7 +76,6 @@ export default class Analyzer extends Disposable {
         // init analyze setting button
         document.getElementById("analyze-setting").style.display = "none";
         this._analyzeSettingButton = <HTMLButtonElement>document.getElementById("analyze-setting-button");
-        this._analyzeSettingButton.style.display = "none";
         this._analyzeSettingButton.onclick = () => {
             const settings = document.getElementById("analyze-setting");
             if (settings.style.display !== "block") {
@@ -91,42 +89,23 @@ export default class Analyzer extends Disposable {
 
         // init analyze button
         this._analyzeButton = <HTMLButtonElement>document.getElementById("analyze-button");
-        this._analyzeButton.style.display = "none";
         this._analyzeButton.onclick = () => { this.analyze() };
 
         // init analyze result box
         this._analyzeResultBox = document.getElementById("analyze-result-box");
 
-        // add eventlistener to get spectrogram data
-        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveDate(e.data)));
-    }
-
-    private clearAnalyzeResult() {
-        for (const c of Array.from(this._analyzeResultBox.children)) {
-            this._analyzeResultBox.removeChild(c);
-        }
-    }
-
-    private activate(autoAnalyze: boolean) {
-        // init default analyze settings
+        // init analyze settings
         this.initAnalyzeSettings();
 
-        // enable analyze button
-        this._analyzeSettingButton.style.display = "block";
-        this._analyzeButton.style.display = "block";
+        // run autoAnalyze
         if (autoAnalyze) {
             this._analyzeButton.click();
         }
     }
 
-    private onReceiveDate(msg: ExtMessage) {
-        switch (msg.type) {
-            case ExtMessageType.Data: {
-                if (msg.data.wholeLength <= msg.data.end) {
-                    this.activate(msg.data.autoAnalyze);
-                }
-                break;
-            }
+    private clearAnalyzeResult() {
+        for (const c of Array.from(this._analyzeResultBox.children)) {
+            this._analyzeResultBox.removeChild(c);
         }
     }
 
@@ -265,7 +244,7 @@ export default class Analyzer extends Disposable {
         }
     }
 
-    private getAnalyzeSettings(): AnalyzeSettings {
+    private getAnalyzeSettings(): AnalyzeConfig {
         // get windowsize
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
         const windowSize = Number(windowSizeSelect.value);
@@ -404,7 +383,7 @@ export default class Analyzer extends Disposable {
         this._analyzeButton.style.display = "block";
     }
 
-    private showWaveForm(ch: number, settings: AnalyzeSettings) {
+    private showWaveForm(ch: number, settings: AnalyzeConfig) {
         const width = 1000;
         const height = 200;
 
@@ -475,7 +454,7 @@ export default class Analyzer extends Disposable {
         }
     }
 
-    private getSpectrogram(ch: number, settings: AnalyzeSettings) {
+    private getSpectrogram(ch: number, settings: AnalyzeConfig) {
         const data = this._audioBuffer.getChannelData(ch);
         const sampleRate = this._audioBuffer.sampleRate;
 
@@ -531,7 +510,7 @@ export default class Analyzer extends Disposable {
         return spectrogram;
     }
 
-    private showSpectrogram(ch: number, settings: AnalyzeSettings) {
+    private showSpectrogram(ch: number, settings: AnalyzeConfig) {
         const width = 1800;
         const height = 600;
 
@@ -574,7 +553,7 @@ export default class Analyzer extends Disposable {
 
     private drawSpectrogram(
         width: number, height: number, context: CanvasRenderingContext2D,
-        spectrogram: number[][], settings: AnalyzeSettings, startBlockIndex: number,
+        spectrogram: number[][], settings: AnalyzeConfig, startBlockIndex: number,
     ) {
         const wholeSampleNum = (settings.maxTime - settings.minTime) * this._audioBuffer.sampleRate;
         const rectWidth = width * settings.hopSize / wholeSampleNum;

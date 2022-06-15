@@ -1,9 +1,8 @@
 import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
-import { AnalyzeDefault } from "./analyzeSettings";
-import { ExtDataData, ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, WebviewMessage, WebviewMessageType } from "./message";
-import documentData from "./documentData";
+import { AnalyzeConfigDefault, Config } from "./config";
+import { ExtData, ExtMessage, ExtMessageType, WebviewMessage, WebviewMessageType } from "./message";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
@@ -13,14 +12,8 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     ): Promise<AudioPreviewDocument | PromiseLike<AudioPreviewDocument>> {
         // If we have a backup, read that. Otherwise read the resource from the workspace
         const dataFile = typeof backupId === 'string' ? vscode.Uri.parse(backupId) : uri;
-        const fileData = await AudioPreviewDocument.readFile(dataFile);
-        try {
-            const decoder = await documentData.create(fileData);
-            return new AudioPreviewDocument(uri, decoder);
-        } catch (err: any) {
-            vscode.window.showErrorMessage(err.message);
-            return new AudioPreviewDocument(uri, undefined);
-        }
+        const data = await AudioPreviewDocument.readFile(dataFile);
+        return new AudioPreviewDocument(uri, data);
     }
 
     private static async readFile(uri: vscode.Uri): Promise<Uint8Array> {
@@ -31,12 +24,12 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     }
 
     private readonly _uri: vscode.Uri;
-    private _documentData: documentData;
+    private _documentData: Uint8Array;
     private _fsWatcher: vscode.FileSystemWatcher;
 
     private constructor (
         uri: vscode.Uri,
-        initialContent: any
+        initialContent: Uint8Array
     ) {
         super();
         this._uri = uri;
@@ -47,61 +40,12 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
     public get uri() { return this._uri; }
 
+    public get documentData() { return this._documentData; }
+
     public onDidChange: vscode.Event<vscode.Uri>;
 
-    public audioInfo(): ExtInfoData {
-        this._documentData.readAudioInfo();
-        return {
-            encoding: this._documentData.encoding,
-            format: this._documentData.format,
-            numChannels: this._documentData.numChannels,
-            sampleRate: this._documentData.sampleRate,
-            fileSize: this._documentData.fileSize,
-        };
-    }
-
-    public prepareData(): ExtPrepareData {
-        // execute decode
-        this._documentData.decode();
-
-        // read config
-        const config = vscode.workspace.getConfiguration("WavPreview");
-        const analyzeDefault = config.get("analyzeDefault") as AnalyzeDefault;
-
-        return {
-            sampleRate: this._documentData.sampleRate,
-            numberOfChannels: this._documentData.numChannels,
-            length: this._documentData.length,
-            duration: this._documentData.duration,
-            analyzeDefault
-        };
-    }
-
-    public audioData(start: number, end: number): ExtDataData {
-        const samples = new Array(this._documentData.numChannels);
-        for (let ch = 0; ch < this._documentData.numChannels; ch++) {
-            samples[ch] = this._documentData.samples[ch].slice(start, end);
-        }
-
-        return {
-            samples,
-            length: samples[0].length,
-            numberOfChannels: this._documentData.numChannels,
-            start,
-            end,
-            wholeLength: this._documentData.samples[0].length
-        };
-    }
-
     public async reload() {
-        const fileData = await AudioPreviewDocument.readFile(this._uri);
-        try {
-            this._documentData.dispose();
-            this._documentData = await documentData.create(fileData);
-        } catch (err: any) {
-            vscode.window.showErrorMessage(err.message);
-            this._documentData = undefined;
-        }
+        this._documentData =await AudioPreviewDocument.readFile(this._uri);
     }
 
     private readonly _onDidDispose = this._register(new vscode.EventEmitter<void>());
@@ -114,7 +58,6 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
      */
     dispose(): void {
         this._onDidDispose.fire();
-        this._documentData.dispose();
         super.dispose();
     }
 }
@@ -194,46 +137,33 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
     private onReceiveMessage(msg: WebviewMessage, webviewPanel: vscode.WebviewPanel, document: AudioPreviewDocument) {
         switch (msg.type) {
-            case WebviewMessageType.Ready: {
-                this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Info,
-                    data: {
-                        isTrusted: vscode.workspace.isTrusted,
-                        ...document.audioInfo(),
-                    }
-                });
-                break;
-            }
+            case WebviewMessageType.Config: {
+                const config = vscode.workspace.getConfiguration("WavPreview");
+                console.log(config);
+                const autoPlay = config.get("autoPlay") as boolean;
+                const autoAnalyze = config.get("autoAnalyze") as boolean;
+                const analyzeConfigDefault = config.get("analyzeDefault") as AnalyzeConfigDefault;
 
-            case WebviewMessageType.Prepare: {
                 this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Prepare,
-                    data: document.prepareData()
+                    type: ExtMessageType.Config,
+                    data: { autoPlay, autoAnalyze, analyzeConfigDefault }
                 });
                 break;
             }
 
             case WebviewMessageType.Data: {
-                const data = document.audioData(msg.data.start, msg.data.end);
-
-                // play audio automatically after first data message 
-                // if WapPreview.autoPlay is true
-                if (msg.data.start === 0) {
-                    const config = vscode.workspace.getConfiguration("WavPreview");
-                    data.autoPlay = config.get("autoPlay");
+                if (!vscode.workspace.isTrusted) {
+                    throw new Error("cannot play audio in untrusted workspace");
                 }
 
-                // analyze automatically
-                if (data.wholeLength <= data.end) {
-                    const config = vscode.workspace.getConfiguration("WavPreview");
-                    data.autoAnalyze = config.get("autoAnalyze");
-                }
-
+                const dd = document.documentData;
+                const a = Array.from(dd.slice(msg.data.start, msg.data.end));
                 this.postMessage(webviewPanel.webview, {
                     type: ExtMessageType.Data,
-                    data
+                    data: {
+                        samples: a, start: msg.data.start, end: msg.data.end, wholeLength: dd.length
+                    }
                 });
-
                 break;
             }
 
@@ -271,7 +201,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
             <head>
                 <meta charset="UTF-8">
                 
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'unsafe-eval' 'nonce-${nonce}'; connect-src data:;">
                 
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 

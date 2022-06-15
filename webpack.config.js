@@ -50,7 +50,12 @@ const webviewConfig = {
     extensions: ['.ts', '.js'],
     fallback: {
       assert: require.resolve('assert'),
+      path: require.resolve('path-browserify')
     },
+    alias: {
+      "fs": false,
+      "crypto": false
+    }
   },
   module: {
     rules: [

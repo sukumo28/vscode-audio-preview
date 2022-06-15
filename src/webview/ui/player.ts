@@ -5,7 +5,6 @@ import { EventType, Event } from "../events";
 export default class Player extends Disposable {
     private _audioContext: AudioContext;
     private _audioBuffer: AudioBuffer;
-    private _postMessage: postMessage;
 
     // play audio
     private _playButton: HTMLButtonElement;
@@ -30,11 +29,10 @@ export default class Player extends Disposable {
     private _seekbarValue: number = 0;
     private _animationFrameID: number = 0;
 
-    constructor (parentID: string, audioContext: AudioContext, audioBuffer: AudioBuffer, postMessage: postMessage) {
+    constructor (parentID: string, audioContext: AudioContext, audioBuffer: AudioBuffer, autoPlay: boolean) {
         super();
         this._audioContext = audioContext;
         this._audioBuffer = audioBuffer;
-        this._postMessage = postMessage;
 
         // init base html
         const parent = document.getElementById(parentID);
@@ -81,9 +79,6 @@ export default class Player extends Disposable {
         this._playButton.textContent = "play";
         this._playButton.style.display = "block";
 
-        // add eventlistener to get audio data
-        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveData(e.data)));
-
         // register keyboard shortcuts
         // don't use command.register at audioPreviewEditorProvider.openCustomDocument due to command confliction
         this._register(new Event(window, EventType.KeyDown, (e: KeyboardEvent) => {
@@ -93,28 +88,10 @@ export default class Player extends Disposable {
             e.preventDefault();
             this._playButton.click();
         }));
-    }
 
-    private onReceiveData(msg: ExtMessage) {
-        if (msg.type !== ExtMessageType.Data) return;
-
-        if (msg.data.autoPlay) {
+        // run autoPlay
+        if (autoPlay) {
             this._playButton.click();
-        }
-
-        // copy passed data.samples into audioBuffer manually, because it is once serialized (not recognised as Float32Array)
-        for (let ch = 0; ch < msg.data.numberOfChannels; ch++) {
-            const f32a = new Float32Array(msg.data.length);
-            for (let i = 0; i < f32a.length; i++) {
-                f32a[i] = msg.data.samples[ch][i];
-            }
-            this._audioBuffer.copyToChannel(f32a, ch, msg.data.start);
-        }
-
-        if (msg.data.end < msg.data.wholeLength) {
-            this._postMessage({
-                type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end + 100000 }
-            });
         }
     }
 
