@@ -156,8 +156,10 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     throw new Error("cannot play audio in untrusted workspace");
                 }
 
+                console.log("slice start");
                 const dd = document.documentData;
                 const a = Array.from(dd.slice(msg.data.start, msg.data.end));
+                console.log("slice done");
                 this.postMessage(webviewPanel.webview, {
                     type: ExtMessageType.Data,
                     data: {

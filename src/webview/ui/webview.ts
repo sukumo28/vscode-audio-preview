@@ -44,24 +44,27 @@ export default class WebView {
             case ExtMessageType.Config: {
                 this._config = msg.data
 
-                this._postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 100000 } });
+                this._postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 3000000 } });
                 break;
             }
     
             case ExtMessageType.Data: {
                 // init fileData
+                console.log(msg);
                 if (!this._fileData) {
                     this._fileData = new Uint8Array(msg.data.wholeLength);
                 }
 
                 // set fileData
+                console.log("start copy");
                 for (let i = 0; i < msg.data.samples.length; i++) {
                     this._fileData[i + msg.data.start] = msg.data.samples[i];
                 }
+                console.log("copy done");
     
                 // request next data
                 if (msg.data.end < msg.data.wholeLength) {
-                    this._postMessage({ type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end+100000 } });
+                    this._postMessage({ type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end+3000000 } });
                     break;
                 }
 
@@ -78,7 +81,10 @@ export default class WebView {
     }
 
     private async activateUI() {
+        console.log("init decoder");
         const decoder = await documentData.create(this._fileData);
+
+        console.log("read header info");
         decoder.readAudioInfo();
 
         new InfoTable(
@@ -90,8 +96,10 @@ export default class WebView {
             decoder.fileSize
         );
 
+        console.log("decode");
         decoder.decode();
 
+        console.log("show ui");
         const audioContext = this._createAudioContext(decoder.sampleRate);
         const audioBuffer = audioContext.createBuffer(decoder.numChannels, decoder.length, decoder.sampleRate);
         for (let ch = 0; ch < decoder.numChannels; ch++) {
@@ -102,6 +110,8 @@ export default class WebView {
         this._disposables.push(player);
         const analyzer = new Analyzer("analyzer", audioBuffer, this._config.analyzeConfigDefault, this._config.autoAnalyze);
         this._disposables.push(analyzer);
+
+        decoder.dispose();
     }
 
     public dispose() {
