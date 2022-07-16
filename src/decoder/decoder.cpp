@@ -62,6 +62,19 @@ void read_samples(AVFrame* frame, std::vector<float>& dest, bool is_planar) {
 }
 
 template <>
+void read_samples<double>(AVFrame* frame, std::vector<float>& dest, bool is_planar) {
+    for (int i = 0; i < frame->nb_samples; i++) {
+        for (int j = 0; j < frame->channels; j++) {
+            float channelSample = static_cast<float>(is_planar 
+                ? reinterpret_cast<double*>(frame->extended_data[j])[i]
+                : reinterpret_cast<double*>(frame->data[0])[i * frame->channels + j]);
+
+            dest.push_back(channelSample);
+        }
+    }
+}
+
+template <>
 void read_samples<float>(AVFrame* frame, std::vector<float>& dest, bool is_planar) {
     for (int i = 0; i < frame->nb_samples; i++) {
         for (int j = 0; j < frame->channels; j++) {
@@ -92,6 +105,10 @@ int read_samples(AVFrame* frame, AVSampleFormat format, std::vector<float>& dest
     case AV_SAMPLE_FMT_FLT:
     case AV_SAMPLE_FMT_FLTP:
         read_samples<float>(frame, dest, is_planar);
+        return 0;
+    case AV_SAMPLE_FMT_DBL:
+    case AV_SAMPLE_FMT_DBLP:
+        read_samples<double>(frame, dest, is_planar);
         return 0;
     default:
         return -1;
