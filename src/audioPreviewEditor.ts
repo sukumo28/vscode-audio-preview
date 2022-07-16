@@ -139,7 +139,6 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
         switch (msg.type) {
             case WebviewMessageType.Config: {
                 const config = vscode.workspace.getConfiguration("WavPreview");
-                console.log(config);
                 const autoPlay = config.get("autoPlay") as boolean;
                 const autoAnalyze = config.get("autoAnalyze") as boolean;
                 const analyzeConfigDefault = config.get("analyzeDefault") as AnalyzeConfigDefault;
@@ -156,10 +155,8 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     throw new Error("cannot play audio in untrusted workspace");
                 }
 
-                console.log("slice start");
                 const dd = document.documentData;
-                const a = Array.from(dd.slice(msg.data.start, msg.data.end));
-                console.log("slice done");
+                const a = Buffer.from(dd.slice(msg.data.start, msg.data.end)).toString('base64');
                 this.postMessage(webviewPanel.webview, {
                     type: ExtMessageType.Data,
                     data: {

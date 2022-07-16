@@ -21,7 +21,7 @@ export class ExtDataMessage {
 }
 
 export interface ExtData {
-    samples: number[];
+    samples: string;
     start: number;
     end: number;
     wholeLength: number;

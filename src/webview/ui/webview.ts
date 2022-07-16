@@ -12,7 +12,7 @@ type createAudioContext = (sampleRate: number) => AudioContext;
 export default class WebView {
     private _postMessage: postMessage;
     private _createAudioContext: createAudioContext;
-    
+
     private _disposables: Disposable[] = [];
 
     private _config: Config;
@@ -47,31 +47,31 @@ export default class WebView {
                 this._postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 3000000 } });
                 break;
             }
-    
+
             case ExtMessageType.Data: {
                 // init fileData
-                console.log(msg);
                 if (!this._fileData) {
+                    console.log('start receiving data');
                     this._fileData = new Uint8Array(msg.data.wholeLength);
                 }
 
                 // set fileData
-                console.log("start copy");
+                const samples = new Uint8Array(base64ToArrayBuffer(msg.data.samples));
                 for (let i = 0; i < msg.data.samples.length; i++) {
-                    this._fileData[i + msg.data.start] = msg.data.samples[i];
+                    this._fileData[i + msg.data.start] = samples[i];
                 }
-                console.log("copy done");
-    
+
                 // request next data
                 if (msg.data.end < msg.data.wholeLength) {
-                    this._postMessage({ type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end+3000000 } });
+                    this._postMessage({ type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end + 3000000 } });
                     break;
                 }
 
+                console.log('finish receiving data');
                 this.activateUI();
                 break;
             }
-    
+
             case ExtMessageType.Reload: {
                 this.dispose();
                 this.initWebview();
@@ -81,7 +81,6 @@ export default class WebView {
     }
 
     private async activateUI() {
-        console.log("init decoder");
         const decoder = await documentData.create(this._fileData);
 
         console.log("read header info");
@@ -117,4 +116,14 @@ export default class WebView {
     public dispose() {
         disposeAll(this._disposables);
     }
+}
+
+function base64ToArrayBuffer(base64) {
+    const binary_string = window.atob(base64);
+    const len = binary_string.length;
+    let bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes.buffer;
 }
