@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.4 - 2022-07-16  
+### Changed  
+- support dbl  
+
 ## 2.0.3 - 2022-06-12  
 ### Changed  
 - fix reload bug  
