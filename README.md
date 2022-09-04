@@ -5,6 +5,12 @@ You can also check waveform and spectrogram.
 
 Supported Audio Files: `wav`, `aac`, `mp3`, `ogg`, `flac`, ... etc.  
 
+> **Note**  
+> VSCode will [officially support Audio controls within Notebooks](https://github.com/microsoft/vscode/issues/118275#issue-823489255) in the near future.  
+> Please consider using the official feature.  
+> Thank you for using this extension.  
+> (However, we will continue to maintain and develop this extension.)  
+
 ## Features
 
 How to preview audio.  
