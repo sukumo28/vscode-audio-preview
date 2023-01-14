@@ -2,7 +2,7 @@
 	"name": "wav-preview",
 	"displayName": "audio-preview",
 	"description": "play & preview audio file in VS Code. (wav,mp3,ogg,aac,flac,...etc)",
-	"version": "2.0.4",
+	"version": "2.0.5",
 	"engines": {
 		"vscode": "^1.59.1"
 	},

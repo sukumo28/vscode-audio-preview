@@ -1,6 +1,6 @@
 # Change Log
 
-## 2.0.4 - 2023-01-14  
+## 2.0.5 - 2023-01-14  
 ### Changed  
 - security update
 
