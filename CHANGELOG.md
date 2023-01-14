@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.4 - 2023-01-14  
+### Changed  
+- security update
+
 ## 2.0.4 - 2022-07-16  
 ### Changed  
 - support dbl  
