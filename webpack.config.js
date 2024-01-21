@@ -47,7 +47,15 @@ const webviewConfig = {
   },
   devtool: 'source-map',
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+    fallback: {
+      assert: require.resolve('assert'), // Ooura(fft lib) contains assert
+      path: require.resolve('path-browserify')
+    },
+    alias: {
+      "fs": false,
+      "crypto": false
+    }
   },
   module: {
     rules: [
@@ -68,6 +76,9 @@ const webviewConfig = {
         './src/webview/css/vscode.css',
         './src/webview/css/audioPreview.css',
       ]
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser' // provide a shim for the global `process` variable
     })
   ]
 }

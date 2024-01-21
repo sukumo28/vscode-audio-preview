@@ -16,6 +16,7 @@ decoder.wasm.js:
 	-s FORCE_FILESYSTEM=1 \
 	-s SINGLE_FILE=1 \
 	-s EXPORTED_RUNTIME_METHODS=['FS'] \
+	-s NO_DYNAMIC_EXECUTION=1 \
 	-lembind \
 	-o ./wasm/decoder.js \
 	decoder.cpp

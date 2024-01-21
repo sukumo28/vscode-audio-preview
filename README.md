@@ -3,13 +3,13 @@
 You can play your audio file and preview its info on VS Code.  
 You can also check waveform and spectrogram.  
 
-Supported Audio Files: `wav`, `aac`, `mp3`, `ogg`, `flac`, ... etc.  
+Supported Audio Files: `wav`, `mp3`, `aac`, `ogg`, `flac`, `opus` ... etc.  
 
 > **Note**  
-> VSCode will [officially support Audio controls within Notebooks](https://github.com/microsoft/vscode/issues/118275#issue-823489255) in the near future.  
-> Please consider using the official feature.  
-> Thank you for using this extension.  
-> (However, we will continue to maintain and develop this extension.)  
+> Please consider using the built-in audio playback feature as well. 
+> When we developed this VS Code extension, VS Code did not bundle ffmpeg and had no audio playback capabilities. 
+> However, with updates, a built-in audio playback feature has been added. 
+> While this extension has finish its purpose, we will continue to maintain it slowly.
 
 ## Features
 
@@ -27,17 +27,12 @@ If this extension does not open by default, edit `settings.json` like below.
 ## Settings  
 You can configure these options in `settings.json` or VS Code's GUI.  
 
-You can play audio automatically when you open it.  
-```json
-"WavPreview.autoPlay": true
-```
-
-You can analyze audio automatically when you open it.   
+Analyze audio automatically when you open it.   
 ```json
 "WavPreview.autoAnalyze": true
 ```
 
-You can configure default value of analyze settings like below.  
+Configure default value of analyze settings like below.  
 ```json
 "WavPreview.analyzeDefault": {
         // fft window sizw. [0,7]
@@ -57,15 +52,15 @@ You can configure default value of analyze settings like below.
   
 ## Development  
 
-### Issues  
+### Contributions  
 
-Feel free to report isuues on github.  
+Feel free to report Isuues and send Pull Requests on github.  
 
 ### Build  
 * Clone this repo  
 * Install Dependencies: `npm install`  
 * Build Container for decoder: `docker build -t audio-decoder ./src/decoder/`  
-* Compile decoder.cpp to wasm: `docker run -v ${pwd}/src/decoder:/build -it audio-decoder make`  
+* Compile decoder.cpp to wasm: `docker run --rm -v ${pwd}/src/decoder:/build -it audio-decoder make`  
 * Run Extension: f5  
 
 ### References  

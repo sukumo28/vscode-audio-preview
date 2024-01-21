@@ -1,39 +1,23 @@
-import { Disposable } from "../../dispose";
-import { ExtInfoData, ExtMessage, ExtMessageType } from "../../message";
-import { EventType, Event } from "../events";
-
-export default class InfoTable extends Disposable {
+export default class InfoTableComponent {
     private _infoTable: HTMLTableElement;
 
     constructor (parentID: string) {
-        super();
         const parent = document.getElementById(parentID);
         this._infoTable = document.createElement("table");
         parent.appendChild(this._infoTable);
-
-        this._register(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
     }
 
-    private onReceiveMessage(msg: ExtMessage) {
-        if (!msg || msg.type !== ExtMessageType.Prepare) return;
-        if (!msg.data) return;
-        // insert additional data to infoTable
-        this.insertTableData("duration", msg.data.duration + "s");
-    }
-
-    public showInfo(data: ExtInfoData) {
-        if (!data) return;
-
+    public showInfo(numChannels: number, sampleRate: number, fileSize: number, format: string, encoding: string) {
         const channels = {
             1: "mono", 2: "stereo"
-        }[data.numChannels] || "unsupported";
+        }[numChannels] || "unsupported";
 
         const info = [
-            { name: "encoding", value: `${data.encoding}` },
-            { name: "format", value: `${data.format}` },
-            { name: "number_of_channel", value: `${data.numChannels} (${channels})` },
-            { name: "sample_rate", value: `${data.sampleRate}` },
-            { name: "file_size", value: `${data.fileSize} byte` },
+            { name: "encoding", value: `${encoding}` },
+            { name: "format", value: `${format}` },
+            { name: "number_of_channel", value: `${numChannels} (${channels})` },
+            { name: "sample_rate", value: `${sampleRate}` },
+            { name: "file_size", value: `${fileSize} byte` },
         ];
 
         // clear info table
@@ -45,6 +29,10 @@ export default class InfoTable extends Disposable {
         for (const i of info) {
             this.insertTableData(i.name, i.value);
         }
+    }
+
+    public showAdditionalInfo(duration: number) {
+        this.insertTableData("duration", duration + "s");
     }
 
     private insertTableData(name: string, value: string) {

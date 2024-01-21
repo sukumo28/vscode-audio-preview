@@ -1,27 +1,40 @@
-import Player from "./player";
-import InfoTable from "./infoTable";
-import Analyzer from "./analyzer";
+import InfoTableComponent from "./infoTableComponent"
+import PlayerComponent  from "./playerComponent";
+import PlayerService from "../service/playerService";
+import AnalyzerComponent from "./analyzerComponent";
 import { Event, EventType } from "../events";
 import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../../message";
 import { Disposable, disposeAll } from "../../dispose";
+import { Config } from "../../config";
+import Decoder from "../decoder";
+import AnalyzeSettingsService from "../service/analyzeSettingsService";
 
 type createAudioContext = (sampleRate: number) => AudioContext;
+type createDecoder = (fileData: Uint8Array) => Promise<Decoder>;
 
 export default class WebView {
+    private _fileData: Uint8Array;
+
     private _postMessage: postMessage;
     private _createAudioContext: createAudioContext;
+    private _createDecoder: createDecoder;
+
+    private _config: Config;
+
     private _disposables: Disposable[] = [];
 
-    constructor (postMessage: postMessage, createAudioContext: createAudioContext) {
+    constructor (postMessage: postMessage, createAudioContext: createAudioContext, createDecoder: createDecoder) {
         this._postMessage = postMessage;
         this._createAudioContext = createAudioContext;
+        this._createDecoder = createDecoder;
         this.initWebview();
     }
 
     private initWebview() {
-        this._disposables.push(
-            new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data))
-        );
+        this._fileData = undefined;
+
+        this._disposables.push(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
+        
         const root = document.getElementById("root");
         root.innerHTML = `
         <div id="info-table"></div>
@@ -30,50 +43,44 @@ export default class WebView {
         
         <div id="analyzer"></div>
         `;
-        this._postMessage({ type: WebviewMessageType.Ready });
+        
+        this._postMessage({ type: WebviewMessageType.Config });
     };
 
-    private onReceiveMessage(msg: ExtMessage) {
+    private async onReceiveMessage(msg: ExtMessage) {
         switch (msg.type) {
-            case ExtMessageType.Info: {
-                const infoTable = new InfoTable("info-table");
-                this._disposables.push(infoTable);
-    
-                infoTable.showInfo(msg.data);
-    
-                // do not play audio in untrusted workspace 
-                if (msg.data.isTrusted === false) {
-                    this._postMessage({ type: WebviewMessageType.Error, data: { message: "Cannot play audio in untrusted workspaces" } });
-                    break;
-                }
-    
-                this._postMessage({ type: WebviewMessageType.Prepare });
+            case ExtMessageType.Config: {
+                this._config = msg.data;
+
+                this._postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 500000 } });
                 break;
             }
-    
-            case ExtMessageType.Prepare: {
-                try {
-                    // create AudioContext and AudioBuffer
-                    const ac = this._createAudioContext(msg.data.sampleRate);
-                    const audioBuffer = ac.createBuffer(msg.data.numberOfChannels, msg.data.length, msg.data.sampleRate);
-                    for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
-                        const f32a = new Float32Array(audioBuffer.length);
-                        audioBuffer.copyToChannel(f32a, ch);
-                    }
-    
-                    // set player ui
-                    const player = new Player("player", ac, audioBuffer, this._postMessage);
-                    this._disposables.push(player);
-    
-                    // init analyzer
-                    const analyzer = new Analyzer("analyzer", audioBuffer, msg.data.analyzeDefault, this._postMessage);
-                    this._disposables.push(analyzer);
-                } catch (err) {
-                    this._postMessage({ type: WebviewMessageType.Error, data: { message: "failed to prepare:" + err } });
+
+            case ExtMessageType.Data: {      
+                // init fileData after receiving first data
+                if (!this._fileData) {
+                    console.log('start receiving data');
+                    this._fileData = new Uint8Array(msg.data.wholeLength);
+                }
+                
+                // set fileData
+                console.log(`received data: ${msg.data.start} ~ ${msg.data.end} / ${msg.data.wholeLength}`);
+                const samples = new Uint8Array(msg.data.samples);
+                this._fileData.set(samples, msg.data.start);
+
+                // request next data
+                if (msg.data.end < msg.data.wholeLength) {
+                    this._postMessage({ type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end + 3000000 } });
                     break;
                 }
-    
-                this._postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 100000 } });
+
+                console.log('finish receiving data');
+                try {
+                    await this.activateUI();
+                } catch (err) {
+                    this._postMessage({ type: WebviewMessageType.Error, data: { message: err.message } });
+                }
+                
                 break;
             }
     
@@ -83,6 +90,47 @@ export default class WebView {
                 break;
             }
         }
+    }
+
+    private async activateUI() {
+        const decoder = await this._createDecoder(this._fileData);
+
+        // show header info
+        console.log("read header info");
+        decoder.readAudioInfo();
+        const infoTableComponent = new InfoTableComponent("info-table");
+        infoTableComponent.showInfo(
+            decoder.numChannels,
+            decoder.sampleRate,
+            decoder.fileSize,
+            decoder.format,
+            decoder.encoding
+        );
+
+        // decode
+        console.log("decode");
+        decoder.decode();
+
+        console.log("show other ui");
+        // show additional info
+        infoTableComponent.showAdditionalInfo(decoder.duration);
+        // init audio context and buffer
+        const audioContext = this._createAudioContext(decoder.sampleRate);
+        const audioBuffer = audioContext.createBuffer(decoder.numChannels, decoder.length, decoder.sampleRate);
+        for (let ch = 0; ch < decoder.numChannels; ch++) {
+            const d = Float32Array.from(decoder.samples[ch]);
+            audioBuffer.copyToChannel(d, ch);
+        }
+        // init player
+        const playerService = new PlayerService(audioContext, audioBuffer);
+        const playerComponent = new PlayerComponent("player", playerService);
+        this._disposables.push(playerService, playerComponent);
+        // init analyzer
+        const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(this._config.analyzeDefault, audioBuffer);
+        const analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeSettingsService, this._config.analyzeDefault, this._config.autoAnalyze);
+        this._disposables.push(analyzerComponent);
+        // dispose decoder
+        decoder.dispose();
     }
 
     public dispose() {

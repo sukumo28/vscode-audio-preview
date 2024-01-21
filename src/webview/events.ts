@@ -1,11 +1,21 @@
 import { Disposable } from "../dispose";
 
 export const EventType = {
+    // vscode
+    VSCodeMessage: "message", 
+    // player
     UpdateSeekbar: "update-seekbar",
     InputSeekbar: "input-seekbar",
-    PostMessage: "post-message",
-    VSCodeMessage: "message", 
-
+    UpdateIsPlaying: "update-is-playing",
+    // analyzeSettings
+    AS_UpdateMinFrequency: "as-update-min-frequency",
+    AS_UpdateMaxFrequency: "as-update-max-frequency",
+    AS_UpdateMinTime: "as-update-min-time",
+    AS_UpdateMaxTime: "as-update-max-time",
+    AS_UpdateMinAmplitude: "as-update-min-amplitude",
+    AS_UpdateMaxAmplitude: "as-update-max-amplitude",
+    AS_UpdateSpectrogramAmplitudeRange: "as-update-spectrogram-amplitude-range",
+    // other
     Click: "click",
     Change: "change",
     KeyDown: "keydown"

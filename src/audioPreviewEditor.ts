@@ -1,9 +1,8 @@
 import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
-import { AnalyzeDefault, AnalyzeSettings } from "./analyzeSettings";
-import { ExtDataData, ExtInfoData, ExtMessage, ExtMessageType, ExtPrepareData, ExtSpectrogramData, WebviewMessage, WebviewMessageType } from "./message";
-import documentData from "./documentData";
+import { AnalyzeDefault } from "./config";
+import { ExtMessage, ExtMessageType, WebviewMessage, WebviewMessageType } from "./message";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
@@ -13,14 +12,8 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     ): Promise<AudioPreviewDocument | PromiseLike<AudioPreviewDocument>> {
         // If we have a backup, read that. Otherwise read the resource from the workspace
         const dataFile = typeof backupId === 'string' ? vscode.Uri.parse(backupId) : uri;
-        const fileData = await AudioPreviewDocument.readFile(dataFile);
-        try {
-            const decoder = await documentData.create(fileData);
-            return new AudioPreviewDocument(uri, decoder);
-        } catch (err: any) {
-            vscode.window.showErrorMessage(err.message);
-            return new AudioPreviewDocument(uri, undefined);
-        }
+        const data = await AudioPreviewDocument.readFile(dataFile);
+        return new AudioPreviewDocument(uri, data);
     }
 
     private static async readFile(uri: vscode.Uri): Promise<Uint8Array> {
@@ -31,12 +24,13 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
     }
 
     private readonly _uri: vscode.Uri;
-    private _documentData: documentData;
+    private _documentData: Uint8Array;
+    public get documentData() { return this._documentData; }
     private _fsWatcher: vscode.FileSystemWatcher;
 
     private constructor (
         uri: vscode.Uri,
-        initialContent: any
+        initialContent: Uint8Array
     ) {
         super();
         this._uri = uri;
@@ -49,76 +43,8 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
     public onDidChange: vscode.Event<vscode.Uri>;
 
-    public audioInfo(): ExtInfoData {
-        this._documentData.readAudioInfo();
-        return {
-            encoding: this._documentData.encoding,
-            format: this._documentData.format,
-            numChannels: this._documentData.numChannels,
-            sampleRate: this._documentData.sampleRate,
-            fileSize: this._documentData.fileSize,
-        };
-    }
-
-    public prepareData(): ExtPrepareData {
-        // execute decode
-        this._documentData.decode();
-
-        // read config
-        const config = vscode.workspace.getConfiguration("WavPreview");
-        const analyzeDefault = config.get("analyzeDefault") as AnalyzeDefault;
-
-        return {
-            sampleRate: this._documentData.sampleRate,
-            numberOfChannels: this._documentData.numChannels,
-            length: this._documentData.length,
-            duration: this._documentData.duration,
-            analyzeDefault
-        };
-    }
-
-    public audioData(start: number, end: number): ExtDataData {
-        const samples = new Array(this._documentData.numChannels);
-        for (let ch = 0; ch < this._documentData.numChannels; ch++) {
-            samples[ch] = this._documentData.samples[ch].slice(start, end);
-        }
-
-        return {
-            samples,
-            length: samples[0].length,
-            numberOfChannels: this._documentData.numChannels,
-            start,
-            end,
-            wholeLength: this._documentData.samples[0].length
-        };
-    }
-
-    public makeSpectrogram(ch: number, settings: AnalyzeSettings) {
-        this._documentData.makeSpectrogram(ch, settings);
-    }
-
-    public spectrogram(ch: number, startBlockIndex: number, blockSize: number, settings: AnalyzeSettings): ExtSpectrogramData {
-        const spectrogram = this._documentData.spectrogram[ch].slice(startBlockIndex, startBlockIndex + blockSize);
-
-        return {
-            channel: ch,
-            isEnd: this._documentData.spectrogram[ch].length <= startBlockIndex + blockSize,
-            startBlockIndex,
-            endBlockIndex: startBlockIndex + blockSize,
-            spectrogram,
-            settings
-        };
-    }
-
     public async reload() {
-        const fileData = await AudioPreviewDocument.readFile(this._uri);
-        try {
-            this._documentData.dispose();
-            this._documentData = await documentData.create(fileData);
-        } catch (err: any) {
-            vscode.window.showErrorMessage(err.message);
-            this._documentData = undefined;
-        }
+        this._documentData = await AudioPreviewDocument.readFile(this.uri);
     }
 
     private readonly _onDidDispose = this._register(new vscode.EventEmitter<void>());
@@ -131,7 +57,6 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
      */
     dispose(): void {
         this._onDidDispose.fire();
-        this._documentData.dispose();
         super.dispose();
     }
 }
@@ -211,63 +136,50 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
     private onReceiveMessage(msg: WebviewMessage, webviewPanel: vscode.WebviewPanel, document: AudioPreviewDocument) {
         switch (msg.type) {
-            case WebviewMessageType.Ready: {
+            case WebviewMessageType.Config: {
+                // read config
+                const config = vscode.workspace.getConfiguration("WavPreview");
+                const analyzeDefaultConfig = config.get("analyzeDefault") as AnalyzeDefault;
+                const analyzeDefault = new AnalyzeDefault(
+                    analyzeDefaultConfig.windowSizeIndex,
+                    analyzeDefaultConfig.minAmplitude,
+                    analyzeDefaultConfig.maxAmplitude,
+                    analyzeDefaultConfig.minFrequency,
+                    analyzeDefaultConfig.maxFrequency,
+                    analyzeDefaultConfig.spectrogramAmplitudeRange
+                );
+
                 this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Info,
+                    type: ExtMessageType.Config,
                     data: {
-                        isTrusted: vscode.workspace.isTrusted,
-                        ...document.audioInfo(),
+                        autoPlay: config.get("autoPlay"),
+                        autoAnalyze: config.get("autoAnalyze"),
+                        analyzeDefault
                     }
                 });
                 break;
             }
 
-            case WebviewMessageType.Prepare: {
-                this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Prepare,
-                    data: document.prepareData()
-                });
-                break;
-            }
-
             case WebviewMessageType.Data: {
-                const data = document.audioData(msg.data.start, msg.data.end);
-
-                // play audio automatically after first data message 
-                // if WapPreview.autoPlay is true
-                if (msg.data.start === 0) {
-                    const config = vscode.workspace.getConfiguration("WavPreview");
-                    data.autoPlay = config.get("autoPlay");
+                if (!vscode.workspace.isTrusted) {
+                    throw new Error("Cannot play audio in untrusted workspaces");
                 }
 
-                // analyze automatically
-                if (data.wholeLength <= data.end) {
-                    const config = vscode.workspace.getConfiguration("WavPreview");
-                    data.autoAnalyze = config.get("autoAnalyze");
-                }
+                /*
+                 postMessage performs serialization and deserialization when transferring data.
+                 Therefore, if you send Uint8Array directly, the data may change.
+                 To prevent this, use ArrayBuffer, which is capable of serialization and deserialization, to send data.
+                */
+                const dd = document.documentData;
+                const samples = dd.buffer.slice(msg.data.start, msg.data.end);
 
                 this.postMessage(webviewPanel.webview, {
                     type: ExtMessageType.Data,
-                    data
+                    data: {
+                        samples: samples, start: msg.data.start, end: msg.data.end, wholeLength: dd.length
+                    }
                 });
 
-                break;
-            }
-
-            case WebviewMessageType.MakeSpectrogram: {
-                document.makeSpectrogram(msg.data.channel, msg.data.settings);
-                this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.MakeSpectrogram,
-                    data: { channel: msg.data.channel, settings: msg.data.settings }
-                });
-                break;
-            }
-
-            case WebviewMessageType.Spectrogram: {
-                this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Spectrogram,
-                    data: document.spectrogram(msg.data.channel, msg.data.startBlockIndex, msg.data.blockSize, msg.data.settings)
-                });
                 break;
             }
 
@@ -305,7 +217,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
             <head>
                 <meta charset="UTF-8">
                 
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'wasm-unsafe-eval' 'nonce-${nonce}'; connect-src data:;">
                 
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 

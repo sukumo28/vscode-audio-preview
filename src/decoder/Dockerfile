@@ -1,5 +1,5 @@
 #https://hub.docker.com/r/emscripten/emsdk/tags
-FROM emscripten/emsdk:latest as build 
+FROM emscripten/emsdk:3.1.17 as build 
 
 ARG FFMPEG_VERSION=4.3.2
 ARG PREFIX=/opt/ffmpeg

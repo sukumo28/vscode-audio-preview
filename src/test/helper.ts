@@ -19,10 +19,9 @@ export function postMessageFromWebview(message: WebviewMessage) {
     postMessage(webviewMessageTarget, message);
 }
 
-let timer;
-export async function receiveReaction(preTask: Function, timeout: number = 1000): Promise<ExtMessage | WebviewMessage> {
+export async function waitVSCodeMessageForAction(action: Function, timeout: number = 1000): Promise<ExtMessage | WebviewMessage> {
     return new Promise((resolve) => {
-        timer = setTimeout(() => {
+        const timer = setTimeout(() => {
             postMessageFromWebview({ type: WebviewMessageType.Error, data: { message: "Timeout" } });
         }, timeout);
 
@@ -32,11 +31,27 @@ export async function receiveReaction(preTask: Function, timeout: number = 1000)
             resolve(e.data);
         }, { once: true });
 
-        preTask();
+        action();
     });
 }
 
-class MockAudioBuffer {
+export async function waitEventForAction(action: Function, target: EventTarget, expectedEventType: string, timeout: number = 1000): Promise<any> {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            reject("Timeout");
+        }, timeout);
+
+        target.addEventListener(expectedEventType, (e: CustomEvent) => {
+            clearTimeout(timer);
+            resolve(e.detail);
+        }, { once: true });
+
+        action();
+    });
+}
+
+
+export class MockAudioBuffer {
     numberOfChannels: number;
     length: number;
     sampleRate: number;
@@ -132,4 +147,21 @@ export async function wait(ms: number) {
             resolve();
         }, ms);
     });
+}
+
+export function getRandomInt(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function getRandomFloat(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+}
+
+export function getRandomFloatOutOf(min: number, max: number) {
+    const r = Math.random();
+    if (r < 0.5) {
+        return getRandomFloat(Number.MIN_SAFE_INTEGER, min - Number.EPSILON);
+    } else {
+        return getRandomFloat(max + Number.EPSILON, Number.MAX_SAFE_INTEGER);
+    }
 }
