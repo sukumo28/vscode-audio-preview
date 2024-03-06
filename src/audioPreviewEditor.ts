@@ -169,9 +169,11 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                  postMessage performs serialization and deserialization when transferring data.
                  Therefore, if you send Uint8Array directly, the data may change.
                  To prevent this, use ArrayBuffer, which is capable of serialization and deserialization, to send data.
+
+                 Create a new Uint8Array with a copy of the slice to get a buffer of only the sliced range
                 */
                 const dd = document.documentData;
-                const samples = dd.buffer.slice(msg.data.start, msg.data.end);
+                const samples = new Uint8Array(dd.slice(msg.data.start, msg.data.end)).buffer;
 
                 this.postMessage(webviewPanel.webview, {
                     type: ExtMessageType.Data,
