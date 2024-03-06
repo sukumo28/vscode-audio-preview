@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.6 - 2024-03-06
+### Changed
+- decode in webview
+- fix bug
+
 ## 2.0.5 - 2023-01-14  
 ### Changed  
 - security update
