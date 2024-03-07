@@ -3,7 +3,7 @@
 You can play your audio file and preview its info on VS Code.  
 You can also check waveform and spectrogram.  
 
-Supported Audio Files: `wav`, `mp3`, `aac`, `ogg`, `flac`, `opus` ... etc.  
+Supported Audio Files: `wav`, `mp3`, `aac`, `ogg`, `flac`, `opus`, `m4a`, `sph` ... etc.  
 
 > **Note**  
 > Please consider using the built-in audio playback feature as well. 

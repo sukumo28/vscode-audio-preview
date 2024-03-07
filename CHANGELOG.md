@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.7 - 2024-03-07
+### Changed
+- support sph
+- support m4a
+
 ## 2.0.6 - 2024-03-06
 ### Changed
 - decode in webview
