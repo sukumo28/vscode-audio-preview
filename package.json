@@ -16,7 +16,8 @@
 		"wav",
 		"mp3",
 		"aac",
-		"flac"
+		"flac",
+		"m4a"
 	],
 	"icon": "audio-preview.png",
 	"repository": {
@@ -54,6 +55,9 @@
 					},
 					{
 						"filenamePattern": "*.flac"
+					},
+					{
+						"filenamePattern": "*.m4a"
 					}
 				],
 				"priority": "default"
