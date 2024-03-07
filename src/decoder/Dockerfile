@@ -50,7 +50,7 @@ RUN cd /tmp/ffmpeg-${FFMPEG_VERSION} && \
   --disable-everything --disable-all \
   --enable-avcodec --enable-avformat --enable-avutil \
   --enable-decoder="aac*,mp3*,pcm*,flac,libopus,opus,vorbis,wav" \
-  --enable-demuxer="aac*,mov,pcm*,mp3,ogg,flac,wav,nistsphere" \
+  --enable-demuxer="aac*,mov,m4a,pcm*,mp3,ogg,flac,wav,nistsphere" \
   --enable-libopus \
   --enable-protocol="file" \
   --disable-programs  \
