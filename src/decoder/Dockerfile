@@ -49,8 +49,8 @@ RUN cd /tmp/ffmpeg-${FFMPEG_VERSION} && \
   --cc=emcc --ranlib=emranlib --target-os=none --arch=x86 \
   --disable-everything --disable-all \
   --enable-avcodec --enable-avformat --enable-avutil \
-  --enable-decoder="aac*,mp3*,pcm*,flac,libopus,opus,vorbis" \
-  --enable-demuxer="aac*,mov,pcm*,mp3,ogg,flac,wav" \
+  --enable-decoder="aac*,mp3*,pcm*,flac,libopus,opus,vorbis,wav" \
+  --enable-demuxer="aac*,mov,pcm*,mp3,ogg,flac,wav,nistsphere" \
   --enable-libopus \
   --enable-protocol="file" \
   --disable-programs  \
