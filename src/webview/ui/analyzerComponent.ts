@@ -334,15 +334,19 @@ export default class AnalyzerComponent extends Disposable {
 
         const width = canvas.width;
         const height = canvas.height;
+        
         const wholeSampleNum = (settings.maxTime - settings.minTime) * this._audioBuffer.sampleRate;
         const rectWidth = width * settings.hopSize / wholeSampleNum;
+        
+        const df = this._audioBuffer.sampleRate / settings.windowSize;
+        const minFreqIndex = Math.floor(settings.minFrequency / df);
+        const maxFreqIndex = Math.floor(settings.maxFrequency / df);
+        const rectHeight = height / (maxFreqIndex - minFreqIndex);
 
         for (let i = 0; i < spectrogram.length; i++) {
             const x = i * rectWidth;
-            const rectHeight = height / spectrogram[i].length;
             for (let j = 0; j < spectrogram[i].length; j++) {
-                const y = height * (1 - (j / spectrogram[i].length));
-
+                const y = height - (j + 1) * rectHeight;
                 const value = spectrogram[i][j];
                 context.fillStyle = this.getSpectrogramColor(value, settings.spectrogramAmplitudeRange);
                 context.fillRect(x, y, rectWidth, rectHeight);
@@ -398,7 +402,7 @@ export default class AnalyzerComponent extends Disposable {
         }
 
         for (let i = 0; i < spectrogram.length; i++) {
-            for (let j = minFreqIndex; j < maxFreqIndex; j++) {
+            for (let j = 0; j < spectrogram[i].length; j++) {
                 spectrogram[i][j] = 10 * Math.log10(spectrogram[i][j] / maxValue);
             }
         }
