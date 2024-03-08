@@ -3,6 +3,8 @@ import { Disposable } from '../../dispose';
 import { EventType, Event } from '../events';
 import AnalyzeService from '../service/analyzeService';
 import AnalyzeSettingsService from '../service/analyzeSettingsService';
+import WaveFormComponent from './waveFormComponent';
+import SpectrogramComponent from './spectrogramComponent';
 
 export default class AnalyzerComponent extends Disposable {
     private _audioBuffer: AudioBuffer;
@@ -12,12 +14,7 @@ export default class AnalyzerComponent extends Disposable {
 
     private _analyzeButton: HTMLButtonElement;
     private _analyzeSettingButton: HTMLButtonElement;
-
     private _analyzeResultBox: HTMLElement;
-    private _spectrogramCanvasList: HTMLCanvasElement[] = [];
-    private _spectrogramCanvasContexts: CanvasRenderingContext2D[] = [];
-
-    private _latestAnalyzeID: string;
 
     constructor(
         parentID: string,
@@ -192,150 +189,6 @@ export default class AnalyzerComponent extends Disposable {
         for (const c of Array.from(this._analyzeResultBox.children)) {
             this._analyzeResultBox.removeChild(c);
         }
-        this._spectrogramCanvasList = [];
-        this._spectrogramCanvasContexts = [];
-    }
-
-    private showWaveForm(ch: number, settings: AnalyzeSettingsProps) {
-        const width = 1000;
-        const height = 200;
-
-        const canvasBox = document.createElement("div");
-        canvasBox.className = "canvas-box";
-
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const context = canvas.getContext("2d", { alpha: false });
-        context.fillStyle = "rgb(160,60,200)";
-        canvasBox.appendChild(canvas);
-
-        const axisCanvas = document.createElement("canvas");
-        axisCanvas.className = "axis-canvas";
-        axisCanvas.width = width;
-        axisCanvas.height = height;
-        const axisContext = axisCanvas.getContext("2d");
-        axisContext.font = `12px Arial`;
-        for (let i = 0; i < 10; i++) {
-            axisContext.fillStyle = "rgb(245,130,32)";
-            const x = Math.round(i * width / 10);
-            const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-            if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 10); // skip first label
-            const y = Math.round((i + 1) * height / 10);
-            const a = (i + 1) * (settings.minAmplitude - settings.maxAmplitude) / 10 + settings.maxAmplitude;
-            axisContext.fillText(`${(a).toFixed(2)}`, 4, y - 2);
-
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
-        }
-        canvasBox.appendChild(axisCanvas);
-
-        this._analyzeResultBox.appendChild(canvasBox);
-
-        const startIndex = Math.floor(settings.minTime * this._audioBuffer.sampleRate);
-        const endIndex = Math.floor(settings.maxTime * this._audioBuffer.sampleRate);
-        // limit data size
-        // thus, drawing waveform of long duration input can be done in about the same amount of time as short input
-        const step = Math.ceil((endIndex - startIndex) / 200000);
-        const data = this._audioBuffer.getChannelData(ch).slice(startIndex, endIndex).filter((_, i) => i % step === 0);
-        // convert data. this is not a normalization.
-        // setting.maxAmplitude and setting.minAmplitude is not a min and max of data, but a figure's Y axis range.
-        // data is converted to satisfy setting.maxAmplitude=1 and setting.minAmplitude=0
-        // samples out of range is not displayed. 
-        for (let i = 0; i < data.length; i++) {
-            data[i] = (data[i] - settings.minAmplitude) / (settings.maxAmplitude - settings.minAmplitude);
-        }
-
-        // call draw in requestAnimationFrame not to block ui
-        requestAnimationFrame(() => this.drawWaveForm(data, context, 0, 10000, width, height, settings.analyzeID));
-    }
-
-    private drawWaveForm(
-        data: Float32Array, context: CanvasRenderingContext2D,
-        start: number, count: number, width: number, height: number, analyzeID: string
-    ) {
-        for (let i = 0; i < count; i++) {
-            const x = Math.round(((start + i) / data.length) * width);
-            const y = Math.round(height * (1 - data[start + i]));
-            context.fillRect(x, y, 1, 1);
-        }
-
-        if (start + count < this._audioBuffer.length) {
-            // cancel drawing for old analyzeID
-            if (analyzeID !== this._latestAnalyzeID) return;
-            // call draw in requestAnimationFrame not to block ui
-            requestAnimationFrame(() => this.drawWaveForm(data, context, start + count, count, width, height, analyzeID));
-        }
-    }
-
-    private showSpectrogram(ch: number, settings: AnalyzeSettingsProps) {
-        const width = 1800;
-        const height = 600;
-
-        const canvasBox = document.createElement("div");
-        canvasBox.className = "canvas-box";
-
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const context = canvas.getContext("2d", { alpha: false });
-        canvasBox.appendChild(canvas);
-        this._spectrogramCanvasList.push(canvas);
-        this._spectrogramCanvasContexts.push(context);
-
-        const axisCanvas = document.createElement("canvas");
-        axisCanvas.className = "axis-canvas";
-        axisCanvas.width = width;
-        axisCanvas.height = height;
-        const axisContext = axisCanvas.getContext("2d");
-        axisContext.font = `20px Arial`;
-        for (let i = 0; i < 10; i++) {
-            axisContext.fillStyle = "rgb(245,130,32)";
-            const x = Math.round(i * width / 10);
-            const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-            if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18);
-            const y = Math.round(i * height / 10);
-            const f = (10 - i) * (settings.maxFrequency - settings.minFrequency) / 10 + settings.minFrequency;
-            axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
-
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 2, 2);
-            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
-        }
-
-        canvasBox.appendChild(axisCanvas);
-        this._analyzeResultBox.appendChild(canvasBox);
-
-        const spectrogram = this._analyzeService.getSpectrogram(ch, settings);
-        requestAnimationFrame(() => this.drawSpectrogram(ch, spectrogram, settings));
-    }
-
-    private drawSpectrogram(channel: number, spectrogram: number[][], settings: AnalyzeSettingsProps) {
-        const canvas = this._spectrogramCanvasList[channel];
-        const context = this._spectrogramCanvasContexts[channel];
-        if (!canvas || !context) return;
-
-        const width = canvas.width;
-        const height = canvas.height;
-        
-        const wholeSampleNum = (settings.maxTime - settings.minTime) * this._audioBuffer.sampleRate;
-        const rectWidth = width * settings.hopSize / wholeSampleNum;
-        
-        const df = this._audioBuffer.sampleRate / settings.windowSize;
-        const minFreqIndex = Math.floor(settings.minFrequency / df);
-        const maxFreqIndex = Math.floor(settings.maxFrequency / df);
-        const rectHeight = height / (maxFreqIndex - minFreqIndex);
-
-        for (let i = 0; i < spectrogram.length; i++) {
-            const x = i * rectWidth;
-            for (let j = 0; j < spectrogram[i].length; j++) {
-                const y = height - (j + 1) * rectHeight;
-                const value = spectrogram[i][j];
-                context.fillStyle = this._analyzeService.getSpectrogramColor(value, settings.spectrogramAmplitudeRange);
-                context.fillRect(x, y, rectWidth, rectHeight);
-            }
-        }
     }
 
     public analyze() {
@@ -346,11 +199,10 @@ export default class AnalyzerComponent extends Disposable {
 
         this._analyzeSettingsService.updateAnalyzeID();
         const settings = this._analyzeSettingsService.toProps();
-        this._latestAnalyzeID = settings.analyzeID;
 
         for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {
-            this.showWaveForm(ch, settings);
-            this.showSpectrogram(ch, settings);
+            new WaveFormComponent("analyze-result-box", settings, this._audioBuffer.sampleRate, this._audioBuffer.getChannelData(ch));
+            new SpectrogramComponent("analyze-result-box", this._analyzeService, settings, this._audioBuffer.sampleRate, ch);
         }
 
         // register seekbar on figures
