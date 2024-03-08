@@ -1,12 +1,13 @@
 import { AnalyzeDefault, AnalyzeSettingsProps } from '../../config';
 import { Disposable } from '../../dispose';
 import { EventType, Event } from '../events';
+import AnalyzeService from '../service/analyzeService';
 import AnalyzeSettingsService from '../service/analyzeSettingsService';
-import Ooura from 'ooura';
 
 export default class AnalyzerComponent extends Disposable {
     private _audioBuffer: AudioBuffer;
     private _defaultSetting: AnalyzeDefault;
+    private _analyzeService: AnalyzeService;
     private _analyzeSettingsService: AnalyzeSettingsService;
 
     private _analyzeButton: HTMLButtonElement;
@@ -18,9 +19,17 @@ export default class AnalyzerComponent extends Disposable {
 
     private _latestAnalyzeID: string;
 
-    constructor(parentID: string, audioBuffer: AudioBuffer, analyzeSettingsService: AnalyzeSettingsService, defaultSetting: AnalyzeDefault, autoAnalyze: boolean) {
+    constructor(
+        parentID: string,
+        audioBuffer: AudioBuffer, 
+        analyzeService: AnalyzeService,
+        analyzeSettingsService: AnalyzeSettingsService, 
+        defaultSetting: AnalyzeDefault, 
+        autoAnalyze: boolean
+    ) {
         super();
         this._audioBuffer = audioBuffer;
+        this._analyzeService = analyzeService;
         this._analyzeSettingsService = analyzeSettingsService;
         this._defaultSetting = defaultSetting;
 
@@ -102,31 +111,6 @@ export default class AnalyzerComponent extends Disposable {
         if (autoAnalyze) this.analyze();
     }
 
-    private getSpectrogramColor(amp: number, range: number): string {
-        if (amp == null) return "rgb(0,0,0)";
-        const classNum = 6;
-        const classWidth = range / classNum;
-        const ampClass = Math.floor(amp / classWidth);
-        const classMinAmp = (ampClass + 1) * classWidth;
-        const value = (amp - classMinAmp) / -classWidth;
-        switch (ampClass) {
-            case 0:
-                return `rgb(255,255,${125 + Math.floor(value * 130)})`;
-            case 1:
-                return `rgb(255,${125 + Math.floor(value * 130)},125)`;
-            case 2:
-                return `rgb(255,${Math.floor(value * 125)},125)`;
-            case 3:
-                return `rgb(${125 + Math.floor(value * 130)},0,125)`;
-            case 4:
-                return `rgb(${Math.floor(value * 125)},0,125)`;
-            case 5:
-                return `rgb(0,0,${Math.floor(value * 125)})`;
-            default:
-                return `rgb(0,0,0)`;
-        }
-    }
-
     private initAnalyzerSetting() {
         const settings = this._analyzeSettingsService;
 
@@ -199,7 +183,7 @@ export default class AnalyzerComponent extends Disposable {
         for (let i = 0; i < 100; i++) {
             const amp = i * settings.spectrogramAmplitudeRange / 100;
             const x = i * colorCanvas.width / 100;
-            colorContext.fillStyle = this.getSpectrogramColor(amp, settings.spectrogramAmplitudeRange);
+            colorContext.fillStyle = this._analyzeService.getSpectrogramColor(amp, settings.spectrogramAmplitudeRange);
             colorContext.fillRect(x, 0, colorCanvas.width / 100, colorCanvas.height);
         }
     }
@@ -323,7 +307,7 @@ export default class AnalyzerComponent extends Disposable {
         canvasBox.appendChild(axisCanvas);
         this._analyzeResultBox.appendChild(canvasBox);
 
-        const spectrogram = this.getSpectrogram(ch, settings);
+        const spectrogram = this._analyzeService.getSpectrogram(ch, settings);
         requestAnimationFrame(() => this.drawSpectrogram(ch, spectrogram, settings));
     }
 
@@ -348,66 +332,10 @@ export default class AnalyzerComponent extends Disposable {
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height - (j + 1) * rectHeight;
                 const value = spectrogram[i][j];
-                context.fillStyle = this.getSpectrogramColor(value, settings.spectrogramAmplitudeRange);
+                context.fillStyle = this._analyzeService.getSpectrogramColor(value, settings.spectrogramAmplitudeRange);
                 context.fillRect(x, y, rectWidth, rectHeight);
             }
         }
-    }
-
-    private getSpectrogram(ch: number, settings: AnalyzeSettingsProps) {
-        const data = this._audioBuffer.getChannelData(ch);
-        const sampleRate = this._audioBuffer.sampleRate;
-
-        const windowSize = settings.windowSize;
-        const window = new Float32Array(windowSize);
-        for (let i = 0; i < windowSize; i++) {
-            window[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / windowSize);
-        }
-
-        const startIndex = Math.floor(settings.minTime * sampleRate);
-        const endIndex = Math.floor(settings.maxTime * sampleRate);
-
-        const df = sampleRate / settings.windowSize;
-        const minFreqIndex = Math.floor(settings.minFrequency / df);
-        const maxFreqIndex = Math.floor(settings.maxFrequency / df);
-
-        const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
-
-        let maxValue = Number.EPSILON;
-
-        const spectrogram: number[][] = [];
-        for (let i = startIndex; i < endIndex; i += settings.hopSize) {
-            // i is center of the window
-            const s = i - windowSize / 2, t = i + windowSize / 2;
-            const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
-            const d = ooura.scalarArrayFactory();
-            for (let j = 0; j < d.length; j++) {
-                if (s + j < ss) continue;
-                if (tt < s + j) continue;
-                d[j] = data[s + j] * window[j];
-            }
-
-            const re = ooura.vectorArrayFactory();
-            const im = ooura.vectorArrayFactory();
-            ooura.fft(d.buffer, re.buffer, im.buffer);
-
-            const ps: number[] = [];
-            for (let j = minFreqIndex; j < maxFreqIndex; j++) {
-                const v = re[j] * re[j] + im[j] * im[j];
-                ps.push(v);
-                if (maxValue < v) maxValue = v;
-            }
-
-            spectrogram.push(ps);
-        }
-
-        for (let i = 0; i < spectrogram.length; i++) {
-            for (let j = 0; j < spectrogram[i].length; j++) {
-                spectrogram[i][j] = 10 * Math.log10(spectrogram[i][j] / maxValue);
-            }
-        }
-
-        return spectrogram;
     }
 
     public analyze() {

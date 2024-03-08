@@ -8,6 +8,7 @@ import { Disposable, disposeAll } from "../../dispose";
 import { Config } from "../../config";
 import Decoder from "../decoder";
 import AnalyzeSettingsService from "../service/analyzeSettingsService";
+import AnalyzeService from "../service/analyzeService";
 
 type createAudioContext = (sampleRate: number) => AudioContext;
 type createDecoder = (fileData: Uint8Array) => Promise<Decoder>;
@@ -126,8 +127,9 @@ export default class WebView {
         const playerComponent = new PlayerComponent("player", playerService);
         this._disposables.push(playerService, playerComponent);
         // init analyzer
+        const analyzeService = new AnalyzeService(audioBuffer);
         const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(this._config.analyzeDefault, audioBuffer);
-        const analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeSettingsService, this._config.analyzeDefault, this._config.autoAnalyze);
+        const analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, this._config.analyzeDefault, this._config.autoAnalyze);
         this._disposables.push(analyzerComponent);
         // dispose decoder
         decoder.dispose();
