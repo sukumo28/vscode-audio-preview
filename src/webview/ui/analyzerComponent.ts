@@ -338,7 +338,7 @@ export default class AnalyzerComponent extends Disposable {
         const rectWidth = width * settings.hopSize / wholeSampleNum;
 
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = width * ((i * settings.hopSize) / wholeSampleNum);
+            const x = i * rectWidth;
             const rectHeight = height / spectrogram[i].length;
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height * (1 - (j / spectrogram[i].length));
