@@ -324,10 +324,10 @@ export default class AnalyzerComponent extends Disposable {
         this._analyzeResultBox.appendChild(canvasBox);
 
         const spectrogram = this.getSpectrogram(ch, settings);
-        requestAnimationFrame(() => this.drawSpectrogram(ch, spectrogram, settings, 0));
+        requestAnimationFrame(() => this.drawSpectrogram(ch, spectrogram, settings));
     }
 
-    private drawSpectrogram(channel: number, spectrogram: number[][], settings: AnalyzeSettingsProps, startBlockIndex: number) {
+    private drawSpectrogram(channel: number, spectrogram: number[][], settings: AnalyzeSettingsProps) {
         const canvas = this._spectrogramCanvasList[channel];
         const context = this._spectrogramCanvasContexts[channel];
         if (!canvas || !context) return;
@@ -338,7 +338,7 @@ export default class AnalyzerComponent extends Disposable {
         const rectWidth = width * settings.hopSize / wholeSampleNum;
 
         for (let i = 0; i < spectrogram.length; i++) {
-            const x = width * (((i + startBlockIndex) * settings.hopSize) / wholeSampleNum);
+            const x = width * ((i * settings.hopSize) / wholeSampleNum);
             const rectHeight = height / spectrogram[i].length;
             for (let j = 0; j < spectrogram[i].length; j++) {
                 const y = height * (1 - (j / spectrogram[i].length));
