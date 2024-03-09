@@ -78,7 +78,13 @@ You can configure default value of analyze settings like example below.
 ### Contributions  
 
 Feel free to report Isuues and send Pull Requests on github.  
-
+  
+If you encounter an error and create an issue, it may be helpful for development if you attach the log displayed in VSCode's DevTools.  
+VSCode's DevTools can be opened in the following ways.  
+- Press f12   
+- Press shift + ctrl + I   
+- Select Help > Toggle Developer Tools from the menu at the top of the screen  
+  
 ### Build  
 * Clone this repo  
 * Install Dependencies: `npm install`  

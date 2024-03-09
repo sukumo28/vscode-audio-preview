@@ -52,7 +52,7 @@ export default class WebView {
         switch (msg.type) {
             case ExtMessageType.Config: {
                 this._config = msg.data;
-
+                console.log(msg.data);
                 this._postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 500000 } });
                 break;
             }
