@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.1.0 - 2024-03-09
+### Added
+- suport log scale spectrogram
+- support mel spectrogram
+
 ## 2.0.7 - 2024-03-07
 ### Changed
 - support sph
