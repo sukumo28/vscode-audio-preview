@@ -18,7 +18,7 @@ How to preview audio.
 Note: You can play audio without waiting for finish decoding.
 
 If this extension does not open by default, edit `settings.json` like below.  
-```json
+```jsonc
 "workbench.editorAssociations": {
     "*.wav": "wavPreview.audioPreview"
 },
@@ -30,14 +30,14 @@ Configuration is completely optional.
 There is no need to configure anything if you are just using this extension.  
 
 You can analyze audio automatically when you open it.   
-```json
+```jsonc
 "WavPreview.autoAnalyze": true
 ```
 
 You can configure default value of analyze settings like example below.  
-```json
+```jsonc
 "WavPreview.analyzeDefault": {
-        // Settings about WaveForm figure
+        // Settings about WaveForm
 
         /*
          Range of amplitude displayed on the figure. [-100,100]  
