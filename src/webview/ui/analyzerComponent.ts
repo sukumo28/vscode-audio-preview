@@ -1,4 +1,4 @@
-import { AnalyzeSettingsProps } from '../../config';
+import { AnalyzeSettingsProps } from '../service/analyzeSettingsService';
 import { Disposable } from '../../dispose';
 import { EventType, Event } from '../events';
 import AnalyzeService from '../service/analyzeService';

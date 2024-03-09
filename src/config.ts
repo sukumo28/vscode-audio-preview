@@ -14,17 +14,3 @@ export interface AnalyzeDefault {
     frequencyScale: number;
     melFilterNum: number;
 }
-
-export interface AnalyzeSettingsProps {
-    windowSize: number;
-    hopSize: number;
-    minFrequency: number;
-    maxFrequency: number;
-    minTime: number;
-    maxTime: number;
-    minAmplitude: number;
-    maxAmplitude: number;
-    spectrogramAmplitudeRange: number;
-    frequencyScale: number;
-    melFilterNum: number;
-}

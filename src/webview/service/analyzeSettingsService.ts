@@ -1,5 +1,5 @@
 import { EventType } from "../events";
-import { AnalyzeDefault, AnalyzeSettingsProps } from "../../config";
+import { AnalyzeDefault } from "../../config";
 
 export enum WindowSizeIndex {
     W256 = 0,
@@ -16,6 +16,20 @@ export enum FrequencyScale {
     Linear = 0,
     Log = 1,
     Mel = 2,
+}
+
+export interface AnalyzeSettingsProps {
+    windowSize: number;
+    hopSize: number;
+    minFrequency: number;
+    maxFrequency: number;
+    minTime: number;
+    maxTime: number;
+    minAmplitude: number;
+    maxAmplitude: number;
+    spectrogramAmplitudeRange: number;
+    frequencyScale: number;
+    melFilterNum: number;
 }
 
 export default class AnalyzeSettingsService {

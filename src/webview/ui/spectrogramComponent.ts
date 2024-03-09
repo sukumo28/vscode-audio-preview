@@ -1,4 +1,4 @@
-import { AnalyzeSettingsProps } from "../../config";
+import { AnalyzeSettingsProps } from '../service/analyzeSettingsService';
 import AnalyzeService from "../service/analyzeService";
 import { FrequencyScale } from "../service/analyzeSettingsService";
 

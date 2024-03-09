@@ -1,4 +1,4 @@
-import { AnalyzeSettingsProps } from "../../config";
+import { AnalyzeSettingsProps } from '../service/analyzeSettingsService';
 
 export default class WaveFormComponent {
 

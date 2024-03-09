@@ -1,5 +1,5 @@
 import Ooura from 'ooura';
-import { AnalyzeSettingsProps } from '../../config';
+import { AnalyzeSettingsProps } from '../service/analyzeSettingsService';
 
 export default class AnalyzeService {
     private _audioBuffer: AudioBuffer;
