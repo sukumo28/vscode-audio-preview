@@ -216,7 +216,6 @@ export default class AnalyzerComponent extends Disposable {
         // clear previous result
         this.clearAnalyzeResult();
 
-        this._analyzeSettingsService.updateAnalyzeID();
         const settings = this._analyzeSettingsService.toProps();
 
         for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {

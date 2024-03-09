@@ -266,25 +266,3 @@ describe("fromDefaultSettings", () => {
     });
 
 });
-
-describe("updateAnalyzeID", () => {
-    test("analyzeID should be updated", () => {
-        const as = AnalyzeSettingsService.fromDefaultSetting(
-            { 
-                windowSizeIndex: undefined, 
-                minAmplitude: undefined, 
-                maxAmplitude: undefined, 
-                minFrequency: undefined, 
-                maxFrequency: undefined, 
-                spectrogramAmplitudeRange: undefined, 
-                frequencyScale: undefined, 
-                melFilterNum: undefined
-            },
-            new MockAudioBuffer(1, 44100, 44100) as unknown as AudioBuffer
-        );
-        const analyzeID = as.analyzeID;
-        as.updateAnalyzeID();
-        expect(as.analyzeID).not.toBe(analyzeID);
-    });
-});
-

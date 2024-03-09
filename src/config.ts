@@ -27,5 +27,4 @@ export interface AnalyzeSettingsProps {
     spectrogramAmplitudeRange: number;
     frequencyScale: number;
     melFilterNum: number;
-    analyzeID: string;
 }

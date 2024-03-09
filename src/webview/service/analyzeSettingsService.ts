@@ -1,4 +1,3 @@
-import { getNonce } from "../../util";
 import { EventType } from "../events";
 import { AnalyzeDefault, AnalyzeSettingsProps } from "../../config";
 
@@ -151,9 +150,6 @@ export default class AnalyzeSettingsService {
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, { detail: { value: this._melFilterNum }}))
     }
 
-    private _analyzeID: string;
-    public get analyzeID() { return this._analyzeID; }
-
     private constructor(windowSize: number, hopSize: number, minFrequency: number, maxFrequency: number, minTime: number, maxTime: number, minAmplitude: number, maxAmplitude: number, spectrogramAmplitudeRange: number) {
         this._windowSize = windowSize;
         this._hopSize = hopSize;
@@ -164,7 +160,6 @@ export default class AnalyzeSettingsService {
         this._minAmplitude = minAmplitude;
         this._maxAmplitude = maxAmplitude;
         this._spectrogramAmplitudeRange = spectrogramAmplitudeRange;
-        this._analyzeID = getNonce();
     }
 
     public static fromDefaultSetting(defaultSetting: AnalyzeDefault, audioBuffer: AudioBuffer) {
@@ -269,10 +264,6 @@ export default class AnalyzeSettingsService {
         return hopSize;
     }
 
-    public updateAnalyzeID() {
-        this._analyzeID = getNonce();
-    }
-
     public toProps(): AnalyzeSettingsProps {
         return {
             windowSize: this.windowSize,
@@ -286,7 +277,6 @@ export default class AnalyzeSettingsService {
             spectrogramAmplitudeRange: this.spectrogramAmplitudeRange,
             frequencyScale: this.frequencyScale,
             melFilterNum: this.melFilterNum,
-            analyzeID: this.analyzeID
         };
     }
 }
