@@ -36,6 +36,21 @@ export default class AnalyzerComponent extends Disposable {
                 <button id="analyze-setting-button">▼settings</button>
             </div>
             <div id="analyze-setting">
+                <div>Common Settings</div>
+                <div>
+                    time range:
+                    <input id="analyze-min-time" type="number" step="0.1">s ~
+                    <input id="analyze-max-time" type="number" step="0.1">s
+                </div>
+                
+                <div>WaveForm Settings</div>
+                <div>
+                    waveform amplitude range:
+                    <input id="analyze-min-amplitude" type="number" step="0.1"> ~
+                    <input id="analyze-max-amplitude" type="number" step="0.1">
+                </div>
+
+                <div>Spectrogram Settings</div>
                 <div>
                     window size:
                     <select id="analyze-window-size">
@@ -63,16 +78,6 @@ export default class AnalyzerComponent extends Disposable {
                     frequency range:
                     <input id="analyze-min-frequency" type="number" step="1000">Hz ~
                     <input id="analyze-max-frequency" type="number" step="1000">Hz
-                </div>
-                <div>
-                    time range:
-                    <input id="analyze-min-time" type="number" step="0.1">s ~
-                    <input id="analyze-max-time" type="number" step="0.1">s
-                </div>
-                <div>
-                    waveform amplitude range:
-                    <input id="analyze-min-amplitude" type="number" step="0.1"> ~
-                    <input id="analyze-max-amplitude" type="number" step="0.1">
                 </div>
                 <div>
                     <div>
