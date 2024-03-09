@@ -25,8 +25,6 @@ export default class WaveFormComponent {
 
         parent.appendChild(canvasBox);
 
-        console.log("draw spectrogram");
-        console.log(ch, settings);
         switch (settings.frequencyScale) {
             case FrequencyScale.Linear:
                 this.drawLinearAxis(axisCanvas, settings);

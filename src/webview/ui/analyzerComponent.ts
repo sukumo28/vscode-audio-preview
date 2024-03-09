@@ -223,6 +223,7 @@ export default class AnalyzerComponent extends Disposable {
         this.clearAnalyzeResult();
 
         const settings = this._analyzeSettingsService.toProps();
+        console.log("analyze", settings);
 
         for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {
             new WaveFormComponent(
