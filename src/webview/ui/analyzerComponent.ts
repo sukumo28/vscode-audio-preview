@@ -1,4 +1,4 @@
-import { AnalyzeDefault, AnalyzeSettingsProps } from '../../config';
+import { AnalyzeSettingsProps } from '../../config';
 import { Disposable } from '../../dispose';
 import { EventType, Event } from '../events';
 import AnalyzeService from '../service/analyzeService';
@@ -8,7 +8,6 @@ import SpectrogramComponent from './spectrogramComponent';
 
 export default class AnalyzerComponent extends Disposable {
     private _audioBuffer: AudioBuffer;
-    private _defaultSetting: AnalyzeDefault;
     private _analyzeService: AnalyzeService;
     private _analyzeSettingsService: AnalyzeSettingsService;
 
@@ -21,14 +20,12 @@ export default class AnalyzerComponent extends Disposable {
         audioBuffer: AudioBuffer, 
         analyzeService: AnalyzeService,
         analyzeSettingsService: AnalyzeSettingsService, 
-        defaultSetting: AnalyzeDefault, 
         autoAnalyze: boolean
     ) {
         super();
         this._audioBuffer = audioBuffer;
         this._analyzeService = analyzeService;
         this._analyzeSettingsService = analyzeSettingsService;
-        this._defaultSetting = defaultSetting;
 
         // init base html
         const parent = document.getElementById(parentID);
@@ -42,14 +39,14 @@ export default class AnalyzerComponent extends Disposable {
                 <div>
                     window size:
                     <select id="analyze-window-size">
-                        <option value="256">256</option>
-                        <option value="512">512</option>
-                        <option value="1024">1024</option>
-                        <option value="2048">2048</option>
-                        <option value="4096">4096</option>
-                        <option value="8192">8192</option>
-                        <option value="16384">16384</option>
-                        <option value="32768">32768</option>
+                        <option value="0">256</option>
+                        <option value="1">512</option>
+                        <option value="2">1024</option>
+                        <option value="3">2048</option>
+                        <option value="4">4096</option>
+                        <option value="5">8192</option>
+                        <option value="6">16384</option>
+                        <option value="7">32768</option>
                     </select>
                 </div>
                 <div>
@@ -121,10 +118,11 @@ export default class AnalyzerComponent extends Disposable {
     private initAnalyzerSetting() {
         const settings = this._analyzeSettingsService;
 
-        // init fft window size
+        // init fft window size index select
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
-        windowSizeSelect.selectedIndex = this._defaultSetting.windowSizeIndex;
-        this._register(new Event(windowSizeSelect, EventType.Change, () => { settings.windowSize = 2 ** (windowSizeSelect.selectedIndex + 8); }));
+        windowSizeSelect.selectedIndex = settings.windowSizeIndex;
+        this._register(new Event(windowSizeSelect, EventType.Change, () => { settings.windowSizeIndex = Number(windowSizeSelect.selectedIndex); }));
+        this._register(new Event(window, EventType.AS_UpdateWindowSizeIndex, (e: CustomEventInit) => { windowSizeSelect.selectedIndex = e.detail.value; }));
 
         // init frequency scale select
         const frequencyScaleSelect = <HTMLSelectElement>document.getElementById("analyze-frequency-scale");

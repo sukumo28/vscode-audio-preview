@@ -1,14 +1,35 @@
 import { MockAudioBuffer, getRandomFloat, getRandomFloatOutOf, getRandomInt, waitEventForAction } from "../../helper";
 import { AnalyzeDefault } from "../../../config";
-import AnalyzeSettingsService, { FrequencyScale } from "../../../webview/service/analyzeSettingsService";
+import AnalyzeSettingsService, { FrequencyScale, WindowSizeIndex } from "../../../webview/service/analyzeSettingsService";
 import { EventType } from "../../../webview/events";
 
 describe("fromDefaultSettings", () => {
     let defaultSettings: AnalyzeDefault;
     let audioBuffer: AudioBuffer;
     beforeEach(() => {
-        defaultSettings = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+        defaultSettings = { 
+            windowSizeIndex: undefined, 
+            minAmplitude: undefined, 
+            maxAmplitude: undefined, 
+            minFrequency: undefined, 
+            maxFrequency: undefined, 
+            spectrogramAmplitudeRange: undefined, 
+            frequencyScale: undefined, 
+            melFilterNum: undefined
+        };
         audioBuffer = new MockAudioBuffer(1, 44100, 44100) as unknown as AudioBuffer;
+    });
+
+    // windowSizeIndex
+    test("windowSizeIndex should be W1024 if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.windowSizeIndex).toBe(WindowSizeIndex.W1024);
+    });
+    test("windowSizeIndex should be default value", () => {
+        const index = getRandomInt(0, 7);
+        defaultSettings.windowSizeIndex = index;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.windowSizeIndex).toBe(index);
     });
 
     // windowSize
@@ -249,7 +270,16 @@ describe("fromDefaultSettings", () => {
 describe("updateAnalyzeID", () => {
     test("analyzeID should be updated", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(
-            new AnalyzeDefault(0, 0, 0, 0, 0, 0, 0),
+            { 
+                windowSizeIndex: undefined, 
+                minAmplitude: undefined, 
+                maxAmplitude: undefined, 
+                minFrequency: undefined, 
+                maxFrequency: undefined, 
+                spectrogramAmplitudeRange: undefined, 
+                frequencyScale: undefined, 
+                melFilterNum: undefined
+            },
             new MockAudioBuffer(1, 44100, 44100) as unknown as AudioBuffer
         );
         const analyzeID = as.analyzeID;

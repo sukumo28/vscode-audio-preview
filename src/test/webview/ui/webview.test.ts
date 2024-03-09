@@ -45,7 +45,16 @@ describe('webview lifecycle', () => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoPlay: false,
                 autoAnalyze: false,
-                analyzeDefault: new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined),
+                analyzeDefault: { 
+                    windowSizeIndex: undefined, 
+                    minAmplitude: undefined, 
+                    maxAmplitude: undefined, 
+                    minFrequency: undefined, 
+                    maxFrequency: undefined, 
+                    spectrogramAmplitudeRange: undefined, 
+                    frequencyScale: undefined, 
+                    melFilterNum: undefined
+                },
             }});
         });
         expect(msg).toEqual({ type: WebviewMessageType.Data, data: { start: 0, end: 500000 }});
@@ -136,7 +145,16 @@ describe('webview error handling', () => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoPlay: false,
                 autoAnalyze: false,
-                analyzeDefault: new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined),
+                analyzeDefault: { 
+                    windowSizeIndex: undefined, 
+                    minAmplitude: undefined, 
+                    maxAmplitude: undefined, 
+                    minFrequency: undefined, 
+                    maxFrequency: undefined, 
+                    spectrogramAmplitudeRange: undefined, 
+                    frequencyScale: undefined, 
+                    melFilterNum: undefined
+                },
             }});
         });
         // get data

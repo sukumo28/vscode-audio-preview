@@ -129,7 +129,7 @@ export default class WebView {
         // init analyzer
         const analyzeService = new AnalyzeService(audioBuffer);
         const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(this._config.analyzeDefault, audioBuffer);
-        const analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, this._config.analyzeDefault, this._config.autoAnalyze);
+        const analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, this._config.autoAnalyze);
         this._disposables.push(analyzerComponent);
         // dispose decoder
         decoder.dispose();

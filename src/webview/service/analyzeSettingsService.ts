@@ -2,6 +2,17 @@ import { getNonce } from "../../util";
 import { EventType } from "../events";
 import { AnalyzeDefault, AnalyzeSettingsProps } from "../../config";
 
+export enum WindowSizeIndex {
+    W256 = 0,
+    W512 = 1,
+    W1024 = 2,
+    W2048 = 3,
+    W4096 = 4,
+    W8192 = 5,
+    W16384 = 6,
+    W32768 = 7,
+}
+
 export enum FrequencyScale {
     Linear = 0,
     Log = 1,
@@ -20,6 +31,15 @@ export default class AnalyzeSettingsService {
 
     private _autoCalcHopSize: boolean = true;
     public set autoCalsHopSize(value: boolean) { this._autoCalcHopSize = value; }
+
+    private _windowSizeIndex: number;
+    public get windowSizeIndex() { return this._windowSizeIndex; }
+    public set windowSizeIndex(value: number) {
+        const windowSizeIndex = this.getValueInEnum(value, WindowSizeIndex, WindowSizeIndex.W1024);
+        this._windowSizeIndex = windowSizeIndex;
+        this.windowSize = 2 ** (windowSizeIndex + 8);
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWindowSizeIndex, { detail: { value: this._windowSizeIndex }}))
+    }
 
     private _windowSize: number;
     public get windowSize() { return this._windowSize; }
@@ -172,7 +192,7 @@ export default class AnalyzeSettingsService {
         // update the instance props using the values from the default settings
 
         // init fft window size
-        setting.windowSize = 2 ** (defaultSetting.windowSizeIndex + 8);
+        setting.windowSizeIndex = defaultSetting.windowSizeIndex;
 
         // init frequency scale
         setting.frequencyScale = defaultSetting.frequencyScale ?? FrequencyScale.Linear;
@@ -226,6 +246,14 @@ export default class AnalyzeSettingsService {
         }
 
         return targetValue;
+    }
+
+    private getValueInEnum(targetValue: number, enumType: any, defaultValue: number): number {
+        if (Object.values(enumType).includes(targetValue)) {
+            return targetValue;
+        }
+
+        return defaultValue;
     }
 
     private calcHopSize() {

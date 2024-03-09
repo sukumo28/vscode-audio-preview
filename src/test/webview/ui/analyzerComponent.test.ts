@@ -1,9 +1,8 @@
-import { AnalyzeDefault } from "../../../config";
 import { EventType } from "../../../webview/events";
 import AnalyzeService from "../../../webview/service/analyzeService";
 import AnalyzeSettingsService from "../../../webview/service/analyzeSettingsService";
 import AnalyzerComponent from "../../../webview/ui/analyzerComponent";
-import { createAudioContext, getRandomFloat, getRandomInt, wait, waitEventForAction } from "../../helper";
+import { createAudioContext, getRandomFloat, getRandomInt, waitEventForAction } from "../../helper";
 
 describe('analyser', () => {
     let audioBuffer: AudioBuffer;
@@ -13,10 +12,19 @@ describe('analyser', () => {
         document.body.innerHTML = '<div id="analyzer"></div>';
         const audioContext = createAudioContext(44100);
         audioBuffer = audioContext.createBuffer(2, 44100, 44100);
-        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+        const ad = { 
+            windowSizeIndex: undefined, 
+            minAmplitude: undefined, 
+            maxAmplitude: undefined, 
+            minFrequency: undefined, 
+            maxFrequency: undefined, 
+            spectrogramAmplitudeRange: undefined, 
+            frequencyScale: undefined, 
+            melFilterNum: undefined
+        };
         const analyzeService = new AnalyzeService(audioBuffer);
-        analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(analyzeDefault, audioBuffer);
-        analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, analyzeDefault, false);
+        analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(ad, audioBuffer);
+        analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, false);
     });
 
     afterAll(() => {
@@ -67,6 +75,16 @@ describe('analyser', () => {
         windowSizeSelect.selectedIndex = index;
         windowSizeSelect.dispatchEvent(new Event(EventType.Change));
         expect(analyzeSettingsService.windowSize).toBe(windowSize);
+    });
+    test('window-size-select should be updated when recieving update-window-size-index event', () => {
+        const index = getRandomInt(0, 7);
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWindowSizeIndex, {
+            detail: {
+                value: index
+            }
+        }));
+        const windowSizeSelect = <HTMLSelectElement>document.getElementById('analyze-window-size');
+        expect(windowSizeSelect.selectedIndex).toBe(index);
     });
 
     test("frequency scale should be updated when user change frequency-scale-select", () => {
@@ -227,10 +245,19 @@ describe("auto analyze", () => {
     test('analyzer should start analyze if autoAnalyze is true', () => {
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
-        const ad = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+        const ad = { 
+            windowSizeIndex: undefined, 
+            minAmplitude: undefined, 
+            maxAmplitude: undefined, 
+            minFrequency: undefined, 
+            maxFrequency: undefined, 
+            spectrogramAmplitudeRange: undefined, 
+            frequencyScale: undefined, 
+            melFilterNum: undefined
+        };
         const analyzeService = new AnalyzeService(audioBuffer);
         const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(ad, audioBuffer);
-        const ac = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, ad, true);
+        const ac = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, true);
         expect(document.getElementById('analyze-result-box')?.querySelectorAll('canvas').length).toBe(8);
         ac.dispose();
     });
@@ -238,10 +265,19 @@ describe("auto analyze", () => {
     test('analyzer should not start analyze if autoAnalyze is false', () => {
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
-        const ad = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+        const ad = { 
+            windowSizeIndex: undefined, 
+            minAmplitude: undefined, 
+            maxAmplitude: undefined, 
+            minFrequency: undefined, 
+            maxFrequency: undefined, 
+            spectrogramAmplitudeRange: undefined, 
+            frequencyScale: undefined, 
+            melFilterNum: undefined
+        };
         const analyzeService = new AnalyzeService(audioBuffer);
         const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(ad, audioBuffer);
-        const ac = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, ad, false);
+        const ac = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, false);
         expect(document.getElementById('analyze-result-box')?.querySelectorAll('canvas').length).toBe(0);
         ac.dispose();
     });
@@ -255,13 +291,22 @@ describe('position of seek-bar should be updated when recieving update-seekbar e
         document.body.innerHTML = '<div id="analyzer"></div>';
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 441000, 44100);
-        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+        const ad = { 
+            windowSizeIndex: undefined, 
+            minAmplitude: undefined, 
+            maxAmplitude: undefined, 
+            minFrequency: undefined, 
+            maxFrequency: undefined, 
+            spectrogramAmplitudeRange: undefined, 
+            frequencyScale: undefined, 
+            melFilterNum: undefined
+        };
         const analyzeService = new AnalyzeService(audioBuffer);
-        analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(analyzeDefault, audioBuffer);
+        analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(ad, audioBuffer);
         analyzeSettingsService.minTime = 2;
         analyzeSettingsService.maxTime = 6;
         // audio: 10s, minTime: 2s, maxTime: 6s
-        analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, analyzeDefault, false);
+        analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, false);
         analyzerComponent.analyze();
     });
 
@@ -309,13 +354,22 @@ describe('input-seekbar event should be dispatched when user change seek-bar on 
         document.body.innerHTML = '<div id="analyzer"></div>';
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 441000, 44100);
-        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+        const ad = { 
+            windowSizeIndex: undefined, 
+            minAmplitude: undefined, 
+            maxAmplitude: undefined, 
+            minFrequency: undefined, 
+            maxFrequency: undefined, 
+            spectrogramAmplitudeRange: undefined, 
+            frequencyScale: undefined, 
+            melFilterNum: undefined
+        };
         const analyzeService = new AnalyzeService(audioBuffer);
-        analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(analyzeDefault, audioBuffer);
+        analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(ad, audioBuffer);
         analyzeSettingsService.minTime = 2;
         analyzeSettingsService.maxTime = 6;
         // audio: 10s, minTime: 2s, maxTime: 6s
-        analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, analyzeDefault, false);
+        analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, false);
         analyzerComponent.analyze();
     });
 

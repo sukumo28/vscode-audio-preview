@@ -139,23 +139,12 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
             case WebviewMessageType.Config: {
                 // read config
                 const config = vscode.workspace.getConfiguration("WavPreview");
-                const analyzeDefaultConfig = config.get("analyzeDefault") as AnalyzeDefault;
-                const analyzeDefault = new AnalyzeDefault(
-                    analyzeDefaultConfig.windowSizeIndex,
-                    analyzeDefaultConfig.minAmplitude,
-                    analyzeDefaultConfig.maxAmplitude,
-                    analyzeDefaultConfig.minFrequency,
-                    analyzeDefaultConfig.maxFrequency,
-                    analyzeDefaultConfig.frequencyScale,
-                    analyzeDefaultConfig.spectrogramAmplitudeRange
-                );
-
                 this.postMessage(webviewPanel.webview, {
                     type: ExtMessageType.Config,
                     data: {
                         autoPlay: config.get("autoPlay"),
                         autoAnalyze: config.get("autoAnalyze"),
-                        analyzeDefault
+                        analyzeDefault: config.get("analyzeDefault") as AnalyzeDefault
                     }
                 });
                 break;
