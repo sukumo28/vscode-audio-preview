@@ -37,13 +37,7 @@ You can analyze audio automatically when you open it.
 You can configure default value of analyze settings like example below.  
 ```json
 "WavPreview.analyzeDefault": {
-        /*  
-         FFT window sizw. [0,7]  
-         You can choose from values below.   
-         0:256, 1:512, 2:1024, 3:2048, 4:4096, 5:8192, 6:16384, 7:32768
-         default: 2  
-        */  
-        "windowSizeIndex": 5,
+        // Settings about WaveForm figure
 
         /*
          Range of amplitude displayed on the figure. [-100,100]  
@@ -54,13 +48,28 @@ You can configure default value of analyze settings like example below.
         // default: max amplitude of audio data 
         "maxAmplitude": 1,
 
-        /*
-         Range of frequency displayed on the figure. [0,sampleRate/2]  
-        */ 
+        // Settings about Spectrogram
+
+        /*  
+         FFT window sizw. [0,7]  
+         You can choose from values below.   
+         0:256, 1:512, 2:1024, 3:2048, 4:4096, 5:8192, 6:16384, 7:32768
+         default: 2  
+        */  
+        "windowSizeIndex": 5,
+
+        // Range of frequency displayed on the figure. [0,sampleRate/2] 
         // default: 0
         "minFrequency": 1000,
         // default: sampleRate/2
         "maxFrequency": 8000,
+
+        /*
+         Range of amplitude(dB) displayed on the spectrogram. [-1000, 0]
+         Since the maximum value of Amplitude is adjusted to be 0dB, set a negative value.
+         default: -90
+        */
+        "spectrogramAmplitudeRange": -100,
 
         /*
          Frequency Scale of spectrogram. [0,2]  
@@ -68,7 +77,11 @@ You can configure default value of analyze settings like example below.
          0:Linear, 1:Log, 2:Mel  
          default: 0  
         */
-        "frequencyScale": 1
+        "frequencyScale": 1,
+
+        // Number of filter in melFilterBank. [20, 200]
+        // default: 40
+        "melFilterNum": 100
     }
 }
 ```
