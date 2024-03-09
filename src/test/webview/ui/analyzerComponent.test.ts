@@ -69,6 +69,32 @@ describe('analyser', () => {
         expect(analyzeSettingsService.windowSize).toBe(windowSize);
     });
 
+    test("frequency scale should be updated when user change frequency-scale-select", () => {
+        const frequencyScale = getRandomInt(0, 2);
+        const frequencyScaleSelect = <HTMLSelectElement>document.getElementById('analyze-frequency-scale');
+        frequencyScaleSelect.selectedIndex = frequencyScale;
+        frequencyScaleSelect.dispatchEvent(new Event(EventType.Change));
+        expect(analyzeSettingsService.frequencyScale).toBe(frequencyScale);
+    });
+
+    test('mel-filter-num should be updated when user change mel-filter-num-input', () => {
+        const melFilterNum = getRandomFloat(20, 200);
+        const melFilterNumInput = <HTMLInputElement>document.getElementById('analyze-mel-filter-num');
+        melFilterNumInput.value = melFilterNum.toString();
+        melFilterNumInput.dispatchEvent(new Event(EventType.Change));
+        expect(analyzeSettingsService.melFilterNum).toBe(Math.trunc(melFilterNum));
+    });
+    test('mel-filter-num-input should be updated when recieving update-mel-filter-num event', () => {
+        const melFilterNum = getRandomFloat(20, 200);
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, {
+            detail: {
+                value: melFilterNum
+            }
+        }));
+        const melFilterNumInput = <HTMLInputElement>document.getElementById('analyze-mel-filter-num');
+        expect(Number(melFilterNumInput.value)).toBe(melFilterNum);        
+    });
+
     test('min-frequency should be updated when user change min-frequency-input', () => {
         const minFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
         const minFrequencyInput = <HTMLInputElement>document.getElementById('analyze-min-frequency');

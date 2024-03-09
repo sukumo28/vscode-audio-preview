@@ -1,6 +1,6 @@
 import { MockAudioBuffer, getRandomFloat, getRandomFloatOutOf, getRandomInt, waitEventForAction } from "../../helper";
 import { AnalyzeDefault } from "../../../config";
-import AnalyzeSettingsService from "../../../webview/service/analyzeSettingsService";
+import AnalyzeSettingsService, { FrequencyScale } from "../../../webview/service/analyzeSettingsService";
 import { EventType } from "../../../webview/events";
 
 describe("fromDefaultSettings", () => {
@@ -22,6 +22,43 @@ describe("fromDefaultSettings", () => {
         defaultSettings.windowSizeIndex = index;
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.windowSize).toBe(windowSize);
+    });
+
+    // frequencyScale
+    test("frequencyScale should be Linear if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.frequencyScale).toBe(FrequencyScale.Linear);
+    });
+    test("frequencyScale should be default value", () => {
+        const frequencyScale = getRandomInt(0, 2);
+        defaultSettings.frequencyScale = frequencyScale;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.frequencyScale).toBe(frequencyScale);
+    });
+
+    // melFilterNum
+    test("melFilterNum should be 40 if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.melFilterNum).toBe(40);
+    });
+    test("melFilterNum should be default value if its in [20, 200]", () => {
+        const melFilterNum = getRandomFloat(20, 200);
+        defaultSettings.melFilterNum = melFilterNum;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.melFilterNum).toBe(Math.trunc(melFilterNum));
+    });
+    test("melFilterNum should be 40 if default value is out of [20, 200]", () => {
+        const melFilterNum = getRandomFloatOutOf(20, 200);
+        defaultSettings.melFilterNum = melFilterNum;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.melFilterNum).toBe(40);
+    });
+    test("AS_UpdateMelFilterNum event should be sent", async () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const detail = await waitEventForAction(() => {
+            as.melFilterNum = getRandomFloat(20, 200);
+        }, window, EventType.AS_UpdateMelFilterNum);
+        expect(detail.value).toBe(as.melFilterNum);
     });
 
     // minFrequency

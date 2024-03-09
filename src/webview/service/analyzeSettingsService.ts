@@ -127,7 +127,7 @@ export default class AnalyzeSettingsService {
     private _melFilterNum: number;
     public get melFilterNum() { return this._melFilterNum; }
     public set melFilterNum(value: number) {
-        this._melFilterNum = this.getValueInRange(value, 20, 200, 40);
+        this._melFilterNum = this.getValueInRange(Math.trunc(value), 20, 200, 40);
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, { detail: { value: this._melFilterNum }}))
     }
 
