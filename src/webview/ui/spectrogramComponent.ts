@@ -170,7 +170,8 @@ export default class WaveFormComponent {
             const y = Math.round(i * height / 10);
             const maxMel = this._analyzeService.hzToMel(settings.maxFrequency);
             const minMel = this._analyzeService.hzToMel(settings.minFrequency);
-            const f = (10 - i) * (maxMel - minMel) / 10 + minMel;
+            const mel = (10 - i) * (maxMel - minMel) / 10 + minMel;
+            const f = this._analyzeService.melToHz(mel);
             axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
     
             axisContext.fillStyle = "rgb(180,120,20)";
