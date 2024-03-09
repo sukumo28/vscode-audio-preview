@@ -168,14 +168,14 @@ describe('analyser', () => {
     });
 
     test('min-amplitude should be updated when user change min-amplitude-input', () => {
-        const minAmplitude = getRandomFloat(-1, 1);
+        const minAmplitude = getRandomFloat(-1, analyzeSettingsService.maxAmplitude);
         const minAmplitudeInput = <HTMLInputElement>document.getElementById('analyze-min-amplitude');
         minAmplitudeInput.value = minAmplitude.toString();
         minAmplitudeInput.dispatchEvent(new Event(EventType.Change));
         expect(analyzeSettingsService.minAmplitude).toBeCloseTo(minAmplitude);
     });
     test('min-amplitude-input should be updated when recieving update-min-amplitude event', () => {
-        const minAmplitude = getRandomFloat(-1, 1);
+        const minAmplitude = getRandomFloat(-1, analyzeSettingsService.maxAmplitude);
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMinAmplitude, {
             detail: {
                 value: minAmplitude
