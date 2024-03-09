@@ -1,5 +1,4 @@
 export interface Config {
-    autoPlay: boolean,
     autoAnalyze: boolean,
     analyzeDefault: AnalyzeDefault,
 }

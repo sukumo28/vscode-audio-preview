@@ -70,11 +70,6 @@
 		"configuration": {
 			"title": "WavPreview",
 			"properties": {
-				"WavPreview.autoPlay": {
-					"type": "boolean",
-					"default": false,
-					"description": "automatically play audio file when you open it"
-				},
 				"WavPreview.autoAnalyze": {
 					"type": "boolean",
 					"default": false,

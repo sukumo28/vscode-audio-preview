@@ -142,7 +142,6 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 this.postMessage(webviewPanel.webview, {
                     type: ExtMessageType.Config,
                     data: {
-                        autoPlay: config.get("autoPlay"),
                         autoAnalyze: config.get("autoAnalyze"),
                         analyzeDefault: config.get("analyzeDefault") as AnalyzeDefault
                     }

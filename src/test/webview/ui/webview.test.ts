@@ -43,7 +43,6 @@ describe('webview lifecycle', () => {
     test('request data after getting config', async () => {
         const msg = await waitVSCodeMessageForAction(() => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
-                autoPlay: false,
                 autoAnalyze: false,
                 analyzeDefault: { 
                     windowSizeIndex: undefined, 
@@ -143,7 +142,6 @@ describe('webview error handling', () => {
         // get config
         await waitVSCodeMessageForAction(() => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
-                autoPlay: false,
                 autoAnalyze: false,
                 analyzeDefault: { 
                     windowSizeIndex: undefined, 
