@@ -45,7 +45,7 @@ describe('webview lifecycle', () => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoPlay: false,
                 autoAnalyze: false,
-                analyzeDefault: new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined),
+                analyzeDefault: new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined),
             }});
         });
         expect(msg).toEqual({ type: WebviewMessageType.Data, data: { start: 0, end: 500000 }});
@@ -136,7 +136,7 @@ describe('webview error handling', () => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoPlay: false,
                 autoAnalyze: false,
-                analyzeDefault: new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined),
+                analyzeDefault: new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined),
             }});
         });
         // get data

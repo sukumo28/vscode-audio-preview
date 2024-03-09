@@ -8,6 +8,7 @@ export const EventType = {
     InputSeekbar: "input-seekbar",
     UpdateIsPlaying: "update-is-playing",
     // analyzeSettings
+    AS_UpdateMelFilterNum: "as-update-mel-filter-num",
     AS_UpdateMinFrequency: "as-update-min-frequency",
     AS_UpdateMaxFrequency: "as-update-max-frequency",
     AS_UpdateMinTime: "as-update-min-time",

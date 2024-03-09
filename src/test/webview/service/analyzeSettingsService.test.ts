@@ -7,7 +7,7 @@ describe("fromDefaultSettings", () => {
     let defaultSettings: AnalyzeDefault;
     let audioBuffer: AudioBuffer;
     beforeEach(() => {
-        defaultSettings = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined);
+        defaultSettings = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
         audioBuffer = new MockAudioBuffer(1, 44100, 44100) as unknown as AudioBuffer;
     });
 
@@ -212,7 +212,7 @@ describe("fromDefaultSettings", () => {
 describe("updateAnalyzeID", () => {
     test("analyzeID should be updated", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(
-            new AnalyzeDefault(0, 0, 0, 0, 0, 0),
+            new AnalyzeDefault(0, 0, 0, 0, 0, 0, 0),
             new MockAudioBuffer(1, 44100, 44100) as unknown as AudioBuffer
         );
         const analyzeID = as.analyzeID;

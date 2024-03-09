@@ -53,6 +53,16 @@ export default class AnalyzerComponent extends Disposable {
                     </select>
                 </div>
                 <div>
+                    frequency scale:
+                    <select id="analyze-frequency-scale">
+                        <option value="0">Linear</option>
+                        <option value="1">Log</option>
+                        <option value="2">Mel</option>
+                    </select>
+                    mel filter num:
+                    <input id="analyze-mel-filter-num" type="number" step="10">
+                </div>
+                <div>
                     frequency range:
                     <input id="analyze-min-frequency" type="number" step="1000">Hz ~
                     <input id="analyze-max-frequency" type="number" step="1000">Hz
@@ -115,6 +125,17 @@ export default class AnalyzerComponent extends Disposable {
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
         windowSizeSelect.selectedIndex = this._defaultSetting.windowSizeIndex;
         this._register(new Event(windowSizeSelect, EventType.Change, () => { settings.windowSize = 2 ** (windowSizeSelect.selectedIndex + 8); }));
+
+        // init frequency scale select
+        const frequencyScaleSelect = <HTMLSelectElement>document.getElementById("analyze-frequency-scale");
+        frequencyScaleSelect.selectedIndex = settings.frequencyScale;
+        this._register(new Event(frequencyScaleSelect, EventType.Change, () => { settings.frequencyScale = frequencyScaleSelect.selectedIndex; }));
+
+        // init mel filter num input
+        const melFilterNumInput = <HTMLInputElement>document.getElementById("analyze-mel-filter-num");
+        melFilterNumInput.value = `${settings.melFilterNum}`;
+        this._register(new Event(melFilterNumInput, EventType.Change, () => { settings.melFilterNum = Number(melFilterNumInput.value); }));
+        this._register(new Event(window, EventType.AS_UpdateMelFilterNum, (e: CustomEventInit) => { melFilterNumInput.value = `${e.detail.value}`; }));
 
         // init frequency range input
         const minFreqInput = <HTMLInputElement>document.getElementById("analyze-min-frequency");

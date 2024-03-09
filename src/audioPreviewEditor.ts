@@ -146,6 +146,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     analyzeDefaultConfig.maxAmplitude,
                     analyzeDefaultConfig.minFrequency,
                     analyzeDefaultConfig.maxFrequency,
+                    analyzeDefaultConfig.frequencyScale,
                     analyzeDefaultConfig.spectrogramAmplitudeRange
                 );
 

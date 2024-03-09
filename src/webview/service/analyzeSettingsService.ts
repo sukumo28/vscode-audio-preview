@@ -2,6 +2,12 @@ import { getNonce } from "../../util";
 import { EventType } from "../events";
 import { AnalyzeDefault, AnalyzeSettingsProps } from "../../config";
 
+export enum FrequencyScale {
+    Linear = 0,
+    Log = 1,
+    Mel = 2,
+}
+
 export default class AnalyzeSettingsService {
     private _sampleRate: number;
     private _duration: number;
@@ -112,6 +118,19 @@ export default class AnalyzeSettingsService {
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramAmplitudeRange, { detail: { value: this._spectrogramAmplitudeRange }}))
     }
 
+    private _frequencyScale: FrequencyScale;
+    public get frequencyScale() { return this._frequencyScale; }
+    public set frequencyScale(value: FrequencyScale) {
+        this._frequencyScale = value;
+    }
+
+    private _melFilterNum: number;
+    public get melFilterNum() { return this._melFilterNum; }
+    public set melFilterNum(value: number) {
+        this._melFilterNum = this.getValueInRange(value, 20, 200, 40);
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, { detail: { value: this._melFilterNum }}))
+    }
+
     private _analyzeID: string;
     public get analyzeID() { return this._analyzeID; }
 
@@ -155,6 +174,12 @@ export default class AnalyzeSettingsService {
         // init fft window size
         setting.windowSize = 2 ** (defaultSetting.windowSizeIndex + 8);
 
+        // init frequency scale
+        setting.frequencyScale = defaultSetting.frequencyScale ?? FrequencyScale.Linear;
+
+        // init mel filter num
+        setting.melFilterNum = defaultSetting.melFilterNum;
+
         // init default frequency
         setting.minFrequency = defaultSetting.minFrequency;
         setting.maxFrequency = defaultSetting.maxFrequency;
@@ -195,6 +220,14 @@ export default class AnalyzeSettingsService {
         return [minValue, maxValue];
     }
 
+    private getValueInRange(targetValue: number, validMin: number, validMax: number, defaultValue: number): number {
+        if (!Number.isFinite(targetValue) || targetValue < validMin || validMax < targetValue) {
+            return defaultValue;
+        }
+
+        return targetValue;
+    }
+
     private calcHopSize() {
         // Calc hopsize
         // This hopSize make rectWidth greater then minRectWidth for every duration of input.
@@ -223,6 +256,8 @@ export default class AnalyzeSettingsService {
             minAmplitude: this.minAmplitude,
             maxAmplitude: this.maxAmplitude,
             spectrogramAmplitudeRange: this.spectrogramAmplitudeRange,
+            frequencyScale: this.frequencyScale,
+            melFilterNum: this.melFilterNum,
             analyzeID: this.analyzeID
         };
     }

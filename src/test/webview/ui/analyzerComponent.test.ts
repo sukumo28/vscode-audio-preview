@@ -13,7 +13,7 @@ describe('analyser', () => {
         document.body.innerHTML = '<div id="analyzer"></div>';
         const audioContext = createAudioContext(44100);
         audioBuffer = audioContext.createBuffer(2, 44100, 44100);
-        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined);
+        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
         const analyzeService = new AnalyzeService(audioBuffer);
         analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(analyzeDefault, audioBuffer);
         analyzerComponent = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, analyzeDefault, false);
@@ -201,7 +201,7 @@ describe("auto analyze", () => {
     test('analyzer should start analyze if autoAnalyze is true', () => {
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
-        const ad = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined);
+        const ad = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
         const analyzeService = new AnalyzeService(audioBuffer);
         const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(ad, audioBuffer);
         const ac = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, ad, true);
@@ -212,7 +212,7 @@ describe("auto analyze", () => {
     test('analyzer should not start analyze if autoAnalyze is false', () => {
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
-        const ad = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined);
+        const ad = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
         const analyzeService = new AnalyzeService(audioBuffer);
         const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(ad, audioBuffer);
         const ac = new AnalyzerComponent("analyzer", audioBuffer, analyzeService, analyzeSettingsService, ad, false);
@@ -229,7 +229,7 @@ describe('position of seek-bar should be updated when recieving update-seekbar e
         document.body.innerHTML = '<div id="analyzer"></div>';
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 441000, 44100);
-        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined);
+        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
         const analyzeService = new AnalyzeService(audioBuffer);
         analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(analyzeDefault, audioBuffer);
         analyzeSettingsService.minTime = 2;
@@ -283,7 +283,7 @@ describe('input-seekbar event should be dispatched when user change seek-bar on 
         document.body.innerHTML = '<div id="analyzer"></div>';
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 441000, 44100);
-        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined);
+        const analyzeDefault = new AnalyzeDefault(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
         const analyzeService = new AnalyzeService(audioBuffer);
         analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(analyzeDefault, audioBuffer);
         analyzeSettingsService.minTime = 2;
