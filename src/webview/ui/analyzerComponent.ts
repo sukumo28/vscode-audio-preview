@@ -127,7 +127,8 @@ export default class AnalyzerComponent extends Disposable {
         // init frequency scale select
         const frequencyScaleSelect = <HTMLSelectElement>document.getElementById("analyze-frequency-scale");
         frequencyScaleSelect.selectedIndex = settings.frequencyScale;
-        this._register(new Event(frequencyScaleSelect, EventType.Change, () => { settings.frequencyScale = frequencyScaleSelect.selectedIndex; }));
+        this._register(new Event(frequencyScaleSelect, EventType.Change, () => { settings.frequencyScale = Number(frequencyScaleSelect.selectedIndex); }));
+        this._register(new Event(window, EventType.AS_UpdateFrequencyScale, (e: CustomEventInit) => { frequencyScaleSelect.selectedIndex = e.detail.value; }));
 
         // init mel filter num input
         const melFilterNumInput = <HTMLInputElement>document.getElementById("analyze-mel-filter-num");

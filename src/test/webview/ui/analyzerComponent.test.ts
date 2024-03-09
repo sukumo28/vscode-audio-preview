@@ -94,6 +94,16 @@ describe('analyser', () => {
         frequencyScaleSelect.dispatchEvent(new Event(EventType.Change));
         expect(analyzeSettingsService.frequencyScale).toBe(frequencyScale);
     });
+    test('frequency-scale-select should be updated when recieving update-frequency-scale event', () => {
+        const frequencyScale = getRandomInt(0, 2);
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateFrequencyScale, {
+            detail: {
+                value: frequencyScale
+            }
+        }));
+        const frequencyScaleSelect = <HTMLSelectElement>document.getElementById('analyze-frequency-scale');
+        expect(frequencyScaleSelect.selectedIndex).toBe(frequencyScale);
+    });
 
     test('mel-filter-num should be updated when user change mel-filter-num-input', () => {
         const melFilterNum = getRandomFloat(20, 200);

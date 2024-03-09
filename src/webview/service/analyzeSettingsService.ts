@@ -154,7 +154,9 @@ export default class AnalyzeSettingsService {
     private _frequencyScale: FrequencyScale;
     public get frequencyScale() { return this._frequencyScale; }
     public set frequencyScale(value: FrequencyScale) {
-        this._frequencyScale = value;
+        const frequencyScale = this.getValueInEnum(value, FrequencyScale, FrequencyScale.Linear);
+        this._frequencyScale = frequencyScale;
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateFrequencyScale, { detail: { value: this._frequencyScale }}))
     }
 
     private _melFilterNum: number;
@@ -204,7 +206,7 @@ export default class AnalyzeSettingsService {
         setting.windowSizeIndex = defaultSetting.windowSizeIndex;
 
         // init frequency scale
-        setting.frequencyScale = defaultSetting.frequencyScale ?? FrequencyScale.Linear;
+        setting.frequencyScale = defaultSetting.frequencyScale;
 
         // init mel filter num
         setting.melFilterNum = defaultSetting.melFilterNum;

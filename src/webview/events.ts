@@ -9,6 +9,7 @@ export const EventType = {
     UpdateIsPlaying: "update-is-playing",
     // analyzeSettings
     AS_UpdateWindowSizeIndex: "as-update-window-size-index",
+    AS_UpdateFrequencyScale: "as-update-frequency-scale",
     AS_UpdateMelFilterNum: "as-update-mel-filter-num",
     AS_UpdateMinFrequency: "as-update-min-frequency",
     AS_UpdateMaxFrequency: "as-update-max-frequency",
