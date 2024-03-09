@@ -33,6 +33,11 @@ export interface AnalyzeSettingsProps {
 }
 
 export default class AnalyzeSettingsService {
+    public readonly WAVEFORM_CANVAS_WIDTH = 1000;
+    public readonly WAVEFORM_CANVAS_HEIGHT = 200;
+    public readonly SPECTROGRAM_CANVAS_WIDTH = 1800;
+    public readonly SPECTROGRAM_CANVAS_HEIGHT = 600;
+
     private _sampleRate: number;
     private _duration: number;
 
@@ -267,16 +272,19 @@ export default class AnalyzeSettingsService {
         return defaultValue;
     }
 
+    /*
+     Calc hopsize
+     This hopSize make rectWidth greater than minRectWidth for every duration of input.
+     Thus, spectrogram of long duration input can be drawn as faster as short duration one.
+
+     Use a minimum hopSize to prevent from becoming too small for short periods of data.
+    */  
     private calcHopSize() {
-        // Calc hopsize
-        // This hopSize make rectWidth greater then minRectWidth for every duration of input.
-        // Thus, spectrogram of long duration input can be drawn as faster as short duration one.
-        // But we use minimum hopSize not to be too small for shsort duration data
-        const minRectWidth = 4 * this.windowSize / 1024;
-        const hopSize = Math.max(
-            Math.trunc(minRectWidth * (this.maxTime - this.minTime) * this._sampleRate / 1800),
-            this.windowSize / 4
-        );
+        const minRectWidth = 2 * this.windowSize / 1024;
+        const fullSampleNum = (this.maxTime - this.minTime) * this._sampleRate;
+        const enoughHopSize = Math.trunc(minRectWidth * fullSampleNum / this.SPECTROGRAM_CANVAS_WIDTH);
+        const minHopSize = this.windowSize / 32;
+        const hopSize = Math.max(enoughHopSize, minHopSize);
         return hopSize;
     }
 

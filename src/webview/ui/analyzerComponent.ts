@@ -220,8 +220,23 @@ export default class AnalyzerComponent extends Disposable {
         const settings = this._analyzeSettingsService.toProps();
 
         for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {
-            new WaveFormComponent("analyze-result-box", settings, this._audioBuffer.sampleRate, this._audioBuffer.getChannelData(ch));
-            new SpectrogramComponent("analyze-result-box", this._analyzeService, settings, this._audioBuffer.sampleRate, ch);
+            new WaveFormComponent(
+                "analyze-result-box", 
+                this._analyzeSettingsService.WAVEFORM_CANVAS_WIDTH,
+                this._analyzeSettingsService.WAVEFORM_CANVAS_HEIGHT,
+                settings, 
+                this._audioBuffer.sampleRate, 
+                this._audioBuffer.getChannelData(ch)
+            );
+            new SpectrogramComponent(
+                "analyze-result-box", 
+                this._analyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH,
+                this._analyzeSettingsService.SPECTROGRAM_CANVAS_HEIGHT,
+                this._analyzeService, 
+                settings, 
+                this._audioBuffer.sampleRate, 
+                ch
+            );
         }
 
         // register seekbar on figures

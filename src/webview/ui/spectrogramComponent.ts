@@ -5,12 +5,9 @@ import { FrequencyScale } from "../service/analyzeSettingsService";
 export default class WaveFormComponent {
     private _analyzeService: AnalyzeService;
 
-    constructor(parentID: string, analyzeService: AnalyzeService, settings: AnalyzeSettingsProps, sampleRate: number, ch: number) {
+    constructor(parentID: string, width: number, height: number, analyzeService: AnalyzeService, settings: AnalyzeSettingsProps, sampleRate: number, ch: number) {
         const parent = document.getElementById(parentID);
         this._analyzeService = analyzeService;
-
-        const width = 1800;
-        const height = 600;
 
         const canvasBox = document.createElement("div");
         canvasBox.className = "canvas-box";

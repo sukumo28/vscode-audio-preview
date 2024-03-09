@@ -2,10 +2,8 @@ import { AnalyzeSettingsProps } from '../service/analyzeSettingsService';
 
 export default class WaveFormComponent {
 
-    constructor(parentID: string, settings: AnalyzeSettingsProps, sampleRate: number, channelData: Float32Array) {
+    constructor(parentID: string, width: number, height: number, settings: AnalyzeSettingsProps, sampleRate: number, channelData: Float32Array) {
         const parent = document.getElementById(parentID);
-        const height = 200;
-        const width = 1000;
 
         const canvasBox = document.createElement("div");
         canvasBox.className = "canvas-box";
