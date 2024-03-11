@@ -15,7 +15,6 @@ Supported Audio Files: `wav`, `mp3`, `aac`, `ogg`, `flac`, `opus`, `m4a`, `sph` 
 
 How to preview audio.  
 ![how-to-use](https://github.com/sukumo28/vscode-audio-preview/blob/main/images/how-to-use.gif?raw=true)  
-Note: You can play audio without waiting for finish decoding.
 
 If this extension does not open by default, edit `settings.json` like below.  
 ```jsonc
@@ -92,7 +91,7 @@ You can configure default value of analyze settings like example below.
 
 Feel free to report Isuues and send Pull Requests on github.  
   
-If you encounter an error and create an issue, it may be helpful for development if you attach the log displayed in VSCode's DevTools.  
+If an error occurs and you create an issue, posting the log displayed in VSCode's DevTools to the issue may be useful for development and fix.   
 VSCode's DevTools can be opened in the following ways.  
 - Press f12   
 - Press shift + ctrl + I   
@@ -108,4 +107,4 @@ VSCode's DevTools can be opened in the following ways.
 ### References  
 
 Custom Editor: https://code.visualstudio.com/api/extension-guides/custom-editors  
-Cutrom Editor Example: https://github.com/microsoft/vscode-extension-samples/tree/main/custom-editor-sample  
+Custom Editor Example: https://github.com/microsoft/vscode-extension-samples/tree/main/custom-editor-sample  
