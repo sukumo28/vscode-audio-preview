@@ -17,8 +17,8 @@ export default class PlayerComponent extends Disposable {
         parent.innerHTML = `
             <button id="play-button">play</button>
 
-            <div id="volume-text">volume 100</div>
-            <input type="range" id="volume-bar" value="100">
+            <div id="volume-text">volume 0.0dB</div>
+            <input type="range" id="volume-bar" value="0" min="-80" max="0" step="0.5">
                         
             <div id="seek-pos-text">position 0.000 s</div>
             <div class="seek-bar-box">
@@ -49,9 +49,12 @@ export default class PlayerComponent extends Disposable {
         this._volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
         const volumeText = <HTMLInputElement>document.getElementById("volume-text");
         this._register(new Event(this._volumeBar, EventType.Input, () => {
-            // convert seekbar value(0~100) to volume(0~1)
-            this._playerService.volume = Number(this._volumeBar.value) / 100;
-            volumeText.innerHTML = "volume " + this._volumeBar.value;
+            // convert dB setting to linear gain
+            // -80dB is treated as mute
+            var voldb = Number(this._volumeBar.value)
+            var vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20)
+            this._playerService.volume = vollin;
+            volumeText.innerHTML = "volume " + (vollin == 0 ? "muted" : voldb.toFixed(1) + " dB");
         }));
 
         // init play button
