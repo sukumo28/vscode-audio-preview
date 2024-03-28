@@ -17,10 +17,10 @@ export default class PlayerComponent extends Disposable {
         parent.innerHTML = `
             <button id="play-button">play</button>
 
-            <div>volume</div>
+            <div id="volume-text">volume 100</div>
             <input type="range" id="volume-bar" value="100">
                         
-            <div>seekbar</div>
+            <div id="seek-pos-text">position 0.000 s</div>
             <div class="seek-bar-box">
                 <input type="range" id="seek-bar" value="0" />
                 <input type="range" id="user-input-seek-bar" class="input-seek-bar" value="0" />
@@ -39,15 +39,19 @@ export default class PlayerComponent extends Disposable {
             userinputSeekbar.value = "100";
         }));
         const visibleSeekbar = <HTMLInputElement>document.getElementById("seek-bar");
+        const seekPosText = <HTMLInputElement>document.getElementById("seek-pos-text");
         this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {
             visibleSeekbar.value = e.detail.value;
+            seekPosText.innerHTML = "position " + Number(e.detail.value).toFixed(3) + " s";
         }));
 
         // init volumebar
         this._volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
+        const volumeText = <HTMLInputElement>document.getElementById("volume-text");
         this._register(new Event(this._volumeBar, EventType.Change, () => {
             // convert seekbar value(0~100) to volume(0~1)
             this._playerService.volume = Number(this._volumeBar.value) / 100;
+            volumeText.innerHTML = "volume " + this._volumeBar.value;
         }));
 
         // init play button
