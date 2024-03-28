@@ -48,7 +48,7 @@ export default class PlayerComponent extends Disposable {
         // init volumebar
         this._volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
         const volumeText = <HTMLInputElement>document.getElementById("volume-text");
-        this._register(new Event(this._volumeBar, EventType.Change, () => {
+        this._register(new Event(this._volumeBar, EventType.Input, () => {
             // convert seekbar value(0~100) to volume(0~1)
             this._playerService.volume = Number(this._volumeBar.value) / 100;
             volumeText.innerHTML = "volume " + this._volumeBar.value;
