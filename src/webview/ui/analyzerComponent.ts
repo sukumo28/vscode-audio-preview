@@ -45,12 +45,18 @@ export default class AnalyzerComponent extends Disposable {
 
                 <h3>WaveForm Settings</h3>
                 <div>
+                    <input id="analyze-waveform-visible" type="checkbox">visible
+                </div>
+                <div>
                     waveform amplitude range:
                     <input id="analyze-min-amplitude" type="number" step="0.1"> ~
                     <input id="analyze-max-amplitude" type="number" step="0.1">
                 </div>
 
                 <h3>Spectrogram Settings</h3>
+                <div>
+                    <input id="analyze-spectrogram-visible" type="checkbox">visible
+                </div>
                 <div>
                     window size:
                     <select id="analyze-window-size">
@@ -122,6 +128,18 @@ export default class AnalyzerComponent extends Disposable {
 
     private initAnalyzerSetting() {
         const settings = this._analyzeSettingsService;
+
+        // init waveform visible checkbox
+        const waveformVisible = <HTMLInputElement>document.getElementById("analyze-waveform-visible");
+        waveformVisible.checked = settings.waveformVisible;
+        this._register(new Event(waveformVisible, EventType.Change, () => { settings.waveformVisible = waveformVisible.checked; }));
+        this._register(new Event(window, EventType.AS_UpdateWaveformVisible, (e: CustomEventInit) => { waveformVisible.checked = e.detail.value; }));
+
+        // init spectrogram visible checkbox
+        const spectrogramVisible = <HTMLInputElement>document.getElementById("analyze-spectrogram-visible");
+        spectrogramVisible.checked = settings.spectrogramVisible;
+        this._register(new Event(spectrogramVisible, EventType.Change, () => { settings.spectrogramVisible = spectrogramVisible.checked; }));
+        this._register(new Event(window, EventType.AS_UpdateSpectrogramVisible, (e: CustomEventInit) => { spectrogramVisible.checked = e.detail.value; }));
 
         // init fft window size index select
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
@@ -226,23 +244,28 @@ export default class AnalyzerComponent extends Disposable {
         console.log("analyze", settings);
 
         for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {
-            new WaveFormComponent(
-                "analyze-result-box", 
-                this._analyzeSettingsService.WAVEFORM_CANVAS_WIDTH,
-                this._analyzeSettingsService.WAVEFORM_CANVAS_HEIGHT,
-                settings, 
-                this._audioBuffer.sampleRate, 
-                this._audioBuffer.getChannelData(ch)
-            );
-            new SpectrogramComponent(
-                "analyze-result-box", 
-                this._analyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH,
-                this._analyzeSettingsService.SPECTROGRAM_CANVAS_HEIGHT,
-                this._analyzeService, 
-                settings, 
-                this._audioBuffer.sampleRate, 
-                ch
-            );
+            if(this._analyzeSettingsService.waveformVisible){
+                new WaveFormComponent(
+                    "analyze-result-box", 
+                    this._analyzeSettingsService.WAVEFORM_CANVAS_WIDTH,
+                        this._analyzeSettingsService.WAVEFORM_CANVAS_HEIGHT,
+                    settings, 
+                    this._audioBuffer.sampleRate, 
+                    this._audioBuffer.getChannelData(ch)
+                );
+            }
+            
+            if(this._analyzeSettingsService.spectrogramVisible){
+                new SpectrogramComponent(
+                    "analyze-result-box", 
+                    this._analyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH,
+                        this._analyzeSettingsService.SPECTROGRAM_CANVAS_HEIGHT,
+                    this._analyzeService, 
+                    settings, 
+                    this._audioBuffer.sampleRate, 
+                    ch
+                );
+            }
         }
 
         // register seekbar on figures

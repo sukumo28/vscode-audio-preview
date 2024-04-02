@@ -50,6 +50,20 @@ export default class AnalyzeSettingsService {
     private _autoCalcHopSize: boolean = true;
     public set autoCalsHopSize(value: boolean) { this._autoCalcHopSize = value; }
 
+    private _waveformVisible: boolean;
+    public get waveformVisible() { return this._waveformVisible; }
+    public set waveformVisible(value: boolean) {
+        this._waveformVisible = value == undefined ? true : value;      // true by default
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWaveformVisible, { detail: { value: this._waveformVisible }}))
+    }
+
+    private _spectrogramVisible: boolean;
+    public get spectrogramVisible() { return this._spectrogramVisible; }
+    public set spectrogramVisible(value: boolean) {
+        this._spectrogramVisible = value == undefined ? true : value;       // true by default
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVisible, { detail: { value: this._spectrogramVisible }}))
+    }
+
     private _windowSizeIndex: number;
     public get windowSizeIndex() { return this._windowSizeIndex; }
     public set windowSizeIndex(value: number) {
@@ -171,7 +185,9 @@ export default class AnalyzeSettingsService {
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, { detail: { value: this._melFilterNum }}))
     }
 
-    private constructor(windowSize: number, hopSize: number, minFrequency: number, maxFrequency: number, minTime: number, maxTime: number, minAmplitude: number, maxAmplitude: number, spectrogramAmplitudeRange: number) {
+    private constructor(waveformVisible: boolean, spectrogramVisible: boolean, windowSize: number, hopSize: number, minFrequency: number, maxFrequency: number, minTime: number, maxTime: number, minAmplitude: number, maxAmplitude: number, spectrogramAmplitudeRange: number) {
+        this._waveformVisible = waveformVisible;
+        this._spectrogramVisible = spectrogramVisible;
         this._windowSize = windowSize;
         this._hopSize = hopSize;
         this._minFrequency = minFrequency;
@@ -196,7 +212,7 @@ export default class AnalyzeSettingsService {
         }
 
         // create instance
-        const setting = new AnalyzeSettingsService(1024, 256, 0, audioBuffer.sampleRate / 2, 0, audioBuffer.duration, min, max, -90);
+        const setting = new AnalyzeSettingsService(true, true, 1024, 256, 0, audioBuffer.sampleRate / 2, 0, audioBuffer.duration, min, max, -90);
 
         // set min & max amplitude of audio buffer to instance
         setting._minAmplitudeOfAudioBuffer = min;
@@ -206,6 +222,12 @@ export default class AnalyzeSettingsService {
         setting._duration = audioBuffer.duration;
 
         // update the instance props using the values from the default settings
+
+        // init waveform visible
+        setting.waveformVisible = defaultSetting.waveformVisible;
+
+        // init spectrogram visible
+        setting.spectrogramVisible = defaultSetting.spectrogramVisible;
 
         // init fft window size
         setting.windowSizeIndex = defaultSetting.windowSizeIndex;
