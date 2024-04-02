@@ -8,6 +8,8 @@ describe("fromDefaultSettings", () => {
     let audioBuffer: AudioBuffer;
     beforeEach(() => {
         defaultSettings = { 
+            waveformVisible: undefined,
+            spectrogramVisible: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
             maxAmplitude: undefined, 

@@ -13,6 +13,8 @@ describe('analyser', () => {
         const audioContext = createAudioContext(44100);
         audioBuffer = audioContext.createBuffer(2, 44100, 44100);
         const ad = { 
+            waveformVisible: undefined,
+            spectrogramVisible: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
             maxAmplitude: undefined, 
@@ -67,6 +69,40 @@ describe('analyser', () => {
         expect(document.querySelector('.seek-div')).toBeTruthy();
         expect(document.querySelector('.input-seek-bar')).toBeTruthy();
     });
+
+    test('waveform-visible should be updated when recieving update-waveform-visible event', () => {
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWaveformVisible, {
+            detail: {
+                value: true
+            }
+        }));
+        const waveformVisible = <HTMLInputElement>document.getElementById('analyze-waveform-visible');
+        expect(waveformVisible.checked).toBe(true);
+        
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWaveformVisible, {
+            detail: {
+                value: false
+            }
+        }));
+        expect(waveformVisible.checked).toBe(false);
+    });    
+
+    test('spectrogram-visible should be updated when recieving update-spectrogram-visible event', () => {
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVisible, {
+            detail: {
+                value: true
+            }
+        }));
+        const spectrogramVisible = <HTMLInputElement>document.getElementById('analyze-spectrogram-visible');
+        expect(spectrogramVisible.checked).toBe(true);
+        
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVisible, {
+            detail: {
+                value: false
+            }
+        }));
+        expect(spectrogramVisible.checked).toBe(false);
+    });    
 
     test('window size should be updated when user change window-size-select', () => {
         const index = getRandomInt(0, 7);
@@ -256,6 +292,8 @@ describe("auto analyze", () => {
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
         const ad = { 
+            waveformVisible: undefined,
+            spectrogramVisible: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
             maxAmplitude: undefined, 
@@ -276,6 +314,8 @@ describe("auto analyze", () => {
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
         const ad = { 
+            waveformVisible: undefined,
+            spectrogramVisible: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
             maxAmplitude: undefined, 
@@ -302,6 +342,8 @@ describe('position of seek-bar should be updated when recieving update-seekbar e
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 441000, 44100);
         const ad = { 
+            waveformVisible: undefined,
+            spectrogramVisible: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
             maxAmplitude: undefined, 
@@ -365,6 +407,8 @@ describe('input-seekbar event should be dispatched when user change seek-bar on 
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 441000, 44100);
         const ad = { 
+            waveformVisible: undefined,
+            spectrogramVisible: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
             maxAmplitude: undefined, 

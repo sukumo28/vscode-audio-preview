@@ -45,6 +45,8 @@ describe('webview lifecycle', () => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoAnalyze: false,
                 analyzeDefault: { 
+                    waveformVisible: undefined,
+                    spectrogramVisible: undefined,
                     windowSizeIndex: undefined, 
                     minAmplitude: undefined, 
                     maxAmplitude: undefined, 
@@ -144,6 +146,8 @@ describe('webview error handling', () => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoAnalyze: false,
                 analyzeDefault: { 
+                    waveformVisible: undefined,
+                    spectrogramVisible: undefined,
                     windowSizeIndex: undefined, 
                     minAmplitude: undefined, 
                     maxAmplitude: undefined, 
