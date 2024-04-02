@@ -51,8 +51,8 @@ export default class PlayerComponent extends Disposable {
         this._register(new Event(this._volumeBar, EventType.Input, () => {
             // convert dB setting to linear gain
             // -80dB is treated as mute
-            var voldb = Number(this._volumeBar.value)
-            var vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20)
+            let voldb = Number(this._volumeBar.value)
+            let vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20)
             this._playerService.volume = vollin;
             volumeText.innerHTML = "volume " + (vollin == 0 ? "muted" : voldb.toFixed(1) + " dB");
         }));
