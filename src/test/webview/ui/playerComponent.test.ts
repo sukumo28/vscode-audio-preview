@@ -25,11 +25,13 @@ describe('player', () => {
 
     test('player should have volume bar', () => {
         expect(document.getElementById('volume-bar')).toBeTruthy();
+        expect(document.getElementById('volume-text')).toBeTruthy();
     });
 
     test('player should have seek bar', () => {
         expect(document.getElementById('seek-bar')).toBeTruthy();
         expect(document.getElementById('user-input-seek-bar')).toBeTruthy();
+        expect(document.getElementById('seek-pos-text')).toBeTruthy();
     });
 
     test('dispatch update-seekbar event when user change user-input-seek-bar', async () => {
@@ -53,9 +55,15 @@ describe('player', () => {
 
     test('change volume when volume-bar is changed', () => {
         const volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
-        volumeBar.value = "50";
-        volumeBar.dispatchEvent(new Event('change'));
-        expect(playerService.volume).toBe(0.5);
+        volumeBar.value = "0";
+        volumeBar.dispatchEvent(new Event('input'));
+        expect(playerService.volume).toBe(1.0);
+        volumeBar.value = "-20";
+        volumeBar.dispatchEvent(new Event('input'));
+        expect(playerService.volume).toBe(0.1);
+        volumeBar.value = "-80";
+        volumeBar.dispatchEvent(new Event('input'));
+        expect(playerService.volume).toBe(0.0);
     });
 
     test('play when play button is clicked while not playing', () => {
