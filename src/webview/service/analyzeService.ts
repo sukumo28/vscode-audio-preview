@@ -197,4 +197,25 @@ export default class AnalyzeService {
     public melToHz(mel: number) {
         return 700 * (Math.pow(10, mel / 2595 ) - 1);
     }
+
+    // round input value to the nearest nice number, which has the most significant digit of 1, 2, 5
+    // return the number of decimal digits as well, for display purpose
+    public static roundToNearestNiceNumber(input: number): [number, number] {
+        const nice_numbers: number[] = [1.0, 2.0, 5.0, 10.0];
+
+        if (input <= 0) return [0, 0];  // this function only works for positive number
+
+        let exponent = Math.floor(Math.log10(input));
+        let mantissa = input / Math.pow(10, exponent);
+
+        // find which number in nice_numbers is nearest
+        const dist: number[] = nice_numbers.map(value => Math.abs(Math.log10(mantissa) - Math.log10(value)));
+        const nice_number = nice_numbers[dist.indexOf(Math.min(...dist))];
+
+        let nice = nice_number * Math.pow(10, exponent);
+        let digit = nice_number == 10.0 ? -exponent - 1 : -exponent;
+        digit = digit <= 0 ? 0 : digit;   // avoid -0
+
+        return [nice, digit];
+    }
 }
