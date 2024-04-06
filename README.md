@@ -33,6 +33,18 @@ You can analyze audio automatically when you open it.
 "WavPreview.autoAnalyze": true
 ```
 
+You can configure default value of player settings like example below.
+```jsonc
+"WavPreview.playerDefault": {
+    /*
+        Choose the scale of the volume bar
+        true: dB scale, false: linear scale
+        default: true
+    */
+    "volumeUnitDb": true
+}
+```
+
 You can configure default value of analyze settings like example below.  
 ```jsonc
 "WavPreview.analyzeDefault": {
