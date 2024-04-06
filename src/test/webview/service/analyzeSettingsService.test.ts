@@ -38,6 +38,36 @@ describe("fromDefaultSettings", () => {
         expect(as.roundTimeAxis).toBe(false);
     });
 
+    // waveformVisible
+    test("waveformVisible should be true if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVisible).toBe(true);
+    });
+    test("waveformVisible should be default value", () => {
+        defaultSettings.waveformVisible = true;
+        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVisible).toBe(true);
+
+        defaultSettings.waveformVisible = false;
+        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVisible).toBe(false);
+    });
+
+    // spectrogramVisible
+    test("spectrogramVisible should be true if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVisible).toBe(true);
+    });
+    test("spectrogramVisible should be default value", () => {
+        defaultSettings.spectrogramVisible = true;
+        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVisible).toBe(true);
+
+        defaultSettings.spectrogramVisible = false;
+        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVisible).toBe(false);
+    });
+
     // windowSizeIndex
     test("windowSizeIndex should be W1024 if no default value is provided", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
