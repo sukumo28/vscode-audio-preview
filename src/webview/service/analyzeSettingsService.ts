@@ -21,6 +21,7 @@ export enum FrequencyScale {
 export interface AnalyzeSettingsProps {
     windowSize: number;
     hopSize: number;
+    roundTimeAxis: boolean;
     minFrequency: number;
     maxFrequency: number;
     minTime: number;
@@ -62,6 +63,13 @@ export default class AnalyzeSettingsService {
     public set spectrogramVisible(value: boolean) {
         this._spectrogramVisible = value == undefined ? true : value;       // true by default
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVisible, { detail: { value: this._spectrogramVisible }}))
+    }
+
+    private _roundTimeAxis: boolean;
+    public get roundTimeAxis() { return this._roundTimeAxis; }
+    public set roundTimeAxis(value: boolean) {
+        this._roundTimeAxis = value == undefined ? true : value;       // true by default
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateRoundTimeAxis, { detail: { value: this._roundTimeAxis }}))
     }
 
     private _windowSizeIndex: number;
@@ -229,6 +237,9 @@ export default class AnalyzeSettingsService {
         // init spectrogram visible
         setting.spectrogramVisible = defaultSetting.spectrogramVisible;
 
+        // init round time axis
+        setting.roundTimeAxis = defaultSetting.roundTimeAxis;
+
         // init fft window size
         setting.windowSizeIndex = defaultSetting.windowSizeIndex;
 
@@ -312,6 +323,7 @@ export default class AnalyzeSettingsService {
 
     public toProps(): AnalyzeSettingsProps {
         return {
+            roundTimeAxis: this.roundTimeAxis,
             windowSize: this.windowSize,
             hopSize: this.hopSize,
             minFrequency: this.minFrequency,

@@ -47,6 +47,7 @@ describe('webview lifecycle', () => {
                 analyzeDefault: { 
                     waveformVisible: undefined,
                     spectrogramVisible: undefined,
+                    roundTimeAxis: undefined,
                     windowSizeIndex: undefined, 
                     minAmplitude: undefined, 
                     maxAmplitude: undefined, 
@@ -148,6 +149,7 @@ describe('webview error handling', () => {
                 analyzeDefault: { 
                     waveformVisible: undefined,
                     spectrogramVisible: undefined,
+                    roundTimeAxis: undefined,
                     windowSizeIndex: undefined, 
                     minAmplitude: undefined, 
                     maxAmplitude: undefined, 

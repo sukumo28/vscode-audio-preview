@@ -59,20 +59,32 @@ export default class WaveFormComponent {
         axisContext.font = `20px Arial`;
 
         // draw horizontal axis
-        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-        const x_by_t = width / (settings.maxTime - settings.minTime);
-        let t = settings.minTime;
-        do {
-            let x = (t - settings.minTime) * x_by_t;
+        if (settings.roundTimeAxis) {
+            const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+            const x_by_t = width / (settings.maxTime - settings.minTime);
+            let t = settings.minTime;
+            do {
+                let x = (t - settings.minTime) * x_by_t;
 
-            axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+                axisContext.fillStyle = "rgb(245,130,32)";
+                if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+                axisContext.fillStyle = "rgb(180,120,20)";
+                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-            t = Math.floor((t + nice_t) / nice_t) * nice_t;
-        } while (t < settings.maxTime);
+                t = Math.floor((t + nice_t) / nice_t) * nice_t;
+            } while (t < settings.maxTime);
+        } else {        
+            for (let i = 0; i < 10; i++) {
+                axisContext.fillStyle = "rgb(245,130,32)";
+                const x = Math.round(i * width / 10);
+                const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
+                if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18); // skip first label
+
+                axisContext.fillStyle = "rgb(180,120,20)";
+                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            }
+        }
 
         // draw vertical axis
         for (let i = 0; i < 10; i++) {
@@ -118,20 +130,32 @@ export default class WaveFormComponent {
         const scale = (logMax - logMin) / height;
 
         // draw horizontal axis
-        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-        const x_by_t = width / (settings.maxTime - settings.minTime);
-        let t = settings.minTime;
-        do {
-            let x = (t - settings.minTime) * x_by_t;
+        if (settings.roundTimeAxis) {
+            const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+            const x_by_t = width / (settings.maxTime - settings.minTime);
+            let t = settings.minTime;
+            do {
+                let x = (t - settings.minTime) * x_by_t;
 
-            axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+                axisContext.fillStyle = "rgb(245,130,32)";
+                if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+                axisContext.fillStyle = "rgb(180,120,20)";
+                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-            t = Math.floor((t + nice_t) / nice_t) * nice_t;
-        } while (t < settings.maxTime);
+                t = Math.floor((t + nice_t) / nice_t) * nice_t;
+            } while (t < settings.maxTime);
+        } else {        
+            for (let i = 0; i < 10; i++) {
+                axisContext.fillStyle = "rgb(245,130,32)";
+                const x = Math.round(i * width / 10);
+                const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
+                if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18); // skip first label
+
+                axisContext.fillStyle = "rgb(180,120,20)";
+                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            }
+        }
 
         // draw vertical axis    
         for (let i = 0; i < 10; i++) {
@@ -188,20 +212,32 @@ export default class WaveFormComponent {
         axisContext.font = `20px Arial`;
 
         // draw horizontal axis
-        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-        const x_by_t = width / (settings.maxTime - settings.minTime);
-        let t = settings.minTime;
-        do {
-            let x = (t - settings.minTime) * x_by_t;
+        if (settings.roundTimeAxis) {
+            const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+            const x_by_t = width / (settings.maxTime - settings.minTime);
+            let t = settings.minTime;
+            do {
+                let x = (t - settings.minTime) * x_by_t;
 
-            axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+                axisContext.fillStyle = "rgb(245,130,32)";
+                if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+                axisContext.fillStyle = "rgb(180,120,20)";
+                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-            t = Math.floor((t + nice_t) / nice_t) * nice_t;
-        } while (t < settings.maxTime);
+                t = Math.floor((t + nice_t) / nice_t) * nice_t;
+            } while (t < settings.maxTime);
+        } else {        
+            for (let i = 0; i < 10; i++) {
+                axisContext.fillStyle = "rgb(245,130,32)";
+                const x = Math.round(i * width / 10);
+                const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
+                if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18); // skip first label
+
+                axisContext.fillStyle = "rgb(180,120,20)";
+                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            }
+        }
 
         // draw vertical axis
         for (let i = 0; i < 10; i++) {

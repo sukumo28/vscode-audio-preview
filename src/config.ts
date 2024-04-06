@@ -6,6 +6,7 @@ export interface Config {
 export interface AnalyzeDefault {
     waveformVisible: boolean;
     spectrogramVisible: boolean;
+    roundTimeAxis: boolean;
     windowSizeIndex: number;
     minAmplitude: number;
     maxAmplitude: number;

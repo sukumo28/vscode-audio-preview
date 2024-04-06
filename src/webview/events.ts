@@ -10,6 +10,7 @@ export const EventType = {
     // analyzeSettings
     AS_UpdateWaveformVisible: "as-update-waveform-visible",
     AS_UpdateSpectrogramVisible: "as-update-spectrogram-visible",
+    AS_UpdateRoundTimeAxis: "as-update-round-time-axis",
     AS_UpdateWindowSizeIndex: "as-update-window-size-index",
     AS_UpdateFrequencyScale: "as-update-frequency-scale",
     AS_UpdateMelFilterNum: "as-update-mel-filter-num",
