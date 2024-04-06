@@ -14,7 +14,9 @@ describe('analyser', () => {
         audioBuffer = audioContext.createBuffer(2, 44100, 44100);
         const ad = { 
             waveformVisible: undefined,
+            waveformVerticalScale: undefined,
             spectrogramVisible: undefined,
+            spectrogramVerticalScale: undefined,
             roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
@@ -295,7 +297,9 @@ describe("auto analyze", () => {
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
         const ad = { 
             waveformVisible: undefined,
+            waveformVerticalScale: undefined,
             spectrogramVisible: undefined,
+            spectrogramVerticalScale: undefined,
             roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
@@ -319,7 +323,9 @@ describe("auto analyze", () => {
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
         const ad = { 
             waveformVisible: undefined,
+            waveformVerticalScale: undefined,
             spectrogramVisible: undefined,
+            spectrogramVerticalScale: undefined,
             roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
@@ -349,7 +355,9 @@ describe('position of seek-bar should be updated when recieving update-seekbar e
         const audioBuffer = audioContext.createBuffer(2, 441000, 44100);
         const ad = { 
             waveformVisible: undefined,
+            waveformVerticalScale: undefined,
             spectrogramVisible: undefined,
+            spectrogramVerticalScale: undefined,
             roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
@@ -416,7 +424,9 @@ describe('input-seekbar event should be dispatched when user change seek-bar on 
         const audioBuffer = audioContext.createBuffer(2, 441000, 44100);
         const ad = { 
             waveformVisible: undefined,
+            waveformVerticalScale: undefined,
             spectrogramVisible: undefined,
+            spectrogramVerticalScale: undefined,
             roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 

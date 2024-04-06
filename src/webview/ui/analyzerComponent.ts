@@ -248,7 +248,7 @@ export default class AnalyzerComponent extends Disposable {
                 new WaveFormComponent(
                     "analyze-result-box", 
                     this._analyzeSettingsService.WAVEFORM_CANVAS_WIDTH,
-                        this._analyzeSettingsService.WAVEFORM_CANVAS_HEIGHT,
+                    this._analyzeSettingsService.WAVEFORM_CANVAS_HEIGHT * this._analyzeSettingsService.waveformVerticalScale,
                     settings, 
                     this._audioBuffer.sampleRate, 
                     this._audioBuffer.getChannelData(ch)
@@ -259,7 +259,7 @@ export default class AnalyzerComponent extends Disposable {
                 new SpectrogramComponent(
                     "analyze-result-box", 
                     this._analyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH,
-                        this._analyzeSettingsService.SPECTROGRAM_CANVAS_HEIGHT,
+                    this._analyzeSettingsService.SPECTROGRAM_CANVAS_HEIGHT * this._analyzeSettingsService.spectrogramVerticalScale,
                     this._analyzeService, 
                     settings, 
                     this._audioBuffer.sampleRate, 

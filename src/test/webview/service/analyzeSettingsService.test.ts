@@ -9,7 +9,9 @@ describe("fromDefaultSettings", () => {
     beforeEach(() => {
         defaultSettings = { 
             waveformVisible: undefined,
+            waveformVerticalScale: undefined,
             spectrogramVisible: undefined,
+            spectrogramVerticalScale: undefined,
             roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
@@ -39,6 +41,29 @@ describe("fromDefaultSettings", () => {
         expect(as.waveformVisible).toBe(false);
     });
 
+    // waveformVerticalScale
+    test("waveformVerticalScale should be 1.0 if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVerticalScale).toBe(1.0);
+    });
+    test("waveformVerticalScale should be default value", () => {
+        const waveformVerticalScale = getRandomFloat(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN, AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX);
+        defaultSettings.waveformVerticalScale = waveformVerticalScale;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVerticalScale).toBe(waveformVerticalScale);
+    });
+    test("waveformVerticalScale should be in range", () => {
+        let waveformVerticalScale = 0.0;
+        defaultSettings.waveformVerticalScale = waveformVerticalScale;
+        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN);
+
+        waveformVerticalScale = 10.0;
+        defaultSettings.waveformVerticalScale = waveformVerticalScale;
+        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX);
+    });
+
     // spectrogramVisible
     test("spectrogramVisible should be true if no default value is provided", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
@@ -52,6 +77,29 @@ describe("fromDefaultSettings", () => {
         defaultSettings.spectrogramVisible = false;
         as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVisible).toBe(false);
+    });
+
+    // spectrogramVerticalScale
+    test("spectrogramVerticalScale should be 1.0 if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVerticalScale).toBe(1.0);
+    });
+    test("spectrogramVerticalScale should be default value", () => {
+        const spectrogramVerticalScale = getRandomFloat(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN, AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX);
+        defaultSettings.spectrogramVerticalScale = spectrogramVerticalScale;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVerticalScale).toBe(spectrogramVerticalScale);
+    });
+    test("spectrogramVerticalScale should be in range", () => {
+        let spectrogramVerticalScale = 0.0;
+        defaultSettings.spectrogramVerticalScale = spectrogramVerticalScale;
+        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN);
+
+        spectrogramVerticalScale = 10.0;
+        defaultSettings.spectrogramVerticalScale = spectrogramVerticalScale;
+        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX);
     });
 
     // roundWaveformAxis

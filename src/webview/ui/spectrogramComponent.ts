@@ -87,9 +87,10 @@ export default class WaveFormComponent {
         }
 
         // draw vertical axis
-        for (let i = 0; i < 10; i++) {
+        const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
+        for (let i = 0; i < num_axes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
-            const freq = minFreq + i * (maxFreq - minFreq) / 10;
+            const freq = minFreq + i * (maxFreq - minFreq) / num_axes;
             const y = height - (freq - minFreq) / scale;
             axisContext.fillText(`${Math.trunc(freq)}`, 4, y - 4);
 
@@ -158,11 +159,12 @@ export default class WaveFormComponent {
         }
 
         // draw vertical axis    
-        for (let i = 0; i < 10; i++) {
+        const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
+        for (let i = 0; i < num_axes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
     
             // Convert the frequency to the logarithmic scale
-            const logFreq = logMin + i * (logMax - logMin) / 10;
+            const logFreq = logMin + i * (logMax - logMin) / num_axes;
             const f = Math.pow(10, logFreq);
             const y = height - (logFreq - logMin) / scale;
             axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
@@ -240,12 +242,13 @@ export default class WaveFormComponent {
         }
 
         // draw vertical axis
-        for (let i = 0; i < 10; i++) {
+        const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
+        for (let i = 0; i < num_axes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
-            const y = Math.round(i * height / 10);
+            const y = Math.round(i * height / num_axes);
             const maxMel = this._analyzeService.hzToMel(settings.maxFrequency);
             const minMel = this._analyzeService.hzToMel(settings.minFrequency);
-            const mel = (10 - i) * (maxMel - minMel) / 10 + minMel;
+            const mel = (num_axes - i) * (maxMel - minMel) / num_axes + minMel;
             const f = this._analyzeService.melToHz(mel);
             axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
     

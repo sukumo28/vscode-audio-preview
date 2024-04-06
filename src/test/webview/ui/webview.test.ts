@@ -46,7 +46,9 @@ describe('webview lifecycle', () => {
                 autoAnalyze: false,
                 analyzeDefault: { 
                     waveformVisible: undefined,
+                    waveformVerticalScale: undefined,
                     spectrogramVisible: undefined,
+                    spectrogramVerticalScale: undefined,
                     roundWaveformAxis: undefined,
                     roundTimeAxis: undefined,
                     windowSizeIndex: undefined, 
@@ -149,7 +151,9 @@ describe('webview error handling', () => {
                 autoAnalyze: false,
                 analyzeDefault: { 
                     waveformVisible: undefined,
+                    waveformVerticalScale: undefined,
                     spectrogramVisible: undefined,
+                    spectrogramVerticalScale: undefined,
                     roundWaveformAxis: undefined,
                     roundTimeAxis: undefined,
                     windowSizeIndex: undefined, 

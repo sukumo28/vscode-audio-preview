@@ -19,6 +19,8 @@ export enum FrequencyScale {
 }
 
 export interface AnalyzeSettingsProps {
+    waveformVerticalScale: number,
+    spectrogramVerticalScale: number,
     roundWaveformAxis: boolean;
     roundTimeAxis: boolean;
     windowSize: number;
@@ -37,8 +39,12 @@ export interface AnalyzeSettingsProps {
 export default class AnalyzeSettingsService {
     public readonly WAVEFORM_CANVAS_WIDTH = 1000;
     public readonly WAVEFORM_CANVAS_HEIGHT = 200;
+    public static WAVEFORM_CANVAS_VERTICAL_SCALE_MAX = 2.0;
+    public static WAVEFORM_CANVAS_VERTICAL_SCALE_MIN = 0.3;
     public readonly SPECTROGRAM_CANVAS_WIDTH = 1800;
     public readonly SPECTROGRAM_CANVAS_HEIGHT = 600;
+    public static SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX = 2.0;
+    public static SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN = 0.2;
 
     private _sampleRate: number;
     private _duration: number;
@@ -59,11 +65,35 @@ export default class AnalyzeSettingsService {
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWaveformVisible, { detail: { value: this._waveformVisible }}))
     }
 
+    private _waveformVerticalScale: number;
+    public get waveformVerticalScale() { return this._waveformVerticalScale; }
+    public set waveformVerticalScale(value: number) {
+        let val = value == undefined ? 1.0 : value;      // 1.0 by default
+
+        if (val < AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN) val = AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN;
+        if (AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX < val) val = AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX; 
+        this._waveformVerticalScale = val;
+
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWaveformVerticalScale, { detail: { value: this._waveformVerticalScale }}))
+    }
+
     private _spectrogramVisible: boolean;
     public get spectrogramVisible() { return this._spectrogramVisible; }
     public set spectrogramVisible(value: boolean) {
         this._spectrogramVisible = value == undefined ? true : value;       // true by default
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVisible, { detail: { value: this._spectrogramVisible }}))
+    }
+
+    private _spectrogramVerticalScale: number;
+    public get spectrogramVerticalScale() { return this._spectrogramVerticalScale; }
+    public set spectrogramVerticalScale(value: number) {
+        let val = value == undefined ? 1.0 : value;      // 1.0 by default
+
+        if (val < AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN) val = AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN;
+        if (AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX < val) val = AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX; 
+        this._spectrogramVerticalScale = val;
+
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVerticalScale, { detail: { value: this._spectrogramVerticalScale }}))
     }
 
     private _roundWaveformAxis: boolean;
@@ -201,9 +231,12 @@ export default class AnalyzeSettingsService {
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, { detail: { value: this._melFilterNum }}))
     }
 
-    private constructor(waveformVisible: boolean, spectrogramVisible: boolean, windowSize: number, hopSize: number, minFrequency: number, maxFrequency: number, minTime: number, maxTime: number, minAmplitude: number, maxAmplitude: number, spectrogramAmplitudeRange: number) {
+    private constructor(waveformVisible: boolean, waveformVerticalScale: number, spectrogramVisible: boolean, spectrogramVerticalScale: number, 
+                        windowSize: number, hopSize: number, minFrequency: number, maxFrequency: number, minTime: number, maxTime: number, minAmplitude: number, maxAmplitude: number, spectrogramAmplitudeRange: number) {
         this._waveformVisible = waveformVisible;
+        this._waveformVerticalScale = waveformVerticalScale;
         this._spectrogramVisible = spectrogramVisible;
+        this._spectrogramVerticalScale = spectrogramVerticalScale;
         this._windowSize = windowSize;
         this._hopSize = hopSize;
         this._minFrequency = minFrequency;
@@ -228,7 +261,7 @@ export default class AnalyzeSettingsService {
         }
 
         // create instance
-        const setting = new AnalyzeSettingsService(true, true, 1024, 256, 0, audioBuffer.sampleRate / 2, 0, audioBuffer.duration, min, max, -90);
+        const setting = new AnalyzeSettingsService(true, 1.0, true, 1.0, 1024, 256, 0, audioBuffer.sampleRate / 2, 0, audioBuffer.duration, min, max, -90);
 
         // set min & max amplitude of audio buffer to instance
         setting._minAmplitudeOfAudioBuffer = min;
@@ -242,8 +275,14 @@ export default class AnalyzeSettingsService {
         // init waveform visible
         setting.waveformVisible = defaultSetting.waveformVisible;
 
+        // init waveform vertical scale
+        setting.waveformVerticalScale = defaultSetting.waveformVerticalScale;
+
         // init spectrogram visible
         setting.spectrogramVisible = defaultSetting.spectrogramVisible;
+
+        // init spectrogram vertical scale
+        setting.spectrogramVerticalScale = defaultSetting.spectrogramVerticalScale;
 
         // init round waveform axis
         setting.roundWaveformAxis = defaultSetting.roundWaveformAxis;
@@ -334,6 +373,8 @@ export default class AnalyzeSettingsService {
 
     public toProps(): AnalyzeSettingsProps {
         return {
+            waveformVerticalScale: this.waveformVerticalScale,
+            spectrogramVerticalScale: this.spectrogramVerticalScale,
             roundWaveformAxis: this.roundWaveformAxis,
             roundTimeAxis: this.roundTimeAxis,
             windowSize: this.windowSize,

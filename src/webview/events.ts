@@ -9,7 +9,9 @@ export const EventType = {
     UpdateIsPlaying: "update-is-playing",
     // analyzeSettings
     AS_UpdateWaveformVisible: "as-update-waveform-visible",
+    AS_UpdateWaveformVerticalScale: "as-update-waveform-vertical-scale",
     AS_UpdateSpectrogramVisible: "as-update-spectrogram-visible",
+    AS_UpdateSpectrogramVerticalScale: "as-update-spectrogram-vertical-scale",
     AS_UpdateRoundWaveformAxis: "as-update-round-waveform-axis",
     AS_UpdateRoundTimeAxis: "as-update-round-time-axis",
     AS_UpdateWindowSizeIndex: "as-update-window-size-index",
