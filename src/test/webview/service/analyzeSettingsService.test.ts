@@ -10,6 +10,7 @@ describe("fromDefaultSettings", () => {
         defaultSettings = { 
             waveformVisible: undefined,
             spectrogramVisible: undefined,
+            roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
@@ -21,21 +22,6 @@ describe("fromDefaultSettings", () => {
             melFilterNum: undefined
         };
         audioBuffer = new MockAudioBuffer(1, 44100, 44100) as unknown as AudioBuffer;
-    });
-
-    // roundTimeAxis
-    test("roundTimeAxis should be true if no default value is provided", () => {
-        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
-        expect(as.roundTimeAxis).toBe(true);
-    });
-    test("roundTimeAxis should be default value", () => {
-        defaultSettings.roundTimeAxis = true;
-        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
-        expect(as.roundTimeAxis).toBe(true);
-
-        defaultSettings.roundTimeAxis = false;
-        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
-        expect(as.roundTimeAxis).toBe(false);
     });
 
     // waveformVisible
@@ -66,6 +52,36 @@ describe("fromDefaultSettings", () => {
         defaultSettings.spectrogramVisible = false;
         as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVisible).toBe(false);
+    });
+
+    // roundWaveformAxis
+    test("roundWaveformAxis should be true if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.roundWaveformAxis).toBe(true);
+    });
+    test("roundWaveformAxis should be default value", () => {
+        defaultSettings.roundWaveformAxis = true;
+        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.roundWaveformAxis).toBe(true);
+
+        defaultSettings.roundWaveformAxis = false;
+        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.roundWaveformAxis).toBe(false);
+    });
+
+    // roundTimeAxis
+    test("roundTimeAxis should be true if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.roundTimeAxis).toBe(true);
+    });
+    test("roundTimeAxis should be default value", () => {
+        defaultSettings.roundTimeAxis = true;
+        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.roundTimeAxis).toBe(true);
+
+        defaultSettings.roundTimeAxis = false;
+        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.roundTimeAxis).toBe(false);
     });
 
     // windowSizeIndex

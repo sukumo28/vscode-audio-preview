@@ -52,17 +52,36 @@ export default class WaveFormComponent {
         }
         
         // draw vertical axis
-        for (let i = 0; i < 10; i++) {
-            axisContext.fillStyle = "rgb(245,130,32)";
-            const y = Math.round((i + 1) * height / 10);
-            const a = (i + 1) * (settings.minAmplitude - settings.maxAmplitude) / 10 + settings.maxAmplitude;
-            axisContext.fillText(`${(a).toFixed(2)}`, 4, y - 2);
+        if (settings.roundWaveformAxis) {
+            const [nice_a, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxAmplitude - settings.minAmplitude) / 10);
+            const y_by_a = height / (settings.maxAmplitude - settings.minAmplitude);
+            let a = settings.minAmplitude;
+            do {
+                let y = height - ((a - settings.minAmplitude) * y_by_a);
 
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
+                axisContext.fillStyle = "rgb(245,130,32)";
+                if (height * (5 / 100) < y  && y < height * (97 / 100)) axisContext.fillText(`${(a).toFixed(digit)}`, 4, y - 2);    // don't draw near the edge
+
+                axisContext.fillStyle = "rgb(180,120,20)";
+                if (height * (5 / 100) < y) {   // don't draw on the horizontal axis
+                    for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
+                }
+
+                a = Math.round((a + nice_a) / nice_a) * nice_a;
+            } while (a < settings.maxAmplitude);
+        } else {
+            for (let i = 0; i < 10; i++) {
+                axisContext.fillStyle = "rgb(245,130,32)";
+                const y = Math.round((i + 1) * height / 10);
+                const a = (i + 1) * (settings.minAmplitude - settings.maxAmplitude) / 10 + settings.maxAmplitude;
+                axisContext.fillText(`${(a).toFixed(2)}`, 4, y - 2);
+
+                axisContext.fillStyle = "rgb(180,120,20)";
+                for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
+            }
         }
-        canvasBox.appendChild(axisCanvas);
 
+        canvasBox.appendChild(axisCanvas);
         parent.appendChild(canvasBox);
 
         const startIndex = Math.floor(settings.minTime * sampleRate);

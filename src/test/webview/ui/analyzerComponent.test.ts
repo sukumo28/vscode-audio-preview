@@ -15,6 +15,7 @@ describe('analyser', () => {
         const ad = { 
             waveformVisible: undefined,
             spectrogramVisible: undefined,
+            roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
@@ -295,6 +296,7 @@ describe("auto analyze", () => {
         const ad = { 
             waveformVisible: undefined,
             spectrogramVisible: undefined,
+            roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
@@ -318,6 +320,7 @@ describe("auto analyze", () => {
         const ad = { 
             waveformVisible: undefined,
             spectrogramVisible: undefined,
+            roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
@@ -347,6 +350,7 @@ describe('position of seek-bar should be updated when recieving update-seekbar e
         const ad = { 
             waveformVisible: undefined,
             spectrogramVisible: undefined,
+            roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
@@ -413,6 +417,7 @@ describe('input-seekbar event should be dispatched when user change seek-bar on 
         const ad = { 
             waveformVisible: undefined,
             spectrogramVisible: undefined,
+            roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 

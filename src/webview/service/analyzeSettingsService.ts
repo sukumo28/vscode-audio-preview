@@ -19,9 +19,10 @@ export enum FrequencyScale {
 }
 
 export interface AnalyzeSettingsProps {
+    roundWaveformAxis: boolean;
+    roundTimeAxis: boolean;
     windowSize: number;
     hopSize: number;
-    roundTimeAxis: boolean;
     minFrequency: number;
     maxFrequency: number;
     minTime: number;
@@ -63,6 +64,13 @@ export default class AnalyzeSettingsService {
     public set spectrogramVisible(value: boolean) {
         this._spectrogramVisible = value == undefined ? true : value;       // true by default
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVisible, { detail: { value: this._spectrogramVisible }}))
+    }
+
+    private _roundWaveformAxis: boolean;
+    public get roundWaveformAxis() { return this._roundWaveformAxis; }
+    public set roundWaveformAxis(value: boolean) {
+        this._roundWaveformAxis = value == undefined ? true : value;       // true by default
+        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateRoundWaveformAxis, { detail: { value: this._roundWaveformAxis }}))
     }
 
     private _roundTimeAxis: boolean;
@@ -237,6 +245,9 @@ export default class AnalyzeSettingsService {
         // init spectrogram visible
         setting.spectrogramVisible = defaultSetting.spectrogramVisible;
 
+        // init round waveform axis
+        setting.roundWaveformAxis = defaultSetting.roundWaveformAxis;
+
         // init round time axis
         setting.roundTimeAxis = defaultSetting.roundTimeAxis;
 
@@ -323,6 +334,7 @@ export default class AnalyzeSettingsService {
 
     public toProps(): AnalyzeSettingsProps {
         return {
+            roundWaveformAxis: this.roundWaveformAxis,
             roundTimeAxis: this.roundTimeAxis,
             windowSize: this.windowSize,
             hopSize: this.hopSize,
