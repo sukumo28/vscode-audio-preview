@@ -1,17 +1,23 @@
 import { EventType } from "../../../webview/events";
 import PlayerService from "../../../webview/service/playerService";
+import PlayerSettingsService from "../../../webview/service/playerSettingsService";
 import PlayerComponent from "../../../webview/ui/playerComponent";
 import { createAudioContext, waitEventForAction } from "../../helper";
 
 describe('player', () => {
     let playerService: PlayerService;
+    let playerSettingService: PlayerSettingsService;
     let playerComponent: PlayerComponent;
     beforeAll(() => {
         document.body.innerHTML = '<div id="player"></div>';
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
+        const pd = {
+            volumeUnitDb: undefined
+        }
         playerService = new PlayerService(audioContext, audioBuffer);
-        playerComponent = new PlayerComponent("player", playerService);
+        playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
+        playerComponent = new PlayerComponent("player", playerService, playerSettingService);
     });
 
     afterAll(() => {
@@ -54,7 +60,8 @@ describe('player', () => {
     });
 
     test('change volume when volume-bar is changed', () => {
-        const volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
+        let volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
+
         volumeBar.value = "0";
         volumeBar.dispatchEvent(new Event('input'));
         expect(playerService.volume).toBe(1.0);
@@ -62,6 +69,31 @@ describe('player', () => {
         volumeBar.dispatchEvent(new Event('input'));
         expect(playerService.volume).toBe(0.1);
         volumeBar.value = "-80";
+        volumeBar.dispatchEvent(new Event('input'));
+        expect(playerService.volume).toBe(0.0);
+
+        playerComponent.dispose();
+        playerService.dispose();
+
+        // create playerComponent again to change setting
+        const audioContext = createAudioContext(44100);
+        const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
+        const pd = {
+            volumeUnitDb: false
+        }
+        playerService = new PlayerService(audioContext, audioBuffer);
+        playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
+        playerComponent = new PlayerComponent("player", playerService, playerSettingService);
+
+        volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
+
+        volumeBar.value = "100";
+        volumeBar.dispatchEvent(new Event('input'));
+        expect(playerService.volume).toBe(1.0);
+        volumeBar.value = "50";
+        volumeBar.dispatchEvent(new Event('input'));
+        expect(playerService.volume).toBe(0.5);
+        volumeBar.value = "0";
         volumeBar.dispatchEvent(new Event('input'));
         expect(playerService.volume).toBe(0.0);
     });

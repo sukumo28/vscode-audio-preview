@@ -75,6 +75,11 @@
 					"default": false,
 					"description": "automatically analyze audio file when you open it"
 				},
+				"WavPreview.playerDefault": {
+					"type": "object",
+					"default": {},
+					"description": "default values of player settings"
+				},
 				"WavPreview.analyzeDefault": {
 					"type": "object",
 					"default": {},

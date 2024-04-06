@@ -1,6 +1,11 @@
 export interface Config {
     autoAnalyze: boolean,
+    playerDefault: PlayerDefault,
     analyzeDefault: AnalyzeDefault,
+}
+
+export interface PlayerDefault {
+    volumeUnitDb: boolean;
 }
 
 export interface AnalyzeDefault {

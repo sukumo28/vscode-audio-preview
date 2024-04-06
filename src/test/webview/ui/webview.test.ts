@@ -44,6 +44,9 @@ describe('webview lifecycle', () => {
         const msg = await waitVSCodeMessageForAction(() => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoAnalyze: false,
+                playerDefault: {
+                    volumeUnitDb: undefined
+                },
                 analyzeDefault: { 
                     windowSizeIndex: undefined, 
                     minAmplitude: undefined, 
@@ -143,6 +146,9 @@ describe('webview error handling', () => {
         await waitVSCodeMessageForAction(() => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoAnalyze: false,
+                playerDefault: {
+                    volumeUnitDb: undefined
+                },
                 analyzeDefault: { 
                     windowSizeIndex: undefined, 
                     minAmplitude: undefined, 
