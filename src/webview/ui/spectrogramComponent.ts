@@ -63,6 +63,7 @@ export default class WaveFormComponent {
             const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
             const x_by_t = width / (settings.maxTime - settings.minTime);
             let t = settings.minTime;
+            let loop_cnt = 0;   // safe guard
             do {
                 let x = (t - settings.minTime) * x_by_t;
 
@@ -72,8 +73,8 @@ export default class WaveFormComponent {
                 axisContext.fillStyle = "rgb(180,120,20)";
                 for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t = Math.floor((t + nice_t) / nice_t) * nice_t;
-            } while (t < settings.maxTime);
+                t = Math.round((t + nice_t) / nice_t) * nice_t;
+            } while (t < settings.maxTime && loop_cnt++ < 100);
         } else {        
             for (let i = 0; i < 10; i++) {
                 axisContext.fillStyle = "rgb(245,130,32)";
@@ -135,6 +136,7 @@ export default class WaveFormComponent {
             const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
             const x_by_t = width / (settings.maxTime - settings.minTime);
             let t = settings.minTime;
+            let loop_cnt = 0;   // safe guard
             do {
                 let x = (t - settings.minTime) * x_by_t;
 
@@ -144,9 +146,8 @@ export default class WaveFormComponent {
                 axisContext.fillStyle = "rgb(180,120,20)";
                 for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t = Math.floor((t + nice_t) / nice_t) * nice_t;
-            } while (t < settings.maxTime);
-        } else {        
+                t = Math.round((t + nice_t) / nice_t) * nice_t;
+            } while (t < settings.maxTime && loop_cnt++ < 100);        } else {        
             for (let i = 0; i < 10; i++) {
                 axisContext.fillStyle = "rgb(245,130,32)";
                 const x = Math.round(i * width / 10);
@@ -218,6 +219,7 @@ export default class WaveFormComponent {
             const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
             const x_by_t = width / (settings.maxTime - settings.minTime);
             let t = settings.minTime;
+            let loop_cnt = 0;   // safe guard
             do {
                 let x = (t - settings.minTime) * x_by_t;
 
@@ -227,8 +229,8 @@ export default class WaveFormComponent {
                 axisContext.fillStyle = "rgb(180,120,20)";
                 for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t = Math.floor((t + nice_t) / nice_t) * nice_t;
-            } while (t < settings.maxTime);
+                t = Math.round((t + nice_t) / nice_t) * nice_t;
+            } while (t < settings.maxTime && loop_cnt++ < 100);
         } else {        
             for (let i = 0; i < 10; i++) {
                 axisContext.fillStyle = "rgb(245,130,32)";
