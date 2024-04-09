@@ -93,7 +93,8 @@ export default class PlayerService extends Disposable {
         // update seek bar value
         const updateSeekbarEvent = new CustomEvent(EventType.UpdateSeekbar, {
             detail: {
-                value: this._seekbarValue
+                value: this._seekbarValue,
+                pos: current
             }
         });
         window.dispatchEvent(updateSeekbarEvent);

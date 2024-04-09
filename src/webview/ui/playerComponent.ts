@@ -51,7 +51,7 @@ export default class PlayerComponent extends Disposable {
         const seekPosText = <HTMLInputElement>document.getElementById("seek-pos-text");
         this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {
             visibleSeekbar.value = e.detail.value;
-            seekPosText.innerHTML = "position " + Number(e.detail.value).toFixed(3) + " s";
+            seekPosText.innerHTML = "position " + Number(e.detail.pos).toFixed(3) + " s";
         }));
 
         // init volumebar
