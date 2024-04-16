@@ -13,7 +13,9 @@ describe('player', () => {
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
         const pd = {
-            volumeUnitDb: undefined
+            volumeUnitDb: undefined,
+            initVolumeDb: 0.0,
+            initVolume: 1.0,
         }
         playerService = new PlayerService(audioContext, audioBuffer);
         playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
@@ -79,7 +81,9 @@ describe('player', () => {
         const audioContext = createAudioContext(44100);
         const audioBuffer = audioContext.createBuffer(2, 44100, 44100);
         const pd = {
-            volumeUnitDb: false
+            volumeUnitDb: false,
+            initVolumeDb: 0.0,
+            initVolume: 1.0,
         }
         playerService = new PlayerService(audioContext, audioBuffer);
         playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);

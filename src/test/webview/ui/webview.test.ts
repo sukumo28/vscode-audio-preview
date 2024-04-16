@@ -45,7 +45,9 @@ describe('webview lifecycle', () => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoAnalyze: false,
                 playerDefault: {
-                    volumeUnitDb: undefined
+                    volumeUnitDb: undefined,
+                    initVolumeDb: 0.0,
+                    initVolume: 1.0,
                 },
                 analyzeDefault: { 
                     windowSizeIndex: undefined, 
@@ -147,7 +149,9 @@ describe('webview error handling', () => {
             postMessageFromExt({ type: ExtMessageType.Config, data: { 
                 autoAnalyze: false,
                 playerDefault: {
-                    volumeUnitDb: undefined
+                    volumeUnitDb: undefined,
+                    initVolumeDb: 0.0,
+                    initVolume: 1.0,
                 },
                 analyzeDefault: { 
                     windowSizeIndex: undefined, 
