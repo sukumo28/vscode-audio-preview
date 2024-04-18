@@ -100,7 +100,7 @@
 		"webpack-dev": "webpack --mode development --watch",
 		"test-compile": "tsc -p ./",
 		"jest": "jest --verbose false",
-		"test": "npm run test-compile && jest --verbose false"
+		"test": "npm run test-compile && jest"
 	},
 	"jest": {
 		"automock": false,
