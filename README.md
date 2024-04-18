@@ -104,6 +104,15 @@ VSCode's DevTools can be opened in the following ways.
 * Compile decoder.cpp to wasm: `docker run --rm -v ${pwd}/src/decoder:/build -it audio-decoder make`  
 * Run Extension: f5  
 
+### Test  
+`npm run test`  
+This command compiles the code, outputs it to the `./out` directory, and runs the tests there.  
+
+`npm run jest`  
+This command does not compile, but runs the tests located in `./out` in verbose:false.  
+Use this when you want to rerun a test that you have already compiled.  
+However, please note that compilation is required both when changing the test code and when changing the test target.  
+  
 ### References  
 
 Custom Editor: https://code.visualstudio.com/api/extension-guides/custom-editors  
