@@ -5,6 +5,8 @@ You can also check waveform and spectrogram.
 
 Supported Audio Files: `wav`, `mp3`, `aac`, `ogg`, `flac`, `opus`, `m4a`, `sph` ... etc.  
 
+Available on Marketplace: https://marketplace.visualstudio.com/items?itemName=sukumo28.wav-preview
+
 > **Note**  
 > Please consider using the built-in audio playback feature as well. 
 > When we developed this VS Code extension, VS Code did not bundle ffmpeg and had no audio playback capabilities. 
@@ -19,11 +21,14 @@ How to preview audio.
 If this extension does not open by default, edit `settings.json` like below.  
 ```jsonc
 "workbench.editorAssociations": {
-    "*.wav": "wavPreview.audioPreview"
+    "*.wav": "wavPreview.audioPreview",
+    "*.mp3": "wavPreview.audioPreview",
+    ...
 },
 ```
 
 ## Settings  
+
 You can configure these options in `settings.json` or VS Code's GUI.  
 Configuration is completely optional.  
 There is no need to configure anything if you are just using this extension.  
@@ -98,6 +103,7 @@ VSCode's DevTools can be opened in the following ways.
 - Select Help > Toggle Developer Tools from the menu at the top of the screen  
   
 ### Build  
+
 * Clone this repo  
 * Install Dependencies: `npm install`  
 * Build Container for decoder: `docker build -t audio-decoder ./src/decoder/`  
@@ -105,6 +111,7 @@ VSCode's DevTools can be opened in the following ways.
 * Run Extension: f5  
 
 ### Test  
+
 `npm run test`  
 This command compiles the code, outputs it to the `./out` directory, and runs the tests there.  
 
