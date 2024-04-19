@@ -12,17 +12,18 @@ describe("fromDefaultSettings", () => {
     });
 
     // volumeUnitDb
-    test("volumeUnitDb should be true if no default value is provided", () => {
+    test("volumeUnitDb should be false if no default value is provided", () => {
+        const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
+        expect(ps.volumeUnitDb).toBe(false);
+    });
+    test("volumeUnitDb should be default value (true case)", () => {
+        defaultSettings.volumeUnitDb = true;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
         expect(ps.volumeUnitDb).toBe(true);
     });
-    test("volumeUnitDb should be default value", () => {
-        defaultSettings.volumeUnitDb = true;
-        let ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.volumeUnitDb).toBe(true);
-
+    test("volumeUnitDb should be default value (false case)", () => {
         defaultSettings.volumeUnitDb = false;
-        ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
+        const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
         expect(ps.volumeUnitDb).toBe(false);
     });
 

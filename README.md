@@ -44,9 +44,9 @@ You can configure default value of player settings like example below.
     /*
         Choose the scale of the volume bar
         true: dB scale, false: linear scale
-        default: true
+        default: false
     */
-    "volumeUnitDb": true,
+    "volumeUnitDb": false,
     
     /*
         Initial player volume in dB scale. [-80.0, 0.0]
