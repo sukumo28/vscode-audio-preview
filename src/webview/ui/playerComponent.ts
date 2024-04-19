@@ -51,7 +51,7 @@ export default class PlayerComponent extends Disposable {
         const seekPosText = <HTMLInputElement>document.getElementById("seek-pos-text");
         this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {
             visibleSeekbar.value = e.detail.value;
-            seekPosText.innerHTML = "position " + Number(e.detail.pos).toFixed(3) + " s";
+            seekPosText.textContent = "position " + Number(e.detail.pos).toFixed(3) + " s";
         }));
 
         // init volumebar
@@ -64,11 +64,11 @@ export default class PlayerComponent extends Disposable {
                 let voldb = Number(this._volumeBar.value)
                 let vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20)
                 this._playerService.volume = vollin;
-                volumeText.innerHTML = "volume " + (vollin == 0 ? "muted" : voldb.toFixed(1) + " dB");
+                volumeText.textContent = "volume " + (vollin == 0 ? "muted" : voldb.toFixed(1) + " dB");
             } else {
                 // convert seekbar value(0~100) to volume(0~1)
                 this._playerService.volume = Number(this._volumeBar.value) / 100;
-                volumeText.innerHTML = "volume " + this._volumeBar.value;
+                volumeText.textContent = "volume " + this._volumeBar.value;
             }
         }
         this._register(new Event(this._volumeBar, EventType.Input, updateVolume));
