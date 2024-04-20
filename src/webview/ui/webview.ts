@@ -9,6 +9,7 @@ import { Config } from "../../config";
 import Decoder from "../decoder";
 import AnalyzeSettingsService from "../service/analyzeSettingsService";
 import AnalyzeService from "../service/analyzeService";
+import PlayerSettingsService from "../service/playerSettingsService";
 
 type createAudioContext = (sampleRate: number) => AudioContext;
 type createDecoder = (fileData: Uint8Array) => Promise<Decoder>;
@@ -124,7 +125,8 @@ export default class WebView {
         }
         // init player
         const playerService = new PlayerService(audioContext, audioBuffer);
-        const playerComponent = new PlayerComponent("player", playerService);
+        const playerSettingsService = PlayerSettingsService.fromDefaultSetting(this._config.playerDefault)
+        const playerComponent = new PlayerComponent("player", playerService, playerSettingsService);
         this._disposables.push(playerService, playerComponent);
         // init analyzer
         const analyzeService = new AnalyzeService(audioBuffer);
