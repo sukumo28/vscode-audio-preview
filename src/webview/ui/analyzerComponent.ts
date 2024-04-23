@@ -251,7 +251,9 @@ export default class AnalyzerComponent extends Disposable {
                     this._analyzeSettingsService.WAVEFORM_CANVAS_HEIGHT * this._analyzeSettingsService.waveformVerticalScale,
                     settings, 
                     this._audioBuffer.sampleRate, 
-                    this._audioBuffer.getChannelData(ch)
+                    this._audioBuffer.getChannelData(ch),
+                    ch, 
+                    this._audioBuffer.numberOfChannels
                 );
             }
             
@@ -263,7 +265,8 @@ export default class AnalyzerComponent extends Disposable {
                     this._analyzeService, 
                     settings, 
                     this._audioBuffer.sampleRate, 
-                    ch
+                    ch,
+                    this._audioBuffer.numberOfChannels
                 );
             }
         }
