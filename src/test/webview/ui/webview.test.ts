@@ -47,8 +47,10 @@ describe('webview lifecycle', () => {
                 analyzeDefault: { 
                     waveformVisible: undefined,
                     waveformVerticalScale: undefined,
+                    waveformShowChannelLabel: undefined,
                     spectrogramVisible: undefined,
                     spectrogramVerticalScale: undefined,
+                    spectrogramShowChannelLabel: undefined,
                     roundWaveformAxis: undefined,
                     roundTimeAxis: undefined,
                     windowSizeIndex: undefined, 
@@ -152,8 +154,10 @@ describe('webview error handling', () => {
                 analyzeDefault: { 
                     waveformVisible: undefined,
                     waveformVerticalScale: undefined,
+                    waveformShowChannelLabel: undefined,
                     spectrogramVisible: undefined,
                     spectrogramVerticalScale: undefined,
+                    spectrogramShowChannelLabel: undefined,
                     roundWaveformAxis: undefined,
                     roundTimeAxis: undefined,
                     windowSizeIndex: undefined, 

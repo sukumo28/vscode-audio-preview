@@ -10,8 +10,10 @@ describe("fromDefaultSettings", () => {
         defaultSettings = { 
             waveformVisible: undefined,
             waveformVerticalScale: undefined,
+            waveformShowChannelLabel: undefined,
             spectrogramVisible: undefined,
             spectrogramVerticalScale: undefined,
+            spectrogramShowChannelLabel: undefined,
             roundWaveformAxis: undefined,
             roundTimeAxis: undefined,
             windowSizeIndex: undefined, 
@@ -64,6 +66,22 @@ describe("fromDefaultSettings", () => {
         expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX);
     });
 
+    // waveformVisible
+    test("waveformShowChannelLabel should be false if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformShowChannelLabel).toBe(false);
+    });
+    test("waveformVisible should be default value (true case)", () => {
+        defaultSettings.waveformVisible = true;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVisible).toBe(true);
+    });
+    test("waveformVisible should be default value (false case)", () => {
+        defaultSettings.waveformVisible = false;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVisible).toBe(false);
+    });
+
     // spectrogramVisible
     test("spectrogramVisible should be true if no default value is provided", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
@@ -100,6 +118,22 @@ describe("fromDefaultSettings", () => {
         defaultSettings.spectrogramVerticalScale = spectrogramVerticalScale;
         as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX);
+    });
+
+    // waveformVisible
+    test("spectrogramShowChannelLabel should be false if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramShowChannelLabel).toBe(false);
+    });
+    test("spectrogramShowChannelLabel should be default value (true case)", () => {
+        defaultSettings.spectrogramShowChannelLabel = true;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramShowChannelLabel).toBe(true);
+    });
+    test("spectrogramShowChannelLabel should be default value (false case)", () => {
+        defaultSettings.spectrogramShowChannelLabel = false;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramShowChannelLabel).toBe(false);
     });
 
     // roundWaveformAxis
