@@ -53,6 +53,13 @@ You can configure default value of analyze settings like example below.
         "waveformVerticalScale": 1.0,
 
         /*
+         Make the waveform channel label shown or hidden.
+         true: shown, false: hidden
+         default: false
+        */
+        "waveformShowChannelLabel": false,
+
+        /*
          Enable nicely rounded waveform axis.
          true: rounded, false: just divided the height
          default: true
@@ -92,6 +99,13 @@ You can configure default value of analyze settings like example below.
          This option can only be configured through the settings file.
         */
         "spectrogramVerticalScale": 1.0,
+
+        /*
+         Make the spectrogram channel label shown or hidden.
+         true: shown, false: hidden
+         default: false
+        */
+        "spectrogramShowChannelLabel": false,
 
         /*  
          FFT window sizw. [0,7]  
