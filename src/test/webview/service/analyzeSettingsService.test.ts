@@ -33,13 +33,14 @@ describe("fromDefaultSettings", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.waveformVisible).toBe(true);
     });
-    test("waveformVisible should be default value", () => {
+    test("waveformVisible should be default value (true case)", () => {
         defaultSettings.waveformVisible = true;
-        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.waveformVisible).toBe(true);
-
+    });
+    test("waveformVisible should be default value (false case)", () => {
         defaultSettings.waveformVisible = false;
-        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.waveformVisible).toBe(false);
     });
 
@@ -54,15 +55,14 @@ describe("fromDefaultSettings", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.waveformVerticalScale).toBe(waveformVerticalScale);
     });
-    test("waveformVerticalScale should be in range", () => {
-        let waveformVerticalScale = 0.0;
-        defaultSettings.waveformVerticalScale = waveformVerticalScale;
-        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+    test("waveformVerticalScale should be in range (check lower limit)", () => {
+        defaultSettings.waveformVerticalScale = 0.0;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN);
-
-        waveformVerticalScale = 10.0;
-        defaultSettings.waveformVerticalScale = waveformVerticalScale;
-        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+    });
+    test("waveformVerticalScale should be in range (check upper limit)", () => {
+        defaultSettings.waveformVerticalScale = 10.0;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX);
     });
 
@@ -87,13 +87,14 @@ describe("fromDefaultSettings", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVisible).toBe(true);
     });
-    test("spectrogramVisible should be default value", () => {
+    test("spectrogramVisible should be default value (true case)", () => {
         defaultSettings.spectrogramVisible = true;
-        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVisible).toBe(true);
-
+    });
+    test("spectrogramVisible should be default value (false case)", () => {
         defaultSettings.spectrogramVisible = false;
-        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVisible).toBe(false);
     });
 
@@ -108,15 +109,14 @@ describe("fromDefaultSettings", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVerticalScale).toBe(spectrogramVerticalScale);
     });
-    test("spectrogramVerticalScale should be in range", () => {
-        let spectrogramVerticalScale = 0.0;
-        defaultSettings.spectrogramVerticalScale = spectrogramVerticalScale;
-        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+    test("spectrogramVerticalScale should be in range (check lower limit)", () => {
+        defaultSettings.spectrogramVerticalScale = 0.0;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN);
-
-        spectrogramVerticalScale = 10.0;
-        defaultSettings.spectrogramVerticalScale = spectrogramVerticalScale;
-        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+    });
+    test("spectrogramVerticalScale should be in range (check upper limit)", () => {
+        defaultSettings.spectrogramVerticalScale = 10.0;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX);
     });
 
@@ -141,28 +141,31 @@ describe("fromDefaultSettings", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.roundWaveformAxis).toBe(true);
     });
-    test("roundWaveformAxis should be default value", () => {
+    test("roundWaveformAxis should be default value (true case)", () => {
         defaultSettings.roundWaveformAxis = true;
-        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.roundWaveformAxis).toBe(true);
-
+    });
+    test("roundWaveformAxis should be default value (false case)", () => {
         defaultSettings.roundWaveformAxis = false;
-        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.roundWaveformAxis).toBe(false);
     });
+
 
     // roundTimeAxis
     test("roundTimeAxis should be true if no default value is provided", () => {
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.roundTimeAxis).toBe(true);
     });
-    test("roundTimeAxis should be default value", () => {
+    test("roundTimeAxis should be default value (true case)", () => {
         defaultSettings.roundTimeAxis = true;
-        let as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.roundTimeAxis).toBe(true);
-
+    });
+    test("roundTimeAxis should be default value (false case)", () => {
         defaultSettings.roundTimeAxis = false;
-        as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
         expect(as.roundTimeAxis).toBe(false);
     });
 
