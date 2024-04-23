@@ -75,8 +75,6 @@ export default class AnalyzeSettingsService {
         if (val < AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN) val = AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN;
         if (AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX < val) val = AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX; 
         this._waveformVerticalScale = val;
-
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWaveformVerticalScale, { detail: { value: this._waveformVerticalScale }}))
     }
 
     private _waveformShowChannelLabel: boolean;
@@ -100,8 +98,6 @@ export default class AnalyzeSettingsService {
         if (val < AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN) val = AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN;
         if (AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX < val) val = AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX; 
         this._spectrogramVerticalScale = val;
-
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVerticalScale, { detail: { value: this._spectrogramVerticalScale }}))
     }
 
     private _spectrogramShowChannelLabel: boolean;
@@ -114,14 +110,12 @@ export default class AnalyzeSettingsService {
     public get roundWaveformAxis() { return this._roundWaveformAxis; }
     public set roundWaveformAxis(value: boolean) {
         this._roundWaveformAxis = value == undefined ? true : value;       // true by default
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateRoundWaveformAxis, { detail: { value: this._roundWaveformAxis }}))
     }
 
     private _roundTimeAxis: boolean;
     public get roundTimeAxis() { return this._roundTimeAxis; }
     public set roundTimeAxis(value: boolean) {
         this._roundTimeAxis = value == undefined ? true : value;       // true by default
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateRoundTimeAxis, { detail: { value: this._roundTimeAxis }}))
     }
 
     private _windowSizeIndex: number;
