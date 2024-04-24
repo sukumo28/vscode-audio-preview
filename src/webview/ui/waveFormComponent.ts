@@ -53,7 +53,6 @@ export default class WaveFormComponent {
         }
         
         // draw vertical axis
-        let maxValueTextWidth = 0;
         if (settings.roundWaveformAxis) {
             const [nice_a, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxAmplitude - settings.minAmplitude) / (10 * settings.waveformVerticalScale));
             const y_by_a = height / (settings.maxAmplitude - settings.minAmplitude);
@@ -61,11 +60,7 @@ export default class WaveFormComponent {
             do {
                 axisContext.fillStyle = "rgb(245,130,32)";
                 const y = height - ((a - settings.minAmplitude) * y_by_a);
-
-                const valueText = `${(a).toFixed(digit)}`;
-                const valueMeasure = axisContext.measureText(valueText);
-                maxValueTextWidth = valueMeasure.width > maxValueTextWidth ? valueMeasure.width : maxValueTextWidth;
-                if (height * (5 / 100) < y  && y < height * (97 / 100)) axisContext.fillText(valueText, 4, y - 2);    // don't draw near the edge
+                if (height * (5 / 100) < y  && y < height * (97 / 100)) axisContext.fillText(`${(a).toFixed(digit)}`, 4, y - 2);    // don't draw near the edge
 
                 axisContext.fillStyle = "rgb(180,120,20)";
                 if (height * (5 / 100) < y) {   // don't draw on the horizontal axis
@@ -80,11 +75,7 @@ export default class WaveFormComponent {
                 axisContext.fillStyle = "rgb(245,130,32)";
                 const y = Math.round((i + 1) * height / num_axes);
                 const a = (i + 1) * (settings.minAmplitude - settings.maxAmplitude) / num_axes + settings.maxAmplitude;
-
-                const valueText = `${(a).toFixed(2)}`;
-                const valueMeasure = axisContext.measureText(valueText);
-                maxValueTextWidth = valueMeasure.width > maxValueTextWidth ? valueMeasure.width : maxValueTextWidth;
-                axisContext.fillText(valueText, 4, y - 2);
+                axisContext.fillText(`${(a).toFixed(2)}`, 4, y - 2);
 
                 axisContext.fillStyle = "rgb(180,120,20)";
                 for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
@@ -124,7 +115,7 @@ export default class WaveFormComponent {
 
             axisContext.font = `12px Arial`;
             axisContext.fillStyle = "rgb(220, 220, 220)";
-            axisContext.fillText(channelText, maxValueTextWidth + 10, 10);
+            axisContext.fillText(channelText, 33, 10);
         }
     }
 }

@@ -88,17 +88,12 @@ export default class WaveFormComponent {
         }
 
         // draw vertical axis
-        let maxValueTextWidth = 0;
         const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
         for (let i = 0; i < num_axes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
             const freq = minFreq + i * (maxFreq - minFreq) / num_axes;
             const y = height - (freq - minFreq) / scale;
-
-            const valueText = `${Math.trunc(freq)}`;
-            const valueMeasure = axisContext.measureText(valueText);
-            maxValueTextWidth = valueMeasure.width > maxValueTextWidth ? valueMeasure.width : maxValueTextWidth;
-            axisContext.fillText(valueText, 4, y - 4);
+            axisContext.fillText(`${Math.trunc(freq)}`, 4, y - 4);
 
             axisContext.fillStyle = "rgb(180,120,20)";
             for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
@@ -114,7 +109,7 @@ export default class WaveFormComponent {
             }
 
             axisContext.fillStyle = "rgb(220, 220, 220)";
-            axisContext.fillText(channelText, maxValueTextWidth + 10, 18);
+            axisContext.fillText(channelText, 60, 18);
         }
     }
 
@@ -178,7 +173,6 @@ export default class WaveFormComponent {
         }
 
         // draw vertical axis    
-        let maxValueTextWidth = 0;
         const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
         for (let i = 0; i < num_axes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
@@ -187,11 +181,7 @@ export default class WaveFormComponent {
             const logFreq = logMin + i * (logMax - logMin) / num_axes;
             const f = Math.pow(10, logFreq);
             const y = height - (logFreq - logMin) / scale;
-
-            const valueText = `${Math.trunc(f)}`;
-            const valueMeasure = axisContext.measureText(valueText);
-            maxValueTextWidth = valueMeasure.width > maxValueTextWidth ? valueMeasure.width : maxValueTextWidth;
-            axisContext.fillText(valueText, 4, y - 4);
+            axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
     
             axisContext.fillStyle = "rgb(180,120,20)";
             for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
@@ -207,7 +197,7 @@ export default class WaveFormComponent {
             }
 
             axisContext.fillStyle = "rgb(220, 220, 220)";
-            axisContext.fillText(channelText, maxValueTextWidth + 10, 18);
+            axisContext.fillText(channelText, 60, 18);
         }
     }
 
@@ -280,7 +270,6 @@ export default class WaveFormComponent {
         }
 
         // draw vertical axis
-        let maxValueTextWidth = 0;
         const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
         for (let i = 0; i < num_axes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
@@ -289,11 +278,7 @@ export default class WaveFormComponent {
             const minMel = this._analyzeService.hzToMel(settings.minFrequency);
             const mel = (num_axes - i) * (maxMel - minMel) / num_axes + minMel;
             const f = this._analyzeService.melToHz(mel);
-
-            const valueText = `${Math.trunc(f)}`;
-            const valueMeasure = axisContext.measureText(valueText);
-            maxValueTextWidth = valueMeasure.width > maxValueTextWidth ? valueMeasure.width : maxValueTextWidth;
-            axisContext.fillText(valueText, 4, y - 4);
+            axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
     
             axisContext.fillStyle = "rgb(180,120,20)";
             for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
@@ -309,7 +294,7 @@ export default class WaveFormComponent {
             }
 
             axisContext.fillStyle = "rgb(220, 220, 220)";
-            axisContext.fillText(channelText, maxValueTextWidth + 10, 18);
+            axisContext.fillText(channelText, 60, 18);
         }
     }
 
