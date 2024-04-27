@@ -30,15 +30,16 @@ export default class WaveFormComponent {
             let t = settings.minTime;
             let loop_cnt = 0;   // safe guard
             do {
+                t = Math.round(t / nice_t) * nice_t;
                 let x = (t - settings.minTime) * x_by_t;
     
                 axisContext.fillStyle = "rgb(245,130,32)";
-                if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 10);     // don't draw near the edge
+                if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 10);     // don't draw near the edge
     
                 axisContext.fillStyle = "rgb(180,120,20)";
                 for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
     
-                t = Math.round((t + nice_t) / nice_t) * nice_t;
+                t += nice_t
             } while (t < settings.maxTime && loop_cnt++ < 100);
         } else {        
             for (let i = 0; i < 10; i++) {
@@ -58,16 +59,18 @@ export default class WaveFormComponent {
             const y_by_a = height / (settings.maxAmplitude - settings.minAmplitude);
             let a = settings.minAmplitude;
             do {
+                a = Math.round(a / nice_a) * nice_a;
+
                 axisContext.fillStyle = "rgb(245,130,32)";
                 const y = height - ((a - settings.minAmplitude) * y_by_a);
-                if (height * (5 / 100) < y  && y < height * (97 / 100)) axisContext.fillText(`${(a).toFixed(digit)}`, 4, y - 2);    // don't draw near the edge
+                if (12 < y && y < height) axisContext.fillText(`${(a).toFixed(digit)}`, 4, y - 2);    // don't draw near the edge
 
                 axisContext.fillStyle = "rgb(180,120,20)";
-                if (height * (5 / 100) < y) {   // don't draw on the horizontal axis
+                if (12 < y && y < height) {   // don't draw on the horizontal axis
                     for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
                 }
 
-                a = Math.round((a + nice_a) / nice_a) * nice_a;
+                a += nice_a;
             } while (a < settings.maxAmplitude);
         } else {
             const num_axes = Math.round(10 * settings.waveformVerticalScale);

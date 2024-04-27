@@ -65,15 +65,16 @@ export default class WaveFormComponent {
             let t = settings.minTime;
             let loop_cnt = 0;   // safe guard
             do {
+                t = Math.round(t / nice_t) * nice_t;
                 let x = (t - settings.minTime) * x_by_t;
 
                 axisContext.fillStyle = "rgb(245,130,32)";
-                if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+                if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
                 axisContext.fillStyle = "rgb(180,120,20)";
                 for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t = Math.round((t + nice_t) / nice_t) * nice_t;
+                t += nice_t
             } while (t < settings.maxTime && loop_cnt++ < 100);
         } else {        
             for (let i = 0; i < 10; i++) {
@@ -151,15 +152,16 @@ export default class WaveFormComponent {
             let t = settings.minTime;
             let loop_cnt = 0;   // safe guard
             do {
+                t = Math.round(t / nice_t) * nice_t;
                 let x = (t - settings.minTime) * x_by_t;
 
                 axisContext.fillStyle = "rgb(245,130,32)";
-                if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+                if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
                 axisContext.fillStyle = "rgb(180,120,20)";
                 for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t = Math.round((t + nice_t) / nice_t) * nice_t;
+                t += nice_t
             } while (t < settings.maxTime && loop_cnt++ < 100);        } else {        
             for (let i = 0; i < 10; i++) {
                 axisContext.fillStyle = "rgb(245,130,32)";
@@ -247,15 +249,16 @@ export default class WaveFormComponent {
             let t = settings.minTime;
             let loop_cnt = 0;   // safe guard
             do {
+                t = Math.round(t / nice_t) * nice_t;
                 let x = (t - settings.minTime) * x_by_t;
 
                 axisContext.fillStyle = "rgb(245,130,32)";
-                if (width * (3 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+                if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
                 axisContext.fillStyle = "rgb(180,120,20)";
                 for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t = Math.round((t + nice_t) / nice_t) * nice_t;
+                t += nice_t
             } while (t < settings.maxTime && loop_cnt++ < 100);
         } else {        
             for (let i = 0; i < 10; i++) {
