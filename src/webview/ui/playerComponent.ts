@@ -1,26 +1,35 @@
 import { Disposable } from '../../dispose';
 import { Event, EventType } from '../events';
 import PlayerService from '../service/playerService';
+import PlayerSettingsService from '../service/playerSettingsService';
 
 export default class PlayerComponent extends Disposable {
     private _playButton: HTMLButtonElement;
     private _volumeBar: HTMLInputElement;
     private _playerService: PlayerService;
+    private _playerSettingService: PlayerSettingsService;
 
-    constructor(parentID: string, playerService: PlayerService) {
+    constructor(parentID: string, playerService: PlayerService, playerSettingService: PlayerSettingsService) {
         super();
         this._playerService = playerService;
+        this._playerSettingService = playerSettingService;
         this._register(this._playerService);
         
         // init base html
         const parent = document.getElementById(parentID);
+
+        let volume_ui = this._playerSettingService.volumeUnitDb ?
+            `<div id="volume-text">volume 0.0dB</div>
+             <input type="range" id="volume-bar" value="0" min="-80" max="0" step="0.5">` :
+            `<div id="volume-text">volume 100</div>
+             <input type="range" id="volume-bar" value="100">`
+
         parent.innerHTML = `
             <button id="play-button">play</button>
 
-            <div>volume</div>
-            <input type="range" id="volume-bar" value="100">
+            ${ volume_ui }
                         
-            <div>seekbar</div>
+            <div id="seek-pos-text">position 0.000 s</div>
             <div class="seek-bar-box">
                 <input type="range" id="seek-bar" value="0" />
                 <input type="range" id="user-input-seek-bar" class="input-seek-bar" value="0" />
@@ -39,16 +48,32 @@ export default class PlayerComponent extends Disposable {
             userinputSeekbar.value = "100";
         }));
         const visibleSeekbar = <HTMLInputElement>document.getElementById("seek-bar");
+        const seekPosText = <HTMLInputElement>document.getElementById("seek-pos-text");
         this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {
             visibleSeekbar.value = e.detail.value;
+            seekPosText.textContent = "position " + Number(e.detail.pos).toFixed(3) + " s";
         }));
 
         // init volumebar
         this._volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
-        this._register(new Event(this._volumeBar, EventType.Change, () => {
-            // convert seekbar value(0~100) to volume(0~1)
-            this._playerService.volume = Number(this._volumeBar.value) / 100;
-        }));
+        const volumeText = <HTMLInputElement>document.getElementById("volume-text");
+        const updateVolume = () => {
+            if (this._playerSettingService.volumeUnitDb) {
+                // convert dB setting to linear gain
+                // -80dB is treated as mute
+                let voldb = Number(this._volumeBar.value)
+                let vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20)
+                this._playerService.volume = vollin;
+                volumeText.textContent = "volume " + (vollin == 0 ? "muted" : voldb.toFixed(1) + " dB");
+            } else {
+                // convert seekbar value(0~100) to volume(0~1)
+                this._playerService.volume = Number(this._volumeBar.value) / 100;
+                volumeText.textContent = "volume " + this._volumeBar.value;
+            }
+        }
+        this._register(new Event(this._volumeBar, EventType.Input, updateVolume));
+        this._volumeBar.value = String(this._playerSettingService.volumeUnitDb ? this._playerSettingService.initVolumeDb : this._playerSettingService.initVolume);
+        updateVolume();
 
         // init play button
         this._playButton = <HTMLButtonElement>document.getElementById("play-button");

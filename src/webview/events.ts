@@ -23,6 +23,7 @@ export const EventType = {
     // other
     Click: "click",
     Change: "change",
+    Input: "input",
     KeyDown: "keydown"
 };
 

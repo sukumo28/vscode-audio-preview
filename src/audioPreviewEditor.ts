@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
-import { AnalyzeDefault } from "./config";
+import { AnalyzeDefault, PlayerDefault } from "./config";
 import { ExtMessage, ExtMessageType, WebviewMessage, WebviewMessageType } from "./message";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
@@ -143,6 +143,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                     type: ExtMessageType.Config,
                     data: {
                         autoAnalyze: config.get("autoAnalyze"),
+                        playerDefault: config.get("playerDefault") as PlayerDefault,
                         analyzeDefault: config.get("analyzeDefault") as AnalyzeDefault
                     }
                 });

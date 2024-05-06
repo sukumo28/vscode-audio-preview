@@ -15,9 +15,9 @@ export default class InfoTableComponent {
         const info = [
             { name: "encoding", value: `${encoding}` },
             { name: "format", value: `${format}` },
-            { name: "number_of_channel", value: `${numChannels} (${channels})` },
-            { name: "sample_rate", value: `${sampleRate}` },
-            { name: "file_size", value: `${fileSize} byte` },
+            { name: "number_of_channel", value: `${numChannels} ch (${channels})` },
+            { name: "sample_rate", value: `${sampleRate.toLocaleString()} Hz` },
+            { name: "file_size", value: `${fileSize.toLocaleString()} bytes` },
         ];
 
         // clear info table
@@ -32,7 +32,7 @@ export default class InfoTableComponent {
     }
 
     public showAdditionalInfo(duration: number) {
-        this.insertTableData("duration", duration + "s");
+        this.insertTableData("duration", duration.toLocaleString(undefined, { maximumFractionDigits: 1 }) + " s");
     }
 
     private insertTableData(name: string, value: string) {
