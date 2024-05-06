@@ -20,11 +20,7 @@ export enum FrequencyScale {
 
 export interface AnalyzeSettingsProps {
     waveformVerticalScale: number,
-    waveformShowChannelLabel: boolean,
     spectrogramVerticalScale: number,
-    spectrogramShowChannelLabel: boolean,
-    roundWaveformAxis: boolean;
-    roundTimeAxis: boolean;
     windowSize: number;
     hopSize: number;
     minFrequency: number;
@@ -77,12 +73,6 @@ export default class AnalyzeSettingsService {
         this._waveformVerticalScale = val;
     }
 
-    private _waveformShowChannelLabel: boolean;
-    public get waveformShowChannelLabel() { return this._waveformShowChannelLabel; }
-    public set waveformShowChannelLabel(value: boolean) {
-        this._waveformShowChannelLabel = value == undefined ? false : value;       // false by default
-    }
-
     private _spectrogramVisible: boolean;
     public get spectrogramVisible() { return this._spectrogramVisible; }
     public set spectrogramVisible(value: boolean) {
@@ -98,24 +88,6 @@ export default class AnalyzeSettingsService {
         if (val < AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN) val = AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN;
         if (AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX < val) val = AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX; 
         this._spectrogramVerticalScale = val;
-    }
-
-    private _spectrogramShowChannelLabel: boolean;
-    public get spectrogramShowChannelLabel() { return this._spectrogramShowChannelLabel; }
-    public set spectrogramShowChannelLabel(value: boolean) {
-        this._spectrogramShowChannelLabel = value == undefined ? false : value;       // false by default
-    }
-
-    private _roundWaveformAxis: boolean;
-    public get roundWaveformAxis() { return this._roundWaveformAxis; }
-    public set roundWaveformAxis(value: boolean) {
-        this._roundWaveformAxis = value == undefined ? true : value;       // true by default
-    }
-
-    private _roundTimeAxis: boolean;
-    public get roundTimeAxis() { return this._roundTimeAxis; }
-    public set roundTimeAxis(value: boolean) {
-        this._roundTimeAxis = value == undefined ? true : value;       // true by default
     }
 
     private _windowSizeIndex: number;
@@ -239,14 +211,12 @@ export default class AnalyzeSettingsService {
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, { detail: { value: this._melFilterNum }}))
     }
 
-    private constructor(waveformVisible: boolean, waveformVerticalScale: number, waveformShowChannelLabel: boolean, spectrogramVisible: boolean, spectrogramVerticalScale: number, spectrogramShowChannelLabel: boolean,
+    private constructor(waveformVisible: boolean, waveformVerticalScale: number, spectrogramVisible: boolean, spectrogramVerticalScale: number,
                         windowSize: number, hopSize: number, minFrequency: number, maxFrequency: number, minTime: number, maxTime: number, minAmplitude: number, maxAmplitude: number, spectrogramAmplitudeRange: number) {
         this._waveformVisible = waveformVisible;
         this._waveformVerticalScale = waveformVerticalScale;
-        this._waveformShowChannelLabel = waveformShowChannelLabel;
         this._spectrogramVisible = spectrogramVisible;
         this._spectrogramVerticalScale = spectrogramVerticalScale;
-        this._spectrogramShowChannelLabel = spectrogramShowChannelLabel;
         this._windowSize = windowSize;
         this._hopSize = hopSize;
         this._minFrequency = minFrequency;
@@ -271,7 +241,7 @@ export default class AnalyzeSettingsService {
         }
 
         // create instance
-        const setting = new AnalyzeSettingsService(true, 1.0, false, true, 1.0, false, 1024, 256, 0, audioBuffer.sampleRate / 2, 0, audioBuffer.duration, min, max, -90);
+        const setting = new AnalyzeSettingsService(true, 1.0, true, 1.0, 1024, 256, 0, audioBuffer.sampleRate / 2, 0, audioBuffer.duration, min, max, -90);
 
         // set min & max amplitude of audio buffer to instance
         setting._minAmplitudeOfAudioBuffer = min;
@@ -288,23 +258,11 @@ export default class AnalyzeSettingsService {
         // init waveform vertical scale
         setting.waveformVerticalScale = defaultSetting.waveformVerticalScale;
 
-        // init waveform show channel label
-        setting.waveformShowChannelLabel = defaultSetting.waveformShowChannelLabel;
-
         // init spectrogram visible
         setting.spectrogramVisible = defaultSetting.spectrogramVisible;
 
         // init spectrogram vertical scale
         setting.spectrogramVerticalScale = defaultSetting.spectrogramVerticalScale;
-
-        // init spectrogram show channel label
-        setting.spectrogramShowChannelLabel = defaultSetting.spectrogramShowChannelLabel;
-
-        // init round waveform axis
-        setting.roundWaveformAxis = defaultSetting.roundWaveformAxis;
-
-        // init round time axis
-        setting.roundTimeAxis = defaultSetting.roundTimeAxis;
 
         // init fft window size
         setting.windowSizeIndex = defaultSetting.windowSizeIndex;
@@ -390,11 +348,7 @@ export default class AnalyzeSettingsService {
     public toProps(): AnalyzeSettingsProps {
         return {
             waveformVerticalScale: this.waveformVerticalScale,
-            waveformShowChannelLabel: this.waveformShowChannelLabel,
             spectrogramVerticalScale: this.spectrogramVerticalScale,
-            spectrogramShowChannelLabel: this.spectrogramShowChannelLabel,
-            roundWaveformAxis: this.roundWaveformAxis,
-            roundTimeAxis: this.roundTimeAxis,
             windowSize: this.windowSize,
             hopSize: this.hopSize,
             minFrequency: this.minFrequency,

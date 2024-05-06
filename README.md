@@ -53,30 +53,6 @@ You can configure default value of analyze settings like example below.
         "waveformVerticalScale": 1.0,
 
         /*
-         Make the waveform channel label shown or hidden.
-         true: shown, false: hidden
-         default: false
-        */
-        "waveformShowChannelLabel": false,
-
-        /*
-         Enable nicely rounded waveform axis.
-         true: rounded, false: just divided the height
-         default: true
-         This option can only be configured through the settings file.
-        */
-        "roundWaveformAxis": true,
-
-        /*
-         Enable nicely rounded time axis.
-         This option affects both the waveform and the spectrogram. 
-         true: rounded, false: just divided the width
-         default: true
-         This option can only be configured through the settings file.
-        */
-        "roundTimeAxis": true,
-
-        /*
          Range of amplitude displayed on the figure. [-100,100]  
          Default value is automatically expanded to fit min and max value of audio data.
         */
@@ -99,13 +75,6 @@ You can configure default value of analyze settings like example below.
          This option can only be configured through the settings file.
         */
         "spectrogramVerticalScale": 1.0,
-
-        /*
-         Make the spectrogram channel label shown or hidden.
-         true: shown, false: hidden
-         default: false
-        */
-        "spectrogramShowChannelLabel": false,
 
         /*  
          FFT window sizw. [0,7]  

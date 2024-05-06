@@ -59,34 +59,22 @@ export default class WaveFormComponent {
         axisContext.font = `20px Arial`;
 
         // draw horizontal axis
-        if (settings.roundTimeAxis) {
-            const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-            const x_by_t = width / (settings.maxTime - settings.minTime);
-            let t = settings.minTime;
-            let loop_cnt = 0;   // safe guard
-            do {
-                t = Math.round(t / nice_t) * nice_t;
-                let x = (t - settings.minTime) * x_by_t;
+        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+        const x_by_t = width / (settings.maxTime - settings.minTime);
+        let t = settings.minTime;
+        let loop_cnt = 0;   // safe guard
+        do {
+            t = Math.round(t / nice_t) * nice_t;
+            let x = (t - settings.minTime) * x_by_t;
 
-                axisContext.fillStyle = "rgb(245,130,32)";
-                if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+            axisContext.fillStyle = "rgb(245,130,32)";
+            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
-                axisContext.fillStyle = "rgb(180,120,20)";
-                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            axisContext.fillStyle = "rgb(180,120,20)";
+            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t += nice_t
-            } while (t < settings.maxTime && loop_cnt++ < 100);
-        } else {        
-            for (let i = 0; i < 10; i++) {
-                axisContext.fillStyle = "rgb(245,130,32)";
-                const x = Math.round(i * width / 10);
-                const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-                if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18); // skip first label
-
-                axisContext.fillStyle = "rgb(180,120,20)";
-                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-            }
-        }
+            t += nice_t
+        } while (t < settings.maxTime && loop_cnt++ < 100);
 
         // draw vertical axis
         const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
@@ -101,7 +89,7 @@ export default class WaveFormComponent {
         }
 
         // draw channel label
-        if (settings.spectrogramShowChannelLabel && numOfCh > 1) {
+        if (numOfCh > 1) {
             let channelText = "";
             if (numOfCh == 2) {
                 channelText = ch == 0 ? "Lch" : "Rch";
@@ -146,33 +134,22 @@ export default class WaveFormComponent {
         const scale = (logMax - logMin) / height;
 
         // draw horizontal axis
-        if (settings.roundTimeAxis) {
-            const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-            const x_by_t = width / (settings.maxTime - settings.minTime);
-            let t = settings.minTime;
-            let loop_cnt = 0;   // safe guard
-            do {
-                t = Math.round(t / nice_t) * nice_t;
-                let x = (t - settings.minTime) * x_by_t;
+        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+        const x_by_t = width / (settings.maxTime - settings.minTime);
+        let t = settings.minTime;
+        let loop_cnt = 0;   // safe guard
+        do {
+            t = Math.round(t / nice_t) * nice_t;
+            let x = (t - settings.minTime) * x_by_t;
 
-                axisContext.fillStyle = "rgb(245,130,32)";
-                if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+            axisContext.fillStyle = "rgb(245,130,32)";
+            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
-                axisContext.fillStyle = "rgb(180,120,20)";
-                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            axisContext.fillStyle = "rgb(180,120,20)";
+            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t += nice_t
-            } while (t < settings.maxTime && loop_cnt++ < 100);        } else {        
-            for (let i = 0; i < 10; i++) {
-                axisContext.fillStyle = "rgb(245,130,32)";
-                const x = Math.round(i * width / 10);
-                const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-                if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18); // skip first label
-
-                axisContext.fillStyle = "rgb(180,120,20)";
-                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-            }
-        }
+            t += nice_t
+        } while (t < settings.maxTime && loop_cnt++ < 100);
 
         // draw vertical axis    
         const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
@@ -190,7 +167,7 @@ export default class WaveFormComponent {
         }
 
         // draw channel label
-        if (settings.spectrogramShowChannelLabel && numOfCh > 1) {
+        if (numOfCh > 1) {
             let channelText = "";
             if (numOfCh == 2) {
                 channelText = ch == 0 ? "Lch" : "Rch";
@@ -243,34 +220,22 @@ export default class WaveFormComponent {
         axisContext.font = `20px Arial`;
 
         // draw horizontal axis
-        if (settings.roundTimeAxis) {
-            const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-            const x_by_t = width / (settings.maxTime - settings.minTime);
-            let t = settings.minTime;
-            let loop_cnt = 0;   // safe guard
-            do {
-                t = Math.round(t / nice_t) * nice_t;
-                let x = (t - settings.minTime) * x_by_t;
+        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+        const x_by_t = width / (settings.maxTime - settings.minTime);
+        let t = settings.minTime;
+        let loop_cnt = 0;   // safe guard
+        do {
+            t = Math.round(t / nice_t) * nice_t;
+            let x = (t - settings.minTime) * x_by_t;
 
-                axisContext.fillStyle = "rgb(245,130,32)";
-                if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+            axisContext.fillStyle = "rgb(245,130,32)";
+            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
-                axisContext.fillStyle = "rgb(180,120,20)";
-                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            axisContext.fillStyle = "rgb(180,120,20)";
+            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
 
-                t += nice_t
-            } while (t < settings.maxTime && loop_cnt++ < 100);
-        } else {        
-            for (let i = 0; i < 10; i++) {
-                axisContext.fillStyle = "rgb(245,130,32)";
-                const x = Math.round(i * width / 10);
-                const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-                if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18); // skip first label
-
-                axisContext.fillStyle = "rgb(180,120,20)";
-                for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-            }
-        }
+            t += nice_t
+        } while (t < settings.maxTime && loop_cnt++ < 100);
 
         // draw vertical axis
         const num_axes = Math.round(10 * settings.spectrogramVerticalScale);
@@ -288,7 +253,7 @@ export default class WaveFormComponent {
         }
 
         // draw channel label
-        if (settings.spectrogramShowChannelLabel && numOfCh > 1) {
+        if (numOfCh > 1) {
             let channelText = "";
             if (numOfCh == 2) {
                 channelText = ch == 0 ? "Lch" : "Rch";
