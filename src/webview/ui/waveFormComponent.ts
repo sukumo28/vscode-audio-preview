@@ -43,7 +43,6 @@ export default class WaveFormComponent {
         const dy = height / (settings.maxAmplitude - settings.minAmplitude);
         const a0 = Math.ceil(settings.minAmplitude / niceA) * niceA;
         const numAAxis = Math.floor((settings.maxAmplitude - settings.minAmplitude) / niceA);
-        let a = settings.minAmplitude;
         for (let i = 0; i <= numAAxis; i++) {
             const a = a0 + niceA * i;
             const y = height - ((a - settings.minAmplitude) * dy);
