@@ -214,22 +214,20 @@ export default class WaveFormComponent {
         const height = axisCanvas.height;
         axisContext.font = `20px Arial`;
 
-        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-        const x_by_t = width / (settings.maxTime - settings.minTime);
-        let t = settings.minTime;
-        let loop_cnt = 0;   // safe guard
-        do {
-            t = Math.round(t / nice_t) * nice_t;
-            let x = (t - settings.minTime) * x_by_t;
+        const [niceT, digit] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+        const dx = width / (settings.maxTime - settings.minTime);
+        const t0 = Math.ceil(settings.minTime / niceT) * niceT;
+        const numAxis = Math.floor((settings.maxTime - settings.minTime) / niceT);
+        for (let i = 0; i <= numAxis; i++) {
+            const t = t0 + niceT * i;
+            const x = (t - settings.minTime) * dx;
 
             axisContext.fillStyle = "rgb(245,130,32)";
             if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
 
             axisContext.fillStyle = "rgb(180,120,20)";
             for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-
-            t += nice_t
-        } while (t < settings.maxTime && loop_cnt++ < 100);
+        }
     }
 
     private drawChannelLabel(axisCanvas: HTMLCanvasElement, ch: number, numOfCh: number) {

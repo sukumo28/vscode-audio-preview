@@ -23,42 +23,39 @@ export default class WaveFormComponent {
         const axisContext = axisCanvas.getContext("2d");
         axisContext.font = `12px Arial`;
 
-        // draw horizontal axis
-        const [nice_t, digit_t]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-        const x_by_t = width / (settings.maxTime - settings.minTime);
-        let t = settings.minTime;
-        let loop_cnt = 0;   // safe guard
-        do {
-            t = Math.round(t / nice_t) * nice_t;
-            let x = (t - settings.minTime) * x_by_t;
+        const [niceT, digitT] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+        const dx = width / (settings.maxTime - settings.minTime);
+        const t0 = Math.ceil(settings.minTime / niceT) * niceT;
+        const numTAxis = Math.floor((settings.maxTime - settings.minTime) / niceT);
+        for (let i = 0; i <= numTAxis; i++) {
+            const t = t0 + niceT * i;
+            const x = (t - settings.minTime) * dx;
 
             axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit_t)}`, x, 10);     // don't draw near the edge
+            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digitT)}`, x, 10);     // don't draw near the edge
 
             axisContext.fillStyle = "rgb(180,120,20)";
             for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+        }
 
-            t += nice_t
-        } while (t < settings.maxTime && loop_cnt++ < 100);
-        
         // draw vertical axis
-        const [nice_a, digit_a]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxAmplitude - settings.minAmplitude) / (10 * settings.waveformVerticalScale));
-        const y_by_a = height / (settings.maxAmplitude - settings.minAmplitude);
+        const [niceA, digitA] = AnalyzeService.roundToNearestNiceNumber((settings.maxAmplitude - settings.minAmplitude) / (10 * settings.waveformVerticalScale));
+        const dy = height / (settings.maxAmplitude - settings.minAmplitude);
+        const a0 = Math.ceil(settings.minAmplitude / niceA) * niceA;
+        const numAAxis = Math.floor((settings.maxAmplitude - settings.minAmplitude) / niceA);
         let a = settings.minAmplitude;
-        do {
-            a = Math.round(a / nice_a) * nice_a;
+        for (let i = 0; i <= numAAxis; i++) {
+            const a = a0 + niceA * i;
+            const y = height - ((a - settings.minAmplitude) * dy);
 
             axisContext.fillStyle = "rgb(245,130,32)";
-            const y = height - ((a - settings.minAmplitude) * y_by_a);
-            if (12 < y && y < height) axisContext.fillText(`${(a).toFixed(digit_a)}`, 4, y - 2);    // don't draw near the edge
+            if (12 < y && y < height) axisContext.fillText(`${(a).toFixed(digitA)}`, 4, y - 2);    // don't draw near the edge
 
             axisContext.fillStyle = "rgb(180,120,20)";
             if (12 < y && y < height) {   // don't draw on the horizontal axis
                 for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
             }
-
-            a += nice_a;
-        } while (a < settings.maxAmplitude);
+        }
 
         canvasBox.appendChild(axisCanvas);
         parent.appendChild(canvasBox);
