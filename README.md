@@ -68,6 +68,20 @@ You can configure default value of analyze settings like example below.
 ```jsonc
 "WavPreview.analyzeDefault": {
         // Settings about WaveForm
+        /*
+         Make the waveform visible or hidden.
+         true: visible, false: hidden
+         default: true
+        */
+        "waveformVisible": true,
+
+        /*
+         Adjust height of the waveform. 
+         The valid range of [0.2, 2.0] scales the default height.
+         default: 1.0
+         This option can only be configured through the settings file.
+        */
+        "waveformVerticalScale": 1.0,
 
         /*
          Range of amplitude displayed on the figure. [-100,100]  
@@ -79,6 +93,19 @@ You can configure default value of analyze settings like example below.
         "maxAmplitude": 1,
 
         // Settings about Spectrogram
+        /*
+         Make the spectrogram visible or hidden.
+         true: visible, false: hidden
+         default: true
+        */
+        "spectrogramVisible": true,
+
+        /*
+         The valid range of [0.2, 2.0] scales the default height.
+         default: 1.0
+         This option can only be configured through the settings file.
+        */
+        "spectrogramVerticalScale": 1.0,
 
         /*  
          FFT window sizw. [0,7]  

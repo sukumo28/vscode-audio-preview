@@ -50,6 +50,10 @@ describe('webview lifecycle', () => {
                     initVolume: 1.0,
                 },
                 analyzeDefault: { 
+                    waveformVisible: undefined,
+                    waveformVerticalScale: undefined,
+                    spectrogramVisible: undefined,
+                    spectrogramVerticalScale: undefined,
                     windowSizeIndex: undefined, 
                     minAmplitude: undefined, 
                     maxAmplitude: undefined, 
@@ -154,6 +158,10 @@ describe('webview error handling', () => {
                     initVolume: 1.0,
                 },
                 analyzeDefault: { 
+                    waveformVisible: undefined,
+                    waveformVerticalScale: undefined,
+                    spectrogramVisible: undefined,
+                    spectrogramVerticalScale: undefined,
                     windowSizeIndex: undefined, 
                     minAmplitude: undefined, 
                     maxAmplitude: undefined, 

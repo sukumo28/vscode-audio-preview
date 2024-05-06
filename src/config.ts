@@ -11,6 +11,10 @@ export interface PlayerDefault {
 }
 
 export interface AnalyzeDefault {
+    waveformVisible: boolean;
+    waveformVerticalScale: number,
+    spectrogramVisible: boolean;
+    spectrogramVerticalScale: number,
     windowSizeIndex: number;
     minAmplitude: number;
     maxAmplitude: number;

@@ -5,7 +5,7 @@ import { FrequencyScale } from "../service/analyzeSettingsService";
 export default class WaveFormComponent {
     private _analyzeService: AnalyzeService;
 
-    constructor(parentID: string, width: number, height: number, analyzeService: AnalyzeService, settings: AnalyzeSettingsProps, sampleRate: number, ch: number) {
+    constructor(parentID: string, width: number, height: number, analyzeService: AnalyzeService, settings: AnalyzeSettingsProps, sampleRate: number, ch: number, numOfCh: number) {
         const parent = document.getElementById(parentID);
         this._analyzeService = analyzeService;
 
@@ -27,7 +27,7 @@ export default class WaveFormComponent {
 
         switch (settings.frequencyScale) {
             case FrequencyScale.Linear:
-                this.drawLinearAxis(axisCanvas, settings);
+                this.drawLinearAxis(axisCanvas, settings, ch, numOfCh);
                 this.drawLinearSpectrogram(canvas, sampleRate, settings, ch);
                 break;
             case FrequencyScale.Log:
@@ -37,40 +37,42 @@ export default class WaveFormComponent {
                  so set minFrequency = 1
                 */
                 if (settings.minFrequency < 1) settings.minFrequency = 1;
-                this.drawLogAxis(axisCanvas, settings);
+                this.drawLogAxis(axisCanvas, settings, ch, numOfCh);
                 this.drawLogSpectrogram(canvas, sampleRate, settings, ch);
                 break;
             case FrequencyScale.Mel:
-                this.drawMelAxis(axisCanvas, settings);
+                this.drawMelAxis(axisCanvas, settings, ch, numOfCh);
                 this.drawMelSpectrogram(canvas, sampleRate, settings, ch);
                 break;
         }
     }
 
-    private drawLinearAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps) {
+    private drawLinearAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps, ch: number, numOfCh: number) {
+        // draw horizontal axis
+        this.drawTimeAxis(axisCanvas, settings);
+
+        // draw vertical axis
         const axisContext = axisCanvas.getContext("2d");
         const width = axisCanvas.width;
-        const height = axisCanvas.height;
-        
+        const height = axisCanvas.height;   
+        axisContext.font = `20px Arial`;
+
         const minFreq = settings.minFrequency;
         const maxFreq = settings.maxFrequency;
-        const scale = (maxFreq - minFreq) / height;
-
-        axisContext.font = `20px Arial`;
-        for (let i = 0; i < 10; i++) {
+        const scale = (maxFreq - minFreq) / height;        
+        const numAxes = Math.round(10 * settings.spectrogramVerticalScale);
+        for (let i = 0; i < numAxes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
-            const x = Math.round(i * width / 10);
-            const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-            if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18);
-
-            const freq = minFreq + i * (maxFreq - minFreq) / 10;
+            const freq = minFreq + i * (maxFreq - minFreq) / numAxes;
             const y = height - (freq - minFreq) / scale;
             axisContext.fillText(`${Math.trunc(freq)}`, 4, y - 4);
 
             axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 2, 2);
             for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
         }
+
+        // draw channel label
+        this.drawChannelLabel(axisCanvas, ch, numOfCh);
     }
 
     private drawLinearSpectrogram(canvas: HTMLCanvasElement, sampleRate: number, settings: AnalyzeSettingsProps, ch: number) {
@@ -94,32 +96,35 @@ export default class WaveFormComponent {
         }
     }
 
-    private drawLogAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps) {
+    private drawLogAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps, ch: number, numOfCh: number) {
+        // draw horizontal axis
+        this.drawTimeAxis(axisCanvas, settings);
+
+        // draw vertical axis    
         const axisContext = axisCanvas.getContext("2d");
         const width = axisCanvas.width;
         const height = axisCanvas.height;
-    
         axisContext.font = `20px Arial`;
+    
         const logMin = Math.log10(settings.minFrequency + Number.EPSILON);
         const logMax = Math.log10(settings.maxFrequency + Number.EPSILON);
         const scale = (logMax - logMin) / height;
-    
-        for (let i = 0; i < 10; i++) {
+        const numAxes = Math.round(10 * settings.spectrogramVerticalScale);
+        for (let i = 0; i < numAxes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
-            const x = Math.round(i * width / 10);
-            const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-            if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18);
     
             // Convert the frequency to the logarithmic scale
-            const logFreq = logMin + i * (logMax - logMin) / 10;
+            const logFreq = logMin + i * (logMax - logMin) / numAxes;
             const f = Math.pow(10, logFreq);
             const y = height - (logFreq - logMin) / scale;
             axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
     
             axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 2, 2);
             for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
         }
+
+        // draw channel label
+        this.drawChannelLabel(axisCanvas, ch, numOfCh);
     }
 
     private drawLogSpectrogram(canvas: HTMLCanvasElement, sampleRate: number, settings: AnalyzeSettingsProps, ch: number) {
@@ -154,28 +159,32 @@ export default class WaveFormComponent {
         }
     }
 
-    private drawMelAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps) {
+    private drawMelAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps, ch: number, numOfCh: number) {
+        // draw horizontal axis
+        this.drawTimeAxis(axisCanvas, settings);
+        
+        // draw vertical axis
         const axisContext = axisCanvas.getContext("2d");
         const width = axisCanvas.width;
         const height = axisCanvas.height;
-    
         axisContext.font = `20px Arial`;
-        for (let i = 0; i < 10; i++) {
+
+        const numAxes = Math.round(10 * settings.spectrogramVerticalScale);        
+        for (let i = 0; i < numAxes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
-            const x = Math.round(i * width / 10);
-            const t = i * (settings.maxTime - settings.minTime) / 10 + settings.minTime;
-            if (i !== 0) axisContext.fillText(`${(t).toFixed(2)}`, x, 18);
-            const y = Math.round(i * height / 10);
+            const y = Math.round(i * height / numAxes);
             const maxMel = this._analyzeService.hzToMel(settings.maxFrequency);
             const minMel = this._analyzeService.hzToMel(settings.minFrequency);
-            const mel = (10 - i) * (maxMel - minMel) / 10 + minMel;
+            const mel = (numAxes - i) * (maxMel - minMel) / numAxes + minMel;
             const f = this._analyzeService.melToHz(mel);
             axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
     
             axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 2, 2);
             for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
         }
+
+        // draw channel label
+        this.drawChannelLabel(axisCanvas, ch, numOfCh);
     }
 
     private drawMelSpectrogram(canvas: HTMLCanvasElement, sampleRate: number, settings: AnalyzeSettingsProps, ch: number) {
@@ -197,5 +206,44 @@ export default class WaveFormComponent {
                 context.fillRect(x, y, rectWidth, rectHeight);
             }
         }
+    }
+
+    private drawTimeAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps) {
+        const axisContext = axisCanvas.getContext("2d");
+        const width = axisCanvas.width;
+        const height = axisCanvas.height;
+        axisContext.font = `20px Arial`;
+
+        const [niceT, digit] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+        const dx = width / (settings.maxTime - settings.minTime);
+        const t0 = Math.ceil(settings.minTime / niceT) * niceT;
+        const numAxis = Math.floor((settings.maxTime - settings.minTime) / niceT);
+        for (let i = 0; i <= numAxis; i++) {
+            const t = t0 + niceT * i;
+            const x = (t - settings.minTime) * dx;
+
+            axisContext.fillStyle = "rgb(245,130,32)";
+            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+
+            axisContext.fillStyle = "rgb(180,120,20)";
+            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+        }
+    }
+
+    private drawChannelLabel(axisCanvas: HTMLCanvasElement, ch: number, numOfCh: number) {
+        const axisContext = axisCanvas.getContext("2d");
+        axisContext.font = `20px Arial`;
+
+        if (numOfCh > 1) {
+            let channelText = "";
+            if (numOfCh == 2) {
+                channelText = ch == 0 ? "Lch" : "Rch";
+            } else {
+                channelText = "ch" + String(ch + 1)
+            }
+
+            axisContext.fillStyle = "rgb(220, 220, 220)";
+            axisContext.fillText(channelText, 60, 18);
+        }        
     }
 }

@@ -8,6 +8,10 @@ describe("fromDefaultSettings", () => {
     let audioBuffer: AudioBuffer;
     beforeEach(() => {
         defaultSettings = { 
+            waveformVisible: undefined,
+            waveformVerticalScale: undefined,
+            spectrogramVisible: undefined,
+            spectrogramVerticalScale: undefined,
             windowSizeIndex: undefined, 
             minAmplitude: undefined, 
             maxAmplitude: undefined, 
@@ -18,6 +22,82 @@ describe("fromDefaultSettings", () => {
             melFilterNum: undefined
         };
         audioBuffer = new MockAudioBuffer(1, 44100, 44100) as unknown as AudioBuffer;
+    });
+
+    // waveformVisible
+    test("waveformVisible should be true if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVisible).toBe(true);
+    });
+    test("waveformVisible should be default value (true case)", () => {
+        defaultSettings.waveformVisible = true;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVisible).toBe(true);
+    });
+    test("waveformVisible should be default value (false case)", () => {
+        defaultSettings.waveformVisible = false;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVisible).toBe(false);
+    });
+
+    // waveformVerticalScale
+    test("waveformVerticalScale should be 1.0 if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVerticalScale).toBe(1.0);
+    });
+    test("waveformVerticalScale should be default value", () => {
+        const waveformVerticalScale = getRandomFloat(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN, AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX);
+        defaultSettings.waveformVerticalScale = waveformVerticalScale;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVerticalScale).toBe(waveformVerticalScale);
+    });
+    test("waveformVerticalScale should be in range (check lower limit)", () => {
+        defaultSettings.waveformVerticalScale = 0.0;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN);
+    });
+    test("waveformVerticalScale should be in range (check upper limit)", () => {
+        defaultSettings.waveformVerticalScale = 10.0;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX);
+    });
+
+    // spectrogramVisible
+    test("spectrogramVisible should be true if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVisible).toBe(true);
+    });
+    test("spectrogramVisible should be default value (true case)", () => {
+        defaultSettings.spectrogramVisible = true;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVisible).toBe(true);
+    });
+    test("spectrogramVisible should be default value (false case)", () => {
+        defaultSettings.spectrogramVisible = false;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVisible).toBe(false);
+    });
+
+    // spectrogramVerticalScale
+    test("spectrogramVerticalScale should be 1.0 if no default value is provided", () => {
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVerticalScale).toBe(1.0);
+    });
+    test("spectrogramVerticalScale should be default value", () => {
+        const spectrogramVerticalScale = getRandomFloat(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN, AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX);
+        defaultSettings.spectrogramVerticalScale = spectrogramVerticalScale;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVerticalScale).toBe(spectrogramVerticalScale);
+    });
+    test("spectrogramVerticalScale should be in range (check lower limit)", () => {
+        defaultSettings.spectrogramVerticalScale = 0.0;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN);
+    });
+    test("spectrogramVerticalScale should be in range (check upper limit)", () => {
+        defaultSettings.spectrogramVerticalScale = 10.0;
+        const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
+        expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX);
     });
 
     // windowSizeIndex
