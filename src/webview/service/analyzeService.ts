@@ -208,7 +208,7 @@ export default class AnalyzeService {
         const exponent = Math.floor(Math.log10(input));
         const mantissa = input / Math.pow(10, exponent);
 
-        // find which number in nice_numbers is nearest
+        // find which number in niceNumbers is nearest
         const dist: number[] = niceNumbers.map(value => Math.abs(Math.log10(mantissa) - Math.log10(value)));
         const niceNumber = niceNumbers[dist.indexOf(Math.min(...dist))];
 
