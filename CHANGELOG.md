@@ -1,5 +1,18 @@
 # Change Log
 
+## 2.2.0 - 2024-05-06  
+### Added
+- add displays for volume and playback position  
+- add volume scale option  
+- add initial volume option  
+- add visibility option of waveforms and spectrograms  
+- add  height scale option of the waveforms and the spectrograms  
+- add channel labels for each of the waveforms and the spectrograms  
+
+### Changed  
+- moving the volume bar immediately affects the volume, without waiting for it to be released  
+- time axis and the waveform vertical axis are drawn in nicely rounded interval
+
 ## 2.1.0 - 2024-03-09
 ### Added
 - suport log scale spectrogram
