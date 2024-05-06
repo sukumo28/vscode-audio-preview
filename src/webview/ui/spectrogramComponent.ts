@@ -48,35 +48,18 @@ export default class WaveFormComponent {
     }
 
     private drawLinearAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps, ch: number, numOfCh: number) {
-        const axisContext = axisCanvas.getContext("2d");
-        const width = axisCanvas.width;
-        const height = axisCanvas.height;
-        
-        const minFreq = settings.minFrequency;
-        const maxFreq = settings.maxFrequency;
-        const scale = (maxFreq - minFreq) / height;
-
-        axisContext.font = `20px Arial`;
-
         // draw horizontal axis
-        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-        const x_by_t = width / (settings.maxTime - settings.minTime);
-        let t = settings.minTime;
-        let loop_cnt = 0;   // safe guard
-        do {
-            t = Math.round(t / nice_t) * nice_t;
-            let x = (t - settings.minTime) * x_by_t;
-
-            axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
-
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-
-            t += nice_t
-        } while (t < settings.maxTime && loop_cnt++ < 100);
+        this.drawTimeAxis(axisCanvas, settings);
 
         // draw vertical axis
+        const axisContext = axisCanvas.getContext("2d");
+        const width = axisCanvas.width;
+        const height = axisCanvas.height;   
+        axisContext.font = `20px Arial`;
+
+        const minFreq = settings.minFrequency;
+        const maxFreq = settings.maxFrequency;
+        const scale = (maxFreq - minFreq) / height;        
         const numAxes = Math.round(10 * settings.spectrogramVerticalScale);
         for (let i = 0; i < numAxes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
@@ -89,17 +72,7 @@ export default class WaveFormComponent {
         }
 
         // draw channel label
-        if (numOfCh > 1) {
-            let channelText = "";
-            if (numOfCh == 2) {
-                channelText = ch == 0 ? "Lch" : "Rch";
-            } else {
-                channelText = "ch" + String(ch + 1)
-            }
-
-            axisContext.fillStyle = "rgb(220, 220, 220)";
-            axisContext.fillText(channelText, 60, 18);
-        }
+        this.drawChannelLabel(axisCanvas, ch, numOfCh);
     }
 
     private drawLinearSpectrogram(canvas: HTMLCanvasElement, sampleRate: number, settings: AnalyzeSettingsProps, ch: number) {
@@ -124,34 +97,18 @@ export default class WaveFormComponent {
     }
 
     private drawLogAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps, ch: number, numOfCh: number) {
+        // draw horizontal axis
+        this.drawTimeAxis(axisCanvas, settings);
+
+        // draw vertical axis    
         const axisContext = axisCanvas.getContext("2d");
         const width = axisCanvas.width;
         const height = axisCanvas.height;
-    
         axisContext.font = `20px Arial`;
+    
         const logMin = Math.log10(settings.minFrequency + Number.EPSILON);
         const logMax = Math.log10(settings.maxFrequency + Number.EPSILON);
         const scale = (logMax - logMin) / height;
-
-        // draw horizontal axis
-        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-        const x_by_t = width / (settings.maxTime - settings.minTime);
-        let t = settings.minTime;
-        let loop_cnt = 0;   // safe guard
-        do {
-            t = Math.round(t / nice_t) * nice_t;
-            let x = (t - settings.minTime) * x_by_t;
-
-            axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
-
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-
-            t += nice_t
-        } while (t < settings.maxTime && loop_cnt++ < 100);
-
-        // draw vertical axis    
         const numAxes = Math.round(10 * settings.spectrogramVerticalScale);
         for (let i = 0; i < numAxes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
@@ -167,17 +124,7 @@ export default class WaveFormComponent {
         }
 
         // draw channel label
-        if (numOfCh > 1) {
-            let channelText = "";
-            if (numOfCh == 2) {
-                channelText = ch == 0 ? "Lch" : "Rch";
-            } else {
-                channelText = "ch" + String(ch + 1)
-            }
-
-            axisContext.fillStyle = "rgb(220, 220, 220)";
-            axisContext.fillText(channelText, 60, 18);
-        }
+        this.drawChannelLabel(axisCanvas, ch, numOfCh);
     }
 
     private drawLogSpectrogram(canvas: HTMLCanvasElement, sampleRate: number, settings: AnalyzeSettingsProps, ch: number) {
@@ -213,32 +160,16 @@ export default class WaveFormComponent {
     }
 
     private drawMelAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps, ch: number, numOfCh: number) {
+        // draw horizontal axis
+        this.drawTimeAxis(axisCanvas, settings);
+        
+        // draw vertical axis
         const axisContext = axisCanvas.getContext("2d");
         const width = axisCanvas.width;
         const height = axisCanvas.height;
-    
         axisContext.font = `20px Arial`;
 
-        // draw horizontal axis
-        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
-        const x_by_t = width / (settings.maxTime - settings.minTime);
-        let t = settings.minTime;
-        let loop_cnt = 0;   // safe guard
-        do {
-            t = Math.round(t / nice_t) * nice_t;
-            let x = (t - settings.minTime) * x_by_t;
-
-            axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
-
-            axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
-
-            t += nice_t
-        } while (t < settings.maxTime && loop_cnt++ < 100);
-
-        // draw vertical axis
-        const numAxes = Math.round(10 * settings.spectrogramVerticalScale);
+        const numAxes = Math.round(10 * settings.spectrogramVerticalScale);        
         for (let i = 0; i < numAxes; i++) {
             axisContext.fillStyle = "rgb(245,130,32)";
             const y = Math.round(i * height / numAxes);
@@ -253,17 +184,7 @@ export default class WaveFormComponent {
         }
 
         // draw channel label
-        if (numOfCh > 1) {
-            let channelText = "";
-            if (numOfCh == 2) {
-                channelText = ch == 0 ? "Lch" : "Rch";
-            } else {
-                channelText = "ch" + String(ch + 1)
-            }
-
-            axisContext.fillStyle = "rgb(220, 220, 220)";
-            axisContext.fillText(channelText, 60, 18);
-        }
+        this.drawChannelLabel(axisCanvas, ch, numOfCh);
     }
 
     private drawMelSpectrogram(canvas: HTMLCanvasElement, sampleRate: number, settings: AnalyzeSettingsProps, ch: number) {
@@ -285,5 +206,46 @@ export default class WaveFormComponent {
                 context.fillRect(x, y, rectWidth, rectHeight);
             }
         }
+    }
+
+    private drawTimeAxis(axisCanvas: HTMLCanvasElement, settings: AnalyzeSettingsProps) {
+        const axisContext = axisCanvas.getContext("2d");
+        const width = axisCanvas.width;
+        const height = axisCanvas.height;
+        axisContext.font = `20px Arial`;
+
+        const [nice_t, digit]: [number, number] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
+        const x_by_t = width / (settings.maxTime - settings.minTime);
+        let t = settings.minTime;
+        let loop_cnt = 0;   // safe guard
+        do {
+            t = Math.round(t / nice_t) * nice_t;
+            let x = (t - settings.minTime) * x_by_t;
+
+            axisContext.fillStyle = "rgb(245,130,32)";
+            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+
+            axisContext.fillStyle = "rgb(180,120,20)";
+            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+
+            t += nice_t
+        } while (t < settings.maxTime && loop_cnt++ < 100);
+    }
+
+    private drawChannelLabel(axisCanvas: HTMLCanvasElement, ch: number, numOfCh: number) {
+        const axisContext = axisCanvas.getContext("2d");
+        axisContext.font = `20px Arial`;
+
+        if (numOfCh > 1) {
+            let channelText = "";
+            if (numOfCh == 2) {
+                channelText = ch == 0 ? "Lch" : "Rch";
+            } else {
+                channelText = "ch" + String(ch + 1)
+            }
+
+            axisContext.fillStyle = "rgb(220, 220, 220)";
+            axisContext.fillText(channelText, 60, 18);
+        }        
     }
 }
