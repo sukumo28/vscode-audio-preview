@@ -46,7 +46,7 @@ You can configure default value of analyze settings like example below.
 
         /*
          Adjust height of the waveform. 
-         The valid range of [0.3, 2.0] scales the default height.
+         The valid range of [0.2, 2.0] scales the default height.
          default: 1.0
          This option can only be configured through the settings file.
         */

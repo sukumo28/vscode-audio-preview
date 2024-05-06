@@ -38,7 +38,7 @@ export default class AnalyzeSettingsService {
     public readonly WAVEFORM_CANVAS_WIDTH = 1000;
     public readonly WAVEFORM_CANVAS_HEIGHT = 200;
     public static WAVEFORM_CANVAS_VERTICAL_SCALE_MAX = 2.0;
-    public static WAVEFORM_CANVAS_VERTICAL_SCALE_MIN = 0.3;
+    public static WAVEFORM_CANVAS_VERTICAL_SCALE_MIN = 0.2;
     public readonly SPECTROGRAM_CANVAS_WIDTH = 1800;
     public readonly SPECTROGRAM_CANVAS_HEIGHT = 600;
     public static SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX = 2.0;
