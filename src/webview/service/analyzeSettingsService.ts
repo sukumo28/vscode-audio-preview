@@ -60,7 +60,7 @@ export default class AnalyzeSettingsService {
     private _waveformVisible: boolean;
     public get waveformVisible() { return this._waveformVisible; }
     public set waveformVisible(value: boolean) {
-        this._waveformVisible = value == undefined ? true : value;      // true by default
+        this._waveformVisible = value === undefined ? true : value;      // true by default
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWaveformVisible, { detail: { value: this._waveformVisible }}));
     }
 
@@ -78,7 +78,7 @@ export default class AnalyzeSettingsService {
     private _spectrogramVisible: boolean;
     public get spectrogramVisible() { return this._spectrogramVisible; }
     public set spectrogramVisible(value: boolean) {
-        this._spectrogramVisible = value == undefined ? true : value;       // true by default
+        this._spectrogramVisible = value === undefined ? true : value;       // true by default
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVisible, { detail: { value: this._spectrogramVisible }}));
     }
 

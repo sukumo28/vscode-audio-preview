@@ -9,7 +9,7 @@ export default class AnalyzeService {
     }
 
     public getSpectrogramColor(amp: number, range: number): string {
-        if (amp == null) {return "rgb(0,0,0)";}
+        if (amp === null) {return "rgb(0,0,0)";}
         const classNum = 6;
         const classWidth = range / classNum;
         const ampClass = Math.floor(amp / classWidth);
@@ -214,7 +214,7 @@ export default class AnalyzeService {
         const niceNumber = niceNumbers[dist.indexOf(Math.min(...dist))];
 
         const rounded = niceNumber * Math.pow(10, exponent);
-        let digit = niceNumber == 10.0 ? -exponent - 1 : -exponent;
+        let digit = niceNumber === 10.0 ? -exponent - 1 : -exponent;
         digit = digit <= 0 ? 0 : digit;   // avoid -0
 
         return [rounded, digit];

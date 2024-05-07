@@ -62,9 +62,9 @@ export default class PlayerComponent extends Disposable {
                 // convert dB setting to linear gain
                 // -80 dB is treated as mute
                 const voldb = Number(this._volumeBar.value);
-                const vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20);
+                const vollin = voldb === -80 ? 0 : Math.pow(10, voldb / 20);
                 this._playerService.volume = vollin;
-                volumeText.textContent = "volume " + (vollin == 0 ? "muted" : voldb.toFixed(1) + " dB");
+                volumeText.textContent = "volume " + (vollin === 0 ? "muted" : voldb.toFixed(1) + " dB");
             } else {
                 // convert seekbar value(0~100) to volume(0~1)
                 this._playerService.volume = Number(this._volumeBar.value) / 100;

@@ -10,7 +10,7 @@ export default class PlayerSettingsService {
     private _volumeUnitDb: boolean;
     public get volumeUnitDb() { return this._volumeUnitDb; }
     public set volumeUnitDb(value: boolean) { 
-        this._volumeUnitDb = value == undefined ? false : value;      // false by default
+        this._volumeUnitDb = value === undefined ? false : value;      // false by default
     }
 
     private _initialVolumeDb: number;

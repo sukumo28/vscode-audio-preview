@@ -236,8 +236,8 @@ export default class WaveFormComponent {
 
         if (numOfCh > 1) {
             let channelText = "";
-            if (numOfCh == 2) {
-                channelText = ch == 0 ? "Lch" : "Rch";
+            if (numOfCh === 2) {
+                channelText = ch === 0 ? "Lch" : "Rch";
             } else {
                 channelText = "ch" + String(ch + 1);
             }
