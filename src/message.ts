@@ -65,4 +65,4 @@ export interface WebviewErrorMessageData {
 }
 
 // Type of post message funtion
-export type postMessage = (message: WebviewMessage) => void;
+export type PostMessage = (message: WebviewMessage) => void;

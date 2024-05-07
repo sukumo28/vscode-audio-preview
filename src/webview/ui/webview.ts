@@ -3,7 +3,7 @@ import PlayerComponent  from "./playerComponent";
 import PlayerService from "../service/playerService";
 import AnalyzerComponent from "./analyzerComponent";
 import { Event, EventType } from "../events";
-import { ExtMessage, ExtMessageType, postMessage, WebviewMessageType } from "../../message";
+import { ExtMessage, ExtMessageType, PostMessage, WebviewMessageType } from "../../message";
 import { Disposable, disposeAll } from "../../dispose";
 import { Config } from "../../config";
 import Decoder from "../decoder";
@@ -17,7 +17,7 @@ type CreateDecoder = (fileData: Uint8Array) => Promise<Decoder>;
 export default class WebView {
     private _fileData: Uint8Array;
 
-    private _postMessage: postMessage;
+    private _postMessage: PostMessage;
     private _createAudioContext: CreateAudioContext;
     private _createDecoder: CreateDecoder;
 
@@ -25,7 +25,7 @@ export default class WebView {
 
     private _disposables: Disposable[] = [];
 
-    constructor (postMessage: postMessage, createAudioContext: CreateAudioContext, createDecoder: CreateDecoder) {
+    constructor (postMessage: PostMessage, createAudioContext: CreateAudioContext, createDecoder: CreateDecoder) {
         this._postMessage = postMessage;
         this._createAudioContext = createAudioContext;
         this._createDecoder = createDecoder;
