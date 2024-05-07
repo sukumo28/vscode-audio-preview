@@ -11,21 +11,21 @@ import AnalyzeSettingsService from "../service/analyzeSettingsService";
 import AnalyzeService from "../service/analyzeService";
 import PlayerSettingsService from "../service/playerSettingsService";
 
-type createAudioContext = (sampleRate: number) => AudioContext;
-type createDecoder = (fileData: Uint8Array) => Promise<Decoder>;
+type CreateAudioContext = (sampleRate: number) => AudioContext;
+type CreateDecoder = (fileData: Uint8Array) => Promise<Decoder>;
 
 export default class WebView {
     private _fileData: Uint8Array;
 
     private _postMessage: postMessage;
-    private _createAudioContext: createAudioContext;
-    private _createDecoder: createDecoder;
+    private _createAudioContext: CreateAudioContext;
+    private _createDecoder: CreateDecoder;
 
     private _config: Config;
 
     private _disposables: Disposable[] = [];
 
-    constructor (postMessage: postMessage, createAudioContext: createAudioContext, createDecoder: createDecoder) {
+    constructor (postMessage: postMessage, createAudioContext: CreateAudioContext, createDecoder: CreateDecoder) {
         this._postMessage = postMessage;
         this._createAudioContext = createAudioContext;
         this._createDecoder = createDecoder;
