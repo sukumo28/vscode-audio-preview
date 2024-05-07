@@ -18,7 +18,7 @@ export default class PlayerComponent extends Disposable {
         // init base html
         const parent = document.getElementById(parentID);
 
-        const volume_ui = this._playerSettingService.volumeUnitDb ?
+        const volumeBar = this._playerSettingService.volumeUnitDb ?
             `<div id="volume-text">volume 0.0 dB</div>
              <input type="range" id="volume-bar" value="0" min="-80" max="0" step="0.5">` :
             `<div id="volume-text">volume 100</div>
@@ -27,7 +27,7 @@ export default class PlayerComponent extends Disposable {
         parent.innerHTML = `
             <button id="play-button">play</button>
 
-            ${ volume_ui }
+            ${ volumeBar }
                         
             <div id="seek-pos-text">position 0.000 s</div>
             <div class="seek-bar-box">
