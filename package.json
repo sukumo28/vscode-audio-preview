@@ -99,7 +99,7 @@
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
 		"test-compile": "tsc -p ./",
-		"jest": "jest --verbose false",
+		"jest": "jest",
 		"test": "npm run test-compile && jest"
 	},
 	"jest": {
