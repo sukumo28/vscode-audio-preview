@@ -205,6 +205,7 @@ export default class AnalyzeService {
 
         if (input <= 0) return [0, 0];  // this function only works for positive number
 
+        // input = mantissa * 10^exponent
         const exponent = Math.floor(Math.log10(input));
         const mantissa = input / Math.pow(10, exponent);
 
