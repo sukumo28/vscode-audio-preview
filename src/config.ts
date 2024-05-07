@@ -6,8 +6,8 @@ export interface Config {
 
 export interface PlayerDefault {
     volumeUnitDb: boolean;
-    initVolumeDb: number;
-    initVolume: number;
+    initialVolumeDb: number;
+    initialVolume: number;
 }
 
 export interface AnalyzeDefault {

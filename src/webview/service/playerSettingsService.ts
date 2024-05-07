@@ -13,10 +13,10 @@ export default class PlayerSettingsService {
         this._volumeUnitDb = value == undefined ? false : value;      // false by default
     }
 
-    private _initVolumeDb: number;
-    public get initVolumeDb() { return this._initVolumeDb; }
-    public set initVolumeDb(value: number) { 
-        this._initVolumeDb = getValueInRange(
+    private _initialVolumeDb: number;
+    public get initialVolumeDb() { return this._initialVolumeDb; }
+    public set initialVolumeDb(value: number) { 
+        this._initialVolumeDb = getValueInRange(
             value,
             PlayerSettingsService.VOLUME_DB_MIN,
             PlayerSettingsService.VOLUME_DB_MAX,
@@ -24,10 +24,10 @@ export default class PlayerSettingsService {
         );
     }
 
-    private _initVolume: number;
-    public get initVolume() { return this._initVolume; }
-    public set initVolume(value: number) { 
-        this._initVolume = getValueInRange(
+    private _initialVolume: number;
+    public get initialVolume() { return this._initialVolume; }
+    public set initialVolume(value: number) { 
+        this._initialVolume = getValueInRange(
             value,
             PlayerSettingsService.VOLUME_MIN,
             PlayerSettingsService.VOLUME_MAX,
@@ -35,10 +35,10 @@ export default class PlayerSettingsService {
         );
     }
 
-    private constructor(volumeUnitDb: boolean, initVolumeDb: number, initVolume: number) {
+    private constructor(volumeUnitDb: boolean, initialVolumeDb: number, initialVolume: number) {
         this._volumeUnitDb = volumeUnitDb;
-        this._initVolumeDb = initVolumeDb;
-        this._initVolume = initVolume;
+        this._initialVolumeDb = initialVolumeDb;
+        this._initialVolume = initialVolume;
     }
 
     public static fromDefaultSetting(defaultSetting: PlayerDefault) {
@@ -49,8 +49,8 @@ export default class PlayerSettingsService {
         setting.volumeUnitDb = defaultSetting.volumeUnitDb;
 
         // init initial volume
-        setting.initVolumeDb = defaultSetting.initVolumeDb;
-        setting.initVolume = defaultSetting.initVolume;
+        setting.initialVolumeDb = defaultSetting.initialVolumeDb;
+        setting.initialVolume = defaultSetting.initialVolume;
 
         return setting;
     }

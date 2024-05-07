@@ -46,8 +46,8 @@ describe('webview lifecycle', () => {
                 autoAnalyze: false,
                 playerDefault: {
                     volumeUnitDb: undefined,
-                    initVolumeDb: 0.0,
-                    initVolume: 1.0,
+                    initialVolumeDb: 0.0,
+                    initialVolume: 1.0,
                 },
                 analyzeDefault: { 
                     waveformVisible: undefined,
@@ -154,8 +154,8 @@ describe('webview error handling', () => {
                 autoAnalyze: false,
                 playerDefault: {
                     volumeUnitDb: undefined,
-                    initVolumeDb: 0.0,
-                    initVolume: 1.0,
+                    initialVolumeDb: 0.0,
+                    initialVolume: 1.0,
                 },
                 analyzeDefault: { 
                     waveformVisible: undefined,

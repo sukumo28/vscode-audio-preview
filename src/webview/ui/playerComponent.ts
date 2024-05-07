@@ -72,7 +72,7 @@ export default class PlayerComponent extends Disposable {
             }
         }
         this._register(new Event(this._volumeBar, EventType.Input, updateVolume));
-        this._volumeBar.value = String(this._playerSettingService.volumeUnitDb ? this._playerSettingService.initVolumeDb : this._playerSettingService.initVolume);
+        this._volumeBar.value = String(this._playerSettingService.volumeUnitDb ? this._playerSettingService.initialVolumeDb : this._playerSettingService.initialVolume);
         updateVolume();
 
         // init play button

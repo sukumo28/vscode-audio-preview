@@ -6,8 +6,8 @@ describe("fromDefaultSettings", () => {
     beforeEach(() => {
         defaultSettings = { 
             volumeUnitDb: undefined,
-            initVolumeDb: undefined,
-            initVolume: undefined,
+            initialVolumeDb: undefined,
+            initialVolume: undefined,
         };
     });
 
@@ -27,45 +27,45 @@ describe("fromDefaultSettings", () => {
         expect(ps.volumeUnitDb).toBe(false);
     });
 
-    // initVolumeDb
-    test("initVolumeDb should be 0.0 if no default value is provided", () => {
+    // initialVolumeDb
+    test("initialVolumeDb should be 0.0 if no default value is provided", () => {
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolumeDb).toBe(0.0);
+        expect(ps.initialVolumeDb).toBe(0.0);
     });
-    test("initVolumeDb should be default value", () => {
-        defaultSettings.initVolumeDb = -20.0;
+    test("initialVolumeDb should be default value", () => {
+        defaultSettings.initialVolumeDb = -20.0;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolumeDb).toBe(-20.0);
+        expect(ps.initialVolumeDb).toBe(-20.0);
     });
-    test("initVolumeDb should be in valid range (check lower limit)", () => {
-        defaultSettings.initVolumeDb = -100.0;
+    test("initialVolumeDb should be in valid range (check lower limit)", () => {
+        defaultSettings.initialVolumeDb = -100.0;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolumeDb).toBe(PlayerSettingService.VOLUME_DB_MAX);
+        expect(ps.initialVolumeDb).toBe(PlayerSettingService.VOLUME_DB_MAX);
     });
-    test("initVolumeDb should be in valid range (check upper limit)", () => {
-        defaultSettings.initVolumeDb = 10.0;
+    test("initialVolumeDb should be in valid range (check upper limit)", () => {
+        defaultSettings.initialVolumeDb = 10.0;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolumeDb).toBe(PlayerSettingService.VOLUME_DB_MAX);
+        expect(ps.initialVolumeDb).toBe(PlayerSettingService.VOLUME_DB_MAX);
     });
 
-    // initVolume
-    test("initVolume should be 100 if no default value is provided", () => {
+    // initialVolume
+    test("initialVolume should be 100 if no default value is provided", () => {
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolume).toBe(100);
+        expect(ps.initialVolume).toBe(100);
     });
-    test("initVolume should be default value", () => {
-        defaultSettings.initVolume = 50;
+    test("initialVolume should be default value", () => {
+        defaultSettings.initialVolume = 50;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolume).toBe(50);
+        expect(ps.initialVolume).toBe(50);
     });
-    test("initVolume should be in valid range (check lower limit)", () => {
-        defaultSettings.initVolume = -10;
+    test("initialVolume should be in valid range (check lower limit)", () => {
+        defaultSettings.initialVolume = -10;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolume).toBe(PlayerSettingService.VOLUME_MAX);
+        expect(ps.initialVolume).toBe(PlayerSettingService.VOLUME_MAX);
     });
-    test("initVolume should be in valid range (check upper limit)", () => {
-        defaultSettings.initVolume = 200;
+    test("initialVolume should be in valid range (check upper limit)", () => {
+        defaultSettings.initialVolume = 200;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolume).toBe(PlayerSettingService.VOLUME_MAX);
+        expect(ps.initialVolume).toBe(PlayerSettingService.VOLUME_MAX);
     });    
 });
