@@ -17,7 +17,7 @@ describe('playerService', () => {
     test('play', async () => {
         const detail = await waitEventForAction(() => {
             playerService.play();
-        }, window, EventType.UpdateIsPlaying);
+        }, window, EventType.UPDATE_IS_PLAYING);
     
         expect(detail.value).toBe(true);
     });
@@ -25,7 +25,7 @@ describe('playerService', () => {
     test('tick', async () => {
         const detail = await waitEventForAction(() => {
             playerService.tick();
-        }, window, EventType.UpdateSeekbar);
+        }, window, EventType.UPDATE_SEEKBAR);
     
         expect(detail.value).toBeDefined();
     });
@@ -33,7 +33,7 @@ describe('playerService', () => {
     test('pause', async () => {
         const detail = await waitEventForAction(() => {
             playerService.pause();
-        }, window, EventType.UpdateIsPlaying);
+        }, window, EventType.UPDATE_IS_PLAYING);
     
         expect(detail.value).toBe(false);
     });

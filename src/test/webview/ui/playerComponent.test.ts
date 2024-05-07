@@ -48,13 +48,13 @@ describe('player', () => {
                 const userinputSeekbar = <HTMLInputElement>document.getElementById("user-input-seek-bar");
                 userinputSeekbar.value = "50";
                 userinputSeekbar.dispatchEvent(new Event('change'));
-            }, window, EventType.UpdateSeekbar);
+            }, window, EventType.UPDATE_SEEKBAR);
             expect(detail.value).toBeGreaterThanOrEqual(50);
         });
 
         test('update visible-seekbar when seekbar value is updated', () => {
             const visibleSeekbar = <HTMLInputElement>document.getElementById("seek-bar");
-            window.dispatchEvent(new CustomEvent(EventType.UpdateSeekbar, {
+            window.dispatchEvent(new CustomEvent(EventType.UPDATE_SEEKBAR, {
                 detail: {
                     value: 50
                 }

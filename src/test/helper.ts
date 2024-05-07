@@ -2,7 +2,7 @@ import { ExtMessage, WebviewMessage, WebviewMessageType } from "../message";
 import { EventType } from "../webview/events";
 
 function postMessage(target: EventTarget, message: ExtMessage | WebviewMessage) {
-    const event = new MessageEvent(EventType.VSCodeMessage, {
+    const event = new MessageEvent(EventType.VSCODE_MESSAGE, {
         data: message
     });
     target.dispatchEvent(event);
@@ -22,12 +22,12 @@ export function postMessageFromWebview(message: WebviewMessage) {
 export async function waitVSCodeMessageForAction(action: Function, timeout: number = 1000): Promise<ExtMessage | WebviewMessage> {
     return new Promise((resolve) => {
         const timer = setTimeout(() => {
-            postMessageFromWebview({ type: WebviewMessageType.Error, data: { message: "Timeout" } });
+            postMessageFromWebview({ type: WebviewMessageType.ERROR, data: { message: "Timeout" } });
         }, timeout);
 
-        webviewMessageTarget.addEventListener(EventType.VSCodeMessage, (e: MessageEvent<ExtMessage | WebviewMessage>) => {
+        webviewMessageTarget.addEventListener(EventType.VSCODE_MESSAGE, (e: MessageEvent<ExtMessage | WebviewMessage>) => {
             clearTimeout(timer);
-            if (e.data.type === WebviewMessageType.Error) { console.log(e.data.data.message); }
+            if (WebviewMessageType.isERROR(e.data)) { console.log(e.data.data.message); }
             resolve(e.data);
         }, { once: true });
 

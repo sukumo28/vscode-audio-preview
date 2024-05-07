@@ -33,7 +33,7 @@ export default class PlayerService extends Disposable {
         this._audioBuffer = audioBuffer;
 
         // register seekbar event
-        this._register(new Event(window, EventType.InputSeekbar, (e: CustomEventInit) => {
+        this._register(new Event(window, EventType.INPUT_SEEKBAR, (e: CustomEventInit) => {
             this.onSeekbarInput(e.detail.value);
         }));
 
@@ -56,7 +56,7 @@ export default class PlayerService extends Disposable {
         this._source.start(this._audioContext.currentTime, this._currentSec);
 
         // update playing status
-        const updatePlayingEvent = new CustomEvent(EventType.UpdateIsPlaying, {
+        const updatePlayingEvent = new CustomEvent(EventType.UPDATE_IS_PLAYING, {
             detail: {
                 value: this._isPlaying
             }
@@ -78,7 +78,7 @@ export default class PlayerService extends Disposable {
         this._source = undefined;
 
         // update playing status
-        const updatePlayingEvent = new CustomEvent(EventType.UpdateIsPlaying, {
+        const updatePlayingEvent = new CustomEvent(EventType.UPDATE_IS_PLAYING, {
             detail: {
                 value: this._isPlaying
             }
@@ -91,7 +91,7 @@ export default class PlayerService extends Disposable {
         this._seekbarValue = 100 * current / this._audioBuffer.duration;
 
         // update seek bar value
-        const updateSeekbarEvent = new CustomEvent(EventType.UpdateSeekbar, {
+        const updateSeekbarEvent = new CustomEvent(EventType.UPDATE_SEEKBAR, {
             detail: {
                 value: this._seekbarValue,
                 pos: current

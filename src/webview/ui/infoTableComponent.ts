@@ -8,9 +8,7 @@ export default class InfoTableComponent {
     }
 
     public showInfo(numChannels: number, sampleRate: number, fileSize: number, format: string, encoding: string) {
-        const channels = {
-            1: "mono", 2: "stereo"
-        }[numChannels] || "unsupported";
+        const channels = numChannels === 1 ? "mono" : numChannels === 2 ? "stereo" : "unsupported";
 
         const info = [
             { name: "encoding", value: `${encoding}` },

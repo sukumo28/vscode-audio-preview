@@ -61,7 +61,7 @@ export default class AnalyzeSettingsService {
     public get waveformVisible() { return this._waveformVisible; }
     public set waveformVisible(value: boolean) {
         this._waveformVisible = value === undefined ? true : value;      // true by default
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWaveformVisible, { detail: { value: this._waveformVisible }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_WAVEFORM_VISIBLE, { detail: { value: this._waveformVisible }}));
     }
 
     private _waveformVerticalScale: number;
@@ -79,7 +79,7 @@ export default class AnalyzeSettingsService {
     public get spectrogramVisible() { return this._spectrogramVisible; }
     public set spectrogramVisible(value: boolean) {
         this._spectrogramVisible = value === undefined ? true : value;       // true by default
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramVisible, { detail: { value: this._spectrogramVisible }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_SPECTROGRAM_VISIBLE, { detail: { value: this._spectrogramVisible }}));
     }
 
     private _spectrogramVerticalScale: number;
@@ -99,7 +99,7 @@ export default class AnalyzeSettingsService {
         const windowSizeIndex = getValueInEnum(value, WindowSizeIndex, WindowSizeIndex.W1024);
         this._windowSizeIndex = windowSizeIndex;
         this.windowSize = 2 ** (windowSizeIndex + 8);
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWindowSizeIndex, { detail: { value: this._windowSizeIndex }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_WINDOW_SIZE_INDEX, { detail: { value: this._windowSizeIndex }}));
     }
 
     private _windowSize: number;
@@ -124,7 +124,7 @@ export default class AnalyzeSettingsService {
             0, this._sampleRate / 2
         );
         this._minFrequency = minFrequency;
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMinFrequency, { detail: { value: this._minFrequency }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_MIN_FREQUENCY, { detail: { value: this._minFrequency }}));
     }
 
     private _maxFrequency: number;
@@ -136,7 +136,7 @@ export default class AnalyzeSettingsService {
             0, this._sampleRate / 2
         );
         this._maxFrequency = maxFrequency;
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMaxFrequency, { detail: { value: this._maxFrequency }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_MAX_FREQUENCY, { detail: { value: this._maxFrequency }}));
     }
 
     private _minTime: number;
@@ -148,7 +148,7 @@ export default class AnalyzeSettingsService {
             0, this._duration
         );
         this._minTime = minTime;
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMinTime, { detail: { value: this._minTime }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_MIN_TIME, { detail: { value: this._minTime }}));
     }
 
     private _maxTime: number;
@@ -160,7 +160,7 @@ export default class AnalyzeSettingsService {
             0, this._duration
         );
         this._maxTime = maxTime;
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMaxTime, { detail: { value: this._maxTime }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_MAX_TIME, { detail: { value: this._maxTime }}));
     }
 
     private _minAmplitude: number;
@@ -172,7 +172,7 @@ export default class AnalyzeSettingsService {
             this._minAmplitudeOfAudioBuffer, this._maxAmplitudeOfAudioBuffer
         );
         this._minAmplitude = minAmplitude;
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMinAmplitude, { detail: { value: this._minAmplitude }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_MIN_AMPLITUDE, { detail: { value: this._minAmplitude }}));
     }
 
     private _maxAmplitude: number;
@@ -184,7 +184,7 @@ export default class AnalyzeSettingsService {
             this._minAmplitudeOfAudioBuffer, this._maxAmplitudeOfAudioBuffer
         );
         this._maxAmplitude = maxAmplitude;
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMaxAmplitude, { detail: { value: this._maxAmplitude }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_MAX_AMPLITUDE, { detail: { value: this._maxAmplitude }}));
     }
 
     private _spectrogramAmplitudeRange: number;
@@ -196,7 +196,7 @@ export default class AnalyzeSettingsService {
             -90, 0
         );
         this._spectrogramAmplitudeRange = spectrogramAmplitudeRange;
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateSpectrogramAmplitudeRange, { detail: { value: this._spectrogramAmplitudeRange }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_RANGE, { detail: { value: this._spectrogramAmplitudeRange }}));
     }
 
     private _frequencyScale: FrequencyScale;
@@ -204,14 +204,14 @@ export default class AnalyzeSettingsService {
     public set frequencyScale(value: FrequencyScale) {
         const frequencyScale = getValueInEnum(value, FrequencyScale, FrequencyScale.Linear);
         this._frequencyScale = frequencyScale;
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateFrequencyScale, { detail: { value: this._frequencyScale }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_FREQUENCY_SCALE, { detail: { value: this._frequencyScale }}));
     }
 
     private _melFilterNum: number;
     public get melFilterNum() { return this._melFilterNum; }
     public set melFilterNum(value: number) {
         this._melFilterNum = getValueInRange(Math.trunc(value), 20, 200, 40);
-        window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, { detail: { value: this._melFilterNum }}));
+        window.dispatchEvent(new CustomEvent(EventType.AS_UPDATE_MEL_FILTER_NUM, { detail: { value: this._melFilterNum }}));
     }
 
     private constructor(waveformVisible: boolean, waveformVerticalScale: number, spectrogramVisible: boolean, spectrogramVerticalScale: number,

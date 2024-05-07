@@ -40,7 +40,7 @@ export default class PlayerComponent extends Disposable {
         // To avoid inconvenience when the timing of user input overlaps with the change in value over time,
         // we separate the InputElement for display and the InputElement that actually accepts user input.
         const userinputSeekbar = <HTMLInputElement>document.getElementById("user-input-seek-bar");
-        this._register(new Event(userinputSeekbar, EventType.Change, () => {
+        this._register(new Event(userinputSeekbar, EventType.CHANGE, () => {
             this._playerService.onSeekbarInput(Number(userinputSeekbar.value));
             // We reset the value of the input element for user input to 100 each time,
             // because it does not respond when the user inputs exactly the same value as the previous one.
@@ -49,7 +49,7 @@ export default class PlayerComponent extends Disposable {
         }));
         const visibleSeekbar = <HTMLInputElement>document.getElementById("seek-bar");
         const seekPosText = <HTMLInputElement>document.getElementById("seek-pos-text");
-        this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {
+        this._register(new Event(window, EventType.UPDATE_SEEKBAR, (e: CustomEventInit) => {
             visibleSeekbar.value = e.detail.value;
             seekPosText.textContent = "position " + Number(e.detail.pos).toFixed(3) + " s";
         }));
@@ -71,13 +71,13 @@ export default class PlayerComponent extends Disposable {
                 volumeText.textContent = "volume " + this._volumeBar.value;
             }
         };
-        this._register(new Event(this._volumeBar, EventType.Input, updateVolume));
+        this._register(new Event(this._volumeBar, EventType.INPUT, updateVolume));
         this._volumeBar.value = String(this._playerSettingService.volumeUnitDb ? this._playerSettingService.initialVolumeDb : this._playerSettingService.initialVolume);
         updateVolume();
 
         // init play button
         this._playButton = <HTMLButtonElement>document.getElementById("play-button");
-        this._register(new Event(this._playButton, EventType.Click, () => {
+        this._register(new Event(this._playButton, EventType.CLICK, () => {
             if (this._playerService.isPlaying) {
                 this._playerService.pause();
             } else {
@@ -86,7 +86,7 @@ export default class PlayerComponent extends Disposable {
         }));
         this._playButton.textContent = "play";
         this._playButton.style.display = "block";
-        this._register(new Event(window, EventType.UpdateIsPlaying, () => {
+        this._register(new Event(window, EventType.UPDATE_IS_PLAYING, () => {
             if (this._playerService.isPlaying) {
                 this._playButton.textContent = "pause";
             } else {
@@ -96,7 +96,7 @@ export default class PlayerComponent extends Disposable {
 
         // register keyboard shortcuts
         // don't use command.register at audioPreviewEditorProvider.openCustomDocument due to command confliction
-        this._register(new Event(window, EventType.KeyDown, (e: KeyboardEvent) => {
+        this._register(new Event(window, EventType.KEY_DOWN, (e: KeyboardEvent) => {
             if (e.isComposing || e.code !== "Space") {
                 return;
             }

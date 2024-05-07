@@ -132,72 +132,72 @@ export default class AnalyzerComponent extends Disposable {
         // init waveform visible checkbox
         const waveformVisible = <HTMLInputElement>document.getElementById("analyze-waveform-visible");
         waveformVisible.checked = settings.waveformVisible;
-        this._register(new Event(waveformVisible, EventType.Change, () => { settings.waveformVisible = waveformVisible.checked; }));
-        this._register(new Event(window, EventType.AS_UpdateWaveformVisible, (e: CustomEventInit) => { waveformVisible.checked = e.detail.value; }));
+        this._register(new Event(waveformVisible, EventType.CHANGE, () => { settings.waveformVisible = waveformVisible.checked; }));
+        this._register(new Event(window, EventType.AS_UPDATE_WAVEFORM_VISIBLE, (e: CustomEventInit) => { waveformVisible.checked = e.detail.value; }));
 
         // init spectrogram visible checkbox
         const spectrogramVisible = <HTMLInputElement>document.getElementById("analyze-spectrogram-visible");
         spectrogramVisible.checked = settings.spectrogramVisible;
-        this._register(new Event(spectrogramVisible, EventType.Change, () => { settings.spectrogramVisible = spectrogramVisible.checked; }));
-        this._register(new Event(window, EventType.AS_UpdateSpectrogramVisible, (e: CustomEventInit) => { spectrogramVisible.checked = e.detail.value; }));
+        this._register(new Event(spectrogramVisible, EventType.CHANGE, () => { settings.spectrogramVisible = spectrogramVisible.checked; }));
+        this._register(new Event(window, EventType.AS_UPDATE_SPECTROGRAM_VISIBLE, (e: CustomEventInit) => { spectrogramVisible.checked = e.detail.value; }));
 
         // init fft window size index select
         const windowSizeSelect = <HTMLSelectElement>document.getElementById("analyze-window-size");
         windowSizeSelect.selectedIndex = settings.windowSizeIndex;
-        this._register(new Event(windowSizeSelect, EventType.Change, () => { settings.windowSizeIndex = Number(windowSizeSelect.selectedIndex); }));
-        this._register(new Event(window, EventType.AS_UpdateWindowSizeIndex, (e: CustomEventInit) => { windowSizeSelect.selectedIndex = e.detail.value; }));
+        this._register(new Event(windowSizeSelect, EventType.CHANGE, () => { settings.windowSizeIndex = Number(windowSizeSelect.selectedIndex); }));
+        this._register(new Event(window, EventType.AS_UPDATE_WINDOW_SIZE_INDEX, (e: CustomEventInit) => { windowSizeSelect.selectedIndex = e.detail.value; }));
 
         // init frequency scale select
         const frequencyScaleSelect = <HTMLSelectElement>document.getElementById("analyze-frequency-scale");
         frequencyScaleSelect.selectedIndex = settings.frequencyScale;
-        this._register(new Event(frequencyScaleSelect, EventType.Change, () => { settings.frequencyScale = Number(frequencyScaleSelect.selectedIndex); }));
-        this._register(new Event(window, EventType.AS_UpdateFrequencyScale, (e: CustomEventInit) => { frequencyScaleSelect.selectedIndex = e.detail.value; }));
+        this._register(new Event(frequencyScaleSelect, EventType.CHANGE, () => { settings.frequencyScale = Number(frequencyScaleSelect.selectedIndex); }));
+        this._register(new Event(window, EventType.AS_UPDATE_FREQUENCY_SCALE, (e: CustomEventInit) => { frequencyScaleSelect.selectedIndex = e.detail.value; }));
 
         // init mel filter num input
         const melFilterNumInput = <HTMLInputElement>document.getElementById("analyze-mel-filter-num");
         melFilterNumInput.value = `${settings.melFilterNum}`;
-        this._register(new Event(melFilterNumInput, EventType.Change, () => { settings.melFilterNum = Number(melFilterNumInput.value); }));
-        this._register(new Event(window, EventType.AS_UpdateMelFilterNum, (e: CustomEventInit) => { melFilterNumInput.value = `${e.detail.value}`; }));
+        this._register(new Event(melFilterNumInput, EventType.CHANGE, () => { settings.melFilterNum = Number(melFilterNumInput.value); }));
+        this._register(new Event(window, EventType.AS_UPDATE_MEL_FILTER_NUM, (e: CustomEventInit) => { melFilterNumInput.value = `${e.detail.value}`; }));
 
         // init frequency range input
         const minFreqInput = <HTMLInputElement>document.getElementById("analyze-min-frequency");
         minFreqInput.value = `${settings.minFrequency}`;
-        this._register(new Event(minFreqInput, EventType.Change, () => { settings.minFrequency = Number(minFreqInput.value); }));
-        this._register(new Event(window, EventType.AS_UpdateMinFrequency, (e: CustomEventInit) => { minFreqInput.value = `${e.detail.value}`; }));
+        this._register(new Event(minFreqInput, EventType.CHANGE, () => { settings.minFrequency = Number(minFreqInput.value); }));
+        this._register(new Event(window, EventType.AS_UPDATE_MIN_FREQUENCY, (e: CustomEventInit) => { minFreqInput.value = `${e.detail.value}`; }));
         
         const maxFreqInput = <HTMLInputElement>document.getElementById("analyze-max-frequency");
         maxFreqInput.value = `${settings.maxFrequency}`;
-        this._register(new Event(maxFreqInput, EventType.Change, () => { settings.maxFrequency = Number(maxFreqInput.value); }));
-        this._register(new Event(window, EventType.AS_UpdateMaxFrequency, (e: CustomEventInit) => { maxFreqInput.value = `${e.detail.value}`; }));
+        this._register(new Event(maxFreqInput, EventType.CHANGE, () => { settings.maxFrequency = Number(maxFreqInput.value); }));
+        this._register(new Event(window, EventType.AS_UPDATE_MAX_FREQUENCY, (e: CustomEventInit) => { maxFreqInput.value = `${e.detail.value}`; }));
 
         // init time range input
         const minTimeInput = <HTMLInputElement>document.getElementById("analyze-min-time");
         minTimeInput.value = `${settings.minTime}`;
-        this._register(new Event(minTimeInput, EventType.Change, () => { settings.minTime = Number(minTimeInput.value); }));
-        this._register(new Event(window, EventType.AS_UpdateMinTime, (e: CustomEventInit) => { minTimeInput.value = `${e.detail.value}`; }));
+        this._register(new Event(minTimeInput, EventType.CHANGE, () => { settings.minTime = Number(minTimeInput.value); }));
+        this._register(new Event(window, EventType.AS_UPDATE_MIN_TIME, (e: CustomEventInit) => { minTimeInput.value = `${e.detail.value}`; }));
 
         const maxTimeInput = <HTMLInputElement>document.getElementById("analyze-max-time");
         maxTimeInput.value = `${settings.maxTime}`;
-        this._register(new Event(maxTimeInput, EventType.Change, () => { settings.maxTime = Number(maxTimeInput.value); }));
-        this._register(new Event(window, EventType.AS_UpdateMaxTime, (e: CustomEventInit) => { maxTimeInput.value = `${e.detail.value}`; }));
+        this._register(new Event(maxTimeInput, EventType.CHANGE, () => { settings.maxTime = Number(maxTimeInput.value); }));
+        this._register(new Event(window, EventType.AS_UPDATE_MAX_TIME, (e: CustomEventInit) => { maxTimeInput.value = `${e.detail.value}`; }));
 
         // init amplitude range input
         const minAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-min-amplitude");
         minAmplitudeInput.value = `${settings.minAmplitude}`;
-        this._register(new Event(minAmplitudeInput, EventType.Change, () => { settings.minAmplitude = Number(minAmplitudeInput.value); }));
-        this._register(new Event(window, EventType.AS_UpdateMinAmplitude, (e: CustomEventInit) => { minAmplitudeInput.value = `${e.detail.value}`; }));
+        this._register(new Event(minAmplitudeInput, EventType.CHANGE, () => { settings.minAmplitude = Number(minAmplitudeInput.value); }));
+        this._register(new Event(window, EventType.AS_UPDATE_MIN_AMPLITUDE, (e: CustomEventInit) => { minAmplitudeInput.value = `${e.detail.value}`; }));
 
         const maxAmplitudeInput = <HTMLInputElement>document.getElementById("analyze-max-amplitude");
         maxAmplitudeInput.value = `${settings.maxAmplitude}`;
-        this._register(new Event(maxAmplitudeInput, EventType.Change, () => { settings.maxAmplitude = Number(maxAmplitudeInput.value); }));
-        this._register(new Event(window, EventType.AS_UpdateMaxAmplitude, (e: CustomEventInit) => { maxAmplitudeInput.value = `${e.detail.value}`; }));
+        this._register(new Event(maxAmplitudeInput, EventType.CHANGE, () => { settings.maxAmplitude = Number(maxAmplitudeInput.value); }));
+        this._register(new Event(window, EventType.AS_UPDATE_MAX_AMPLITUDE, (e: CustomEventInit) => { maxAmplitudeInput.value = `${e.detail.value}`; }));
 
         // init spectrogram amplitude range input
         const spectrogramAmplitudeRangeInput = <HTMLInputElement>document.getElementById("analyze-spectrogram-amplitude-range");
         spectrogramAmplitudeRangeInput.value = `${settings.spectrogramAmplitudeRange}`;
         this.updateColorBar(settings);
-        this._register(new Event(spectrogramAmplitudeRangeInput, EventType.Change, () => { settings.spectrogramAmplitudeRange = Number(spectrogramAmplitudeRangeInput.value); }));
-        this._register(new Event(window, EventType.AS_UpdateSpectrogramAmplitudeRange, (e: CustomEventInit) => { 
+        this._register(new Event(spectrogramAmplitudeRangeInput, EventType.CHANGE, () => { settings.spectrogramAmplitudeRange = Number(spectrogramAmplitudeRangeInput.value); }));
+        this._register(new Event(window, EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_RANGE, (e: CustomEventInit) => { 
             spectrogramAmplitudeRangeInput.value = `${e.detail.value}`; 
             this.updateColorBar(settings);
         }));
@@ -282,7 +282,7 @@ export default class AnalyzerComponent extends Disposable {
         inputSeekbar.step = "0.00001";
         this._analyzeResultBox.appendChild(inputSeekbar);
 
-        this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {
+        this._register(new Event(window, EventType.UPDATE_SEEKBAR, (e: CustomEventInit) => {
             const value = e.detail.value;
             const t = value * this._audioBuffer.duration / 100;
             const v = ((t - settings.minTime) / (settings.maxTime - settings.minTime)) * 100;
@@ -290,10 +290,10 @@ export default class AnalyzerComponent extends Disposable {
             visibleBar.style.width = `${vv}%`;
             return 100 < v;
         }));
-        this._register(new Event(inputSeekbar, EventType.Change, () => {
+        this._register(new Event(inputSeekbar, EventType.CHANGE, () => {
             const rv = Number(inputSeekbar.value);
             const nv = ((rv / 100 * (settings.maxTime - settings.minTime) + settings.minTime) / this._audioBuffer.duration) * 100;
-            const inputSeekbarEvent = new CustomEvent(EventType.InputSeekbar, {
+            const inputSeekbarEvent = new CustomEvent(EventType.INPUT_SEEKBAR, {
                 detail: {
                     value: nv
                 }

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
 import { AnalyzeDefault, PlayerDefault } from "./config";
-import { ExtMessage, ExtMessageType, WebviewMessage, WebviewMessageType } from "./message";
+import { ExtMessage, ExtMessageType, WebviewErrorMessage, WebviewMessage, WebviewMessageType } from "./message";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
@@ -100,7 +100,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
             await document.reload();
             for (const webviewPanel of this.webviews.get(document.uri)) {
                 this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Reload
+                    type: ExtMessageType.RELOAD
                 });
             }
         }));
@@ -136,11 +136,11 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
     private onReceiveMessage(msg: WebviewMessage, webviewPanel: vscode.WebviewPanel, document: AudioPreviewDocument) {
         switch (msg.type) {
-            case WebviewMessageType.Config: {
+            case WebviewMessageType.CONFIG: {
                 // read config
                 const config = vscode.workspace.getConfiguration("WavPreview");
                 this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Config,
+                    type: ExtMessageType.CONFIG,
                     data: {
                         autoAnalyze: config.get("autoAnalyze"),
                         playerDefault: config.get("playerDefault") as PlayerDefault,
@@ -150,7 +150,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 break;
             }
 
-            case WebviewMessageType.Data: {
+            case WebviewMessageType.DATA: if (WebviewMessageType.isDATA(msg)) {
                 if (!vscode.workspace.isTrusted) {
                     throw new Error("Cannot play audio in untrusted workspaces");
                 }
@@ -166,7 +166,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 const samples = new Uint8Array(dd.slice(msg.data.start, msg.data.end)).buffer;
 
                 this.postMessage(webviewPanel.webview, {
-                    type: ExtMessageType.Data,
+                    type: ExtMessageType.DATA,
                     data: {
                         samples: samples, start: msg.data.start, end: msg.data.end, wholeLength: dd.length
                     }
@@ -175,7 +175,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                 break;
             }
 
-            case WebviewMessageType.Error: {
+            case WebviewMessageType.ERROR: if (WebviewMessageType.isERROR(msg)) {
                 vscode.window.showErrorMessage(msg.data.message);
             }
         }

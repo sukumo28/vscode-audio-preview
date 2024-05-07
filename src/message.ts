@@ -1,22 +1,33 @@
 import { Config } from "./config";
 
 // Type of messages from Extension to Webview
-export const ExtMessageType = {
-    Config: "config",
-    Data: "data",
-    Reload: "reload",
-} as const;
-export type ExtMessageType = typeof ExtMessageType[keyof typeof ExtMessageType];
+export class ExtMessageType {
+    public static readonly CONFIG = "CONFIG";
+    public static readonly DATA = "DATA";
+    public static readonly RELOAD = "RELOAD";
+
+    public static isCONFIG(msg: ExtMessage): msg is ExtConfigMessage {
+        return msg.type === ExtMessageType.CONFIG;
+    }
+
+    public static isDATA(msg: ExtMessage): msg is ExtDataMessage {
+        return msg.type === ExtMessageType.DATA;
+    }
+
+    public static isRELOAD(msg: ExtMessage): msg is ExtReloadMessage {
+        return msg.type === ExtMessageType.RELOAD;
+    }
+}
 
 export type ExtMessage = ExtConfigMessage | ExtDataMessage | ExtReloadMessage;
 
 export class ExtConfigMessage {
-    type = ExtMessageType.Config;
+    type = ExtMessageType.CONFIG;
     data: Config;
 }
 
 export class ExtDataMessage {
-    type = ExtMessageType.Data;
+    type = ExtMessageType.DATA;
     data: ExtDataMessageData;
 }
 
@@ -28,25 +39,36 @@ export interface ExtDataMessageData {
 }
 
 export class ExtReloadMessage {
-    type = ExtMessageType.Reload;
+    type = ExtMessageType.RELOAD;
 }
 
 // Type of messages from Webview to Extension
-export const WebviewMessageType = {
-    Config: "config",
-    Data: "data",
-    Error: "error",
-} as const;
-export type WebviewMessageType = typeof WebviewMessageType[keyof typeof WebviewMessageType];
+export class WebviewMessageType {
+    public static readonly CONFIG = "CONFIG";
+    public static readonly DATA = "DATA";
+    public static readonly ERROR = "RELOAD";
+
+    public static isCONFIG(msg: WebviewMessage): msg is WebviewConfigMessage {
+        return msg.type === WebviewMessageType.CONFIG;
+    }
+
+    public static isDATA(msg: WebviewMessage): msg is WebviewDataMessage {
+        return msg.type === WebviewMessageType.DATA;
+    }
+
+    public static isERROR(msg: WebviewMessage): msg is WebviewErrorMessage {
+        return msg.type === WebviewMessageType.ERROR;
+    }
+}
 
 export type WebviewMessage = WebviewConfigMessage | WebviewDataMessage | WebviewErrorMessage;
 
 export class WebviewConfigMessage {
-    type = WebviewMessageType.Config;
+    type = WebviewMessageType.CONFIG;
 }
 
 export class WebviewDataMessage {
-    type = WebviewMessageType.Data;
+    type = WebviewMessageType.DATA;
     data: WebviewDataMessageData;
 }
 
@@ -56,7 +78,7 @@ export interface WebviewDataMessageData {
 }
 
 export class WebviewErrorMessage {
-    type = WebviewMessageType.Error;
+    type = WebviewMessageType.ERROR;
     data: WebviewErrorMessageData;
 }
 

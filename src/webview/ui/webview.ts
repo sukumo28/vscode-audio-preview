@@ -35,7 +35,7 @@ export default class WebView {
     private initWebview() {
         this._fileData = undefined;
 
-        this._disposables.push(new Event(window, EventType.VSCodeMessage, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
+        this._disposables.push(new Event(window, EventType.VSCODE_MESSAGE, (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)));
         
         const root = document.getElementById("root");
         root.innerHTML = `
@@ -46,19 +46,19 @@ export default class WebView {
         <div id="analyzer"></div>
         `;
         
-        this._postMessage({ type: WebviewMessageType.Config });
+        this._postMessage({ type: WebviewMessageType.CONFIG });
     };
 
     private async onReceiveMessage(msg: ExtMessage) {
         switch (msg.type) {
-            case ExtMessageType.Config: {
+            case ExtMessageType.CONFIG: if (ExtMessageType.isCONFIG(msg)) {
                 this._config = msg.data;
                 console.log(msg.data);
-                this._postMessage({ type: WebviewMessageType.Data, data: { start: 0, end: 500000 } });
+                this._postMessage({ type: WebviewMessageType.DATA, data: { start: 0, end: 500000 } });
                 break;
             }
 
-            case ExtMessageType.Data: {      
+            case ExtMessageType.DATA: if (ExtMessageType.isDATA(msg)) {      
                 // init fileData after receiving first data
                 if (!this._fileData) {
                     console.log('start receiving data');
@@ -72,7 +72,7 @@ export default class WebView {
 
                 // request next data
                 if (msg.data.end < msg.data.wholeLength) {
-                    this._postMessage({ type: WebviewMessageType.Data, data: { start: msg.data.end, end: msg.data.end + 3000000 } });
+                    this._postMessage({ type: WebviewMessageType.DATA, data: { start: msg.data.end, end: msg.data.end + 3000000 } });
                     break;
                 }
 
@@ -80,13 +80,13 @@ export default class WebView {
                 try {
                     await this.activateUI();
                 } catch (err) {
-                    this._postMessage({ type: WebviewMessageType.Error, data: { message: err.message } });
+                    this._postMessage({ type: WebviewMessageType.ERROR, data: { message: err.message } });
                 }
                 
                 break;
             }
     
-            case ExtMessageType.Reload: {
+            case ExtMessageType.RELOAD: {
                 this.dispose();
                 this.initWebview();
                 break;

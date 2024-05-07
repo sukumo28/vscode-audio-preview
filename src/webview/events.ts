@@ -1,30 +1,30 @@
 import { Disposable } from "../dispose";
 
-export const EventType = {
+export class EventType {
     // vscode
-    VSCodeMessage: "message", 
+    public static readonly VSCODE_MESSAGE: "message";
     // player
-    UpdateSeekbar: "update-seekbar",
-    InputSeekbar: "input-seekbar",
-    UpdateIsPlaying: "update-is-playing",
+    public static readonly UPDATE_SEEKBAR = "update-seekbar";
+    public static readonly INPUT_SEEKBAR = "input-seekbar";
+    public static readonly UPDATE_IS_PLAYING = "update-is-playing";
     // analyzeSettings
-    AS_UpdateWaveformVisible: "as-update-waveform-visible",
-    AS_UpdateSpectrogramVisible: "as-update-spectrogram-visible",
-    AS_UpdateWindowSizeIndex: "as-update-window-size-index",
-    AS_UpdateFrequencyScale: "as-update-frequency-scale",
-    AS_UpdateMelFilterNum: "as-update-mel-filter-num",
-    AS_UpdateMinFrequency: "as-update-min-frequency",
-    AS_UpdateMaxFrequency: "as-update-max-frequency",
-    AS_UpdateMinTime: "as-update-min-time",
-    AS_UpdateMaxTime: "as-update-max-time",
-    AS_UpdateMinAmplitude: "as-update-min-amplitude",
-    AS_UpdateMaxAmplitude: "as-update-max-amplitude",
-    AS_UpdateSpectrogramAmplitudeRange: "as-update-spectrogram-amplitude-range",
+    public static readonly AS_UPDATE_WAVEFORM_VISIBLE = "as-update-waveform-visible";
+    public static readonly AS_UPDATE_SPECTROGRAM_VISIBLE = "as-update-spectrogram-visible";
+    public static readonly AS_UPDATE_WINDOW_SIZE_INDEX = "as-update-window-size-index";
+    public static readonly AS_UPDATE_FREQUENCY_SCALE = "as-update-frequency-scale";
+    public static readonly AS_UPDATE_MEL_FILTER_NUM = "as-update-mel-filter-num";
+    public static readonly AS_UPDATE_MIN_FREQUENCY = "as-update-min-frequency";
+    public static readonly AS_UPDATE_MAX_FREQUENCY = "as-update-max-frequency";
+    public static readonly AS_UPDATE_MIN_TIME = "as-update-min-time";
+    public static readonly AS_UPDATE_MAX_TIME = "as-update-max-time";
+    public static readonly AS_UPDATE_MIN_AMPLITUDE = "as-update-min-amplitude";
+    public static readonly AS_UPDATE_MAX_AMPLITUDE = "as-update-max-amplitude";
+    public static readonly AS_UPDATE_SPECTROGRAM_AMPLITUDE_RANGE = "as-update-spectrogram-amplitude-range";
     // other
-    Click: "click",
-    Change: "change",
-    Input: "input",
-    KeyDown: "keydown"
+    public static readonly CLICK = "click";
+    public static readonly CHANGE = "change";
+    public static readonly INPUT = "input";
+    public static readonly KEY_DOWN = "keydown";
 };
 
 export class Event extends Disposable {

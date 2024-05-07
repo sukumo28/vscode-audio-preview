@@ -37,12 +37,12 @@ describe('webview lifecycle', () => {
         const msg = await waitVSCodeMessageForAction(() => {
             webview = new Webview(postMessageFromWebview, createAudioContext, createDecoder);
         });
-        expect(msg.type).toBe(WebviewMessageType.Config);
+        expect(msg.type).toBe(WebviewMessageType.CONFIG);
     });
 
     test('request data after getting config', async () => {
         const msg = await waitVSCodeMessageForAction(() => {
-            postMessageFromExt({ type: ExtMessageType.Config, data: { 
+            postMessageFromExt({ type: ExtMessageType.CONFIG, data: { 
                 autoAnalyze: false,
                 playerDefault: {
                     volumeUnitDb: undefined,
@@ -65,20 +65,20 @@ describe('webview lifecycle', () => {
                 },
             }});
         });
-        expect(msg).toEqual({ type: WebviewMessageType.Data, data: { start: 0, end: 500000 }});
+        expect(msg).toEqual({ type: WebviewMessageType.DATA, data: { start: 0, end: 500000 }});
     });
 
     test('request next data after getting data', async () => {
         const msg = await waitVSCodeMessageForAction(() => {
-            postMessageFromExt({ type: ExtMessageType.Data, data: {
+            postMessageFromExt({ type: ExtMessageType.DATA, data: {
                 start: 0, end: 500000, wholeLength: 500001, samples: new Uint8Array(500000)
             }});
         });
-        expect(msg).toEqual({ type: WebviewMessageType.Data, data: { start: 500000, end: 3500000 }});
+        expect(msg).toEqual({ type: WebviewMessageType.DATA, data: { start: 500000, end: 3500000 }});
     });
 
     test('init infoTable after finish receiving data', async () => {
-        postMessageFromExt({ type: ExtMessageType.Data, data: {
+        postMessageFromExt({ type: ExtMessageType.DATA, data: {
             start: 500000, end: 3500000, wholeLength: 500001, samples: new Uint8Array(1)
         }});
         await wait(100);
@@ -95,9 +95,9 @@ describe('webview lifecycle', () => {
 
     test('reload webview', async () => {
         const msg = await waitVSCodeMessageForAction(() => {
-            postMessageFromExt({ type: ExtMessageType.Reload });
+            postMessageFromExt({ type: ExtMessageType.RELOAD });
         });
-        expect(msg).toEqual({ type: WebviewMessageType.Config });
+        expect(msg).toEqual({ type: WebviewMessageType.CONFIG });
     });
 
     test('infoTable is empty after reload', async () => {
@@ -150,7 +150,7 @@ describe('webview error handling', () => {
         });
         // get config
         await waitVSCodeMessageForAction(() => {
-            postMessageFromExt({ type: ExtMessageType.Config, data: { 
+            postMessageFromExt({ type: ExtMessageType.CONFIG, data: { 
                 autoAnalyze: false,
                 playerDefault: {
                     volumeUnitDb: undefined,
@@ -175,17 +175,17 @@ describe('webview error handling', () => {
         });
         // get data
         await waitVSCodeMessageForAction(() => {
-            postMessageFromExt({ type: ExtMessageType.Data, data: {
+            postMessageFromExt({ type: ExtMessageType.DATA, data: {
                 start: 0, end: 500000, wholeLength: 500001, samples: new Uint8Array(500000)
             }});
         });
         // decode after receiving data
         const msg = await waitVSCodeMessageForAction(() => {
-            postMessageFromExt({ type: ExtMessageType.Data, data: {
+            postMessageFromExt({ type: ExtMessageType.DATA, data: {
                 start: 500000, end: 3500000, wholeLength: 500001, samples: new Uint8Array(1)
             }});
         });
 
-        expect(msg).toEqual({ type: WebviewMessageType.Error, data: { message: 'error in webview' }});
+        expect(msg).toEqual({ type: WebviewMessageType.ERROR, data: { message: 'error in webview' }});
     });
 });
