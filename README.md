@@ -172,6 +172,10 @@ This command compiles the code, outputs it to the `./out` directory, and runs th
 This command does not compile, but runs the tests located in `./out`.  
 Use this when you want to rerun a test that you have already compiled.  
 However, please note that compilation is required both when changing the test code and when changing the test target.  
+
+### Lint  
+
+`npx eslint "src/**/*.{js,ts}"`
   
 ### References  
 
