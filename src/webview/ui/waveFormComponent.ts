@@ -23,6 +23,7 @@ export default class WaveFormComponent {
         const axisContext = axisCanvas.getContext("2d");
         axisContext.font = `12px Arial`;
 
+        // draw horizontal axis
         const [niceT, digitT] = AnalyzeService.roundToNearestNiceNumber((settings.maxTime - settings.minTime) / 10);
         const dx = width / (settings.maxTime - settings.minTime);
         const t0 = Math.ceil(settings.minTime / niceT) * niceT;
