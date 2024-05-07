@@ -60,7 +60,7 @@ You can configure default value of player settings like example below.
         This setting is valid when volumeUnitDb is false.
         default: 100
     */
-    "initVolumeDb": 100
+    "initVolume": 100
 }
 ```
 
