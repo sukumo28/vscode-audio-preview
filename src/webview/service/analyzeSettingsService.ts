@@ -36,14 +36,14 @@ export interface AnalyzeSettingsProps {
 }
 
 export default class AnalyzeSettingsService {
-    public readonly WAVEFORM_CANVAS_WIDTH = 1000;
-    public readonly WAVEFORM_CANVAS_HEIGHT = 200;
-    public static WAVEFORM_CANVAS_VERTICAL_SCALE_MAX = 2.0;
-    public static WAVEFORM_CANVAS_VERTICAL_SCALE_MIN = 0.2;
-    public readonly SPECTROGRAM_CANVAS_WIDTH = 1800;
-    public readonly SPECTROGRAM_CANVAS_HEIGHT = 600;
-    public static SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX = 2.0;
-    public static SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN = 0.2;
+    public static readonly WAVEFORM_CANVAS_WIDTH = 1000;
+    public static readonly WAVEFORM_CANVAS_HEIGHT = 200;
+    public static readonly WAVEFORM_CANVAS_VERTICAL_SCALE_MAX = 2.0;
+    public static readonly WAVEFORM_CANVAS_VERTICAL_SCALE_MIN = 0.2;
+    public static readonly SPECTROGRAM_CANVAS_WIDTH = 1800;
+    public static readonly SPECTROGRAM_CANVAS_HEIGHT = 600;
+    public static readonly SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX = 2.0;
+    public static readonly SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN = 0.2;
 
     private _sampleRate: number;
     private _duration: number;
@@ -304,7 +304,7 @@ export default class AnalyzeSettingsService {
     private calcHopSize() {
         const minRectWidth = 2 * this.windowSize / 1024;
         const fullSampleNum = (this.maxTime - this.minTime) * this._sampleRate;
-        const enoughHopSize = Math.trunc(minRectWidth * fullSampleNum / this.SPECTROGRAM_CANVAS_WIDTH);
+        const enoughHopSize = Math.trunc(minRectWidth * fullSampleNum / AnalyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH);
         const minHopSize = this.windowSize / 32;
         const hopSize = Math.max(enoughHopSize, minHopSize);
         return hopSize;

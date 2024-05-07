@@ -2,10 +2,10 @@ import { PlayerDefault } from "../../config";
 import { getValueInRange } from "../../util";
 
 export default class PlayerSettingsService {
-    public static VOLUME_DB_MAX = 0.0;
-    public static VOLUME_DB_MIN = -80.0;
-    public static VOLUME_MAX = 100;
-    public static VOLUME_MIN = 0;
+    public static readonly VOLUME_DB_MAX = 0.0;
+    public static readonly VOLUME_DB_MIN = -80.0;
+    public static readonly VOLUME_MAX = 100;
+    public static readonly VOLUME_MIN = 0;
 
     private _volumeUnitDb: boolean;
     public get volumeUnitDb() { return this._volumeUnitDb; }

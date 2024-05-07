@@ -9,7 +9,27 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "@typescript-eslint/naming-convention": "warn",
+        "@typescript-eslint/naming-convention": [
+            "error",
+            {
+                "selector": "classProperty",
+                "modifiers": ["public", "static", "readonly"],
+                "format": ["UPPER_CASE"]
+            },
+            {
+                "selector": "typeAlias",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": ["variable", "function", "parameter", "method", "property"],
+                "format": ["camelCase"],
+                "leadingUnderscore": "allow"
+            },
+            {
+                "selector": ["class"],
+                "format": ["PascalCase"]
+            }
+        ],
         "@typescript-eslint/semi": "warn",
         "curly": "warn",
         "eqeqeq": "warn",
