@@ -16,11 +16,11 @@ export default class PlayerService extends Disposable {
     private _gainNode: GainNode;
     // volume is 0~1
     public get volume() { 
-        if (!this._gainNode) return 1;
+        if (!this._gainNode) {return 1;}
         return this._gainNode.gain.value;
     }
     public set volume(value: number) {
-        if (!this._gainNode) return;
+        if (!this._gainNode) {return;}
         this._gainNode.gain.value = value;
     }
 

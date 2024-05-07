@@ -17,7 +17,7 @@ describe('player', () => {
                 volumeUnitDb: undefined,
                 initialVolumeDb: 0.0,
                 initialVolume: 1.0,
-            }
+            };
             playerService = new PlayerService(audioContext, audioBuffer);
             playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
             playerComponent = new PlayerComponent("player", playerService, playerSettingService);
@@ -76,7 +76,7 @@ describe('player', () => {
         });
 
         test('play when play button is clicked while not playing', () => {
-            if(playerService.isPlaying) playerService.pause();
+            if(playerService.isPlaying) {playerService.pause();}
             const playButton = <HTMLButtonElement>document.getElementById("play-button");
             playButton.dispatchEvent(new Event('click'));
             expect(playerService.isPlaying).toBe(true);
@@ -90,7 +90,7 @@ describe('player', () => {
         });
 
         test('change text of play button when playing status is updated', () => {
-            if(playerService.isPlaying) playerService.pause();
+            if(playerService.isPlaying) {playerService.pause();}
             const playButton = <HTMLButtonElement>document.getElementById("play-button");
             expect(playButton.textContent).toBe('play');
             playerService.play();
@@ -98,7 +98,7 @@ describe('player', () => {
         });
 
         test('play when space key is pressed while not playing', () => {
-            if(playerService.isPlaying) playerService.pause();
+            if(playerService.isPlaying) {playerService.pause();}
             window.dispatchEvent(new KeyboardEvent('keydown', { isComposing: false, code: 'Space' }));
             expect(playerService.isPlaying).toBe(true);
         });
@@ -116,7 +116,7 @@ describe('player', () => {
                 volumeUnitDb: true,     // test true case
                 initialVolumeDb: 0.0,
                 initialVolume: 1.0,
-            }
+            };
             playerService = new PlayerService(audioContext, audioBuffer);
             playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
             playerComponent = new PlayerComponent("player", playerService, playerSettingService);

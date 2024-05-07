@@ -22,7 +22,7 @@ export default class PlayerComponent extends Disposable {
             `<div id="volume-text">volume 0.0 dB</div>
              <input type="range" id="volume-bar" value="0" min="-80" max="0" step="0.5">` :
             `<div id="volume-text">volume 100</div>
-             <input type="range" id="volume-bar" value="100">`
+             <input type="range" id="volume-bar" value="100">`;
 
         parent.innerHTML = `
             <button id="play-button">play</button>
@@ -61,8 +61,8 @@ export default class PlayerComponent extends Disposable {
             if (this._playerSettingService.volumeUnitDb) {
                 // convert dB setting to linear gain
                 // -80 dB is treated as mute
-                const voldb = Number(this._volumeBar.value)
-                const vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20)
+                const voldb = Number(this._volumeBar.value);
+                const vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20);
                 this._playerService.volume = vollin;
                 volumeText.textContent = "volume " + (vollin == 0 ? "muted" : voldb.toFixed(1) + " dB");
             } else {
@@ -70,7 +70,7 @@ export default class PlayerComponent extends Disposable {
                 this._playerService.volume = Number(this._volumeBar.value) / 100;
                 volumeText.textContent = "volume " + this._volumeBar.value;
             }
-        }
+        };
         this._register(new Event(this._volumeBar, EventType.Input, updateVolume));
         this._volumeBar.value = String(this._playerSettingService.volumeUnitDb ? this._playerSettingService.initialVolumeDb : this._playerSettingService.initialVolume);
         updateVolume();
@@ -106,7 +106,7 @@ export default class PlayerComponent extends Disposable {
     }
 
     public dispose() {
-        if (this._playerService.isPlaying) this._playerService.pause();
+        if (this._playerService.isPlaying) {this._playerService.pause();}
         super.dispose();
     }
 

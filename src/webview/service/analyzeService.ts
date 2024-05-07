@@ -9,7 +9,7 @@ export default class AnalyzeService {
     }
 
     public getSpectrogramColor(amp: number, range: number): string {
-        if (amp == null) return "rgb(0,0,0)";
+        if (amp == null) {return "rgb(0,0,0)";}
         const classNum = 6;
         const classWidth = range / classNum;
         const ampClass = Math.floor(amp / classWidth);
@@ -61,8 +61,8 @@ export default class AnalyzeService {
             const ss = s > 0 ? s : 0, tt = t < data.length ? t : data.length;
             const d = ooura.scalarArrayFactory();
             for (let j = 0; j < d.length; j++) {
-                if (s + j < ss) continue;
-                if (tt < s + j) continue;
+                if (s + j < ss) {continue;}
+                if (tt < s + j) {continue;}
                 d[j] = data[s + j] * window[j];
             }
 
@@ -74,7 +74,7 @@ export default class AnalyzeService {
             for (let j = minFreqIndex; j < maxFreqIndex; j++) {
                 const v = re[j] * re[j] + im[j] * im[j];
                 ps.push(v);
-                if (maxValue < v) maxValue = v;
+                if (maxValue < v) {maxValue = v;}
             }
 
             spectrogram.push(ps);
@@ -116,14 +116,14 @@ export default class AnalyzeService {
 
             const d = ooura.scalarArrayFactory();
             for (let j = 0; j < d.length; j++) {
-                if (s + j < ss) continue;
-                if (tt < s + j) continue;
+                if (s + j < ss) {continue;}
+                if (tt < s + j) {continue;}
                 d[j] = data[s + j] * window[j];
             }
 
             const re = ooura.vectorArrayFactory();
             const im = ooura.vectorArrayFactory();
-            ooura.fft(d.buffer, re.buffer, im.buffer)
+            ooura.fft(d.buffer, re.buffer, im.buffer);
             
             const spectrum: number[] = [];
             for (let j = 0; j < re.length; j++) {
@@ -139,7 +139,7 @@ export default class AnalyzeService {
         let maxValue = Number.EPSILON;
         for (let i = 0; i < spectrogram.length; i++) {
             for (let j = 0; j < spectrogram[i].length; j++) {
-                if (maxValue < spectrogram[i][j]) maxValue = spectrogram[i][j];
+                if (maxValue < spectrogram[i][j]) {maxValue = spectrogram[i][j];}
             }
         }
     
@@ -203,7 +203,7 @@ export default class AnalyzeService {
     public static roundToNearestNiceNumber(input: number): [number, number] {
         const niceNumbers = [1.0, 2.0, 5.0, 10.0];
 
-        if (input <= 0) return [0, 0];  // this function only works for positive number
+        if (input <= 0) {return [0, 0];}  // this function only works for positive number
 
         // input = mantissa * 10^exponent
         const exponent = Math.floor(Math.log10(input));

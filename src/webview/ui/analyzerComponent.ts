@@ -123,7 +123,7 @@ export default class AnalyzerComponent extends Disposable {
         this._analyzeResultBox = document.getElementById("analyze-result-box");
 
         // analyze if user set autoAnalyze true
-        if (autoAnalyze) this.analyze();
+        if (autoAnalyze) {this.analyze();}
     }
 
     private initAnalyzerSetting() {
@@ -279,7 +279,7 @@ export default class AnalyzerComponent extends Disposable {
         const inputSeekbar = document.createElement("input");
         inputSeekbar.type = "range";
         inputSeekbar.className = "input-seek-bar";
-        inputSeekbar.step = "0.00001"
+        inputSeekbar.step = "0.00001";
         this._analyzeResultBox.appendChild(inputSeekbar);
 
         this._register(new Event(window, EventType.UpdateSeekbar, (e: CustomEventInit) => {

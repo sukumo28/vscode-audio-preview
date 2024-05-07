@@ -1,4 +1,4 @@
-import InfoTableComponent from "./infoTableComponent"
+import InfoTableComponent from "./infoTableComponent";
 import PlayerComponent  from "./playerComponent";
 import PlayerService from "../service/playerService";
 import AnalyzerComponent from "./analyzerComponent";
@@ -125,7 +125,7 @@ export default class WebView {
         }
         // init player
         const playerService = new PlayerService(audioContext, audioBuffer);
-        const playerSettingsService = PlayerSettingsService.fromDefaultSetting(this._config.playerDefault)
+        const playerSettingsService = PlayerSettingsService.fromDefaultSetting(this._config.playerDefault);
         const playerComponent = new PlayerComponent("player", playerService, playerSettingsService);
         this._disposables.push(playerService, playerComponent);
         // init analyzer

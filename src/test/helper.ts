@@ -74,9 +74,9 @@ export class MockAudioBuffer {
     }
 
     copyToChannel(source: Float32Array, ch: number, bo?: number) {
-        if (!bo || bo < 0) bo = 0;
+        if (!bo || bo < 0) {bo = 0;}
         for (let i = 0; i < source.length; i++) {
-            if (this.data[ch].length <= bo + i) break;
+            if (this.data[ch].length <= bo + i) {break;}
             this.data[ch][bo + i] = source[i];
         }
     }
@@ -129,7 +129,7 @@ class MockAudioContext extends MockAudioNode {
     }
 
     createBufferSource() {
-        return new MockAudioBufferSourceNode()
+        return new MockAudioBufferSourceNode();
     }
 
     createGain() {

@@ -24,7 +24,7 @@ export default class InfoTableComponent {
         const trList = this._infoTable.querySelectorAll("tr");
         trList.forEach(tr => {
             this._infoTable.removeChild(tr);
-        })
+        });
         // insert datas to info table
         for (const i of info) {
             this.insertTableData(i.name, i.value);

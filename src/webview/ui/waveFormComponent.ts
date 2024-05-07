@@ -33,10 +33,10 @@ export default class WaveFormComponent {
             const x = (t - settings.minTime) * dx;
 
             axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digitT)}`, x, 10);     // don't draw near the edge
+            if (width * (5 / 100) < x  && x < width * (95 / 100)) {axisContext.fillText(`${(t).toFixed(digitT)}`, x, 10);}     // don't draw near the edge
 
             axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            for (let j = 0; j < height; j++) {axisContext.fillRect(x, j, 1, 1);}
         }
 
         // draw vertical axis
@@ -49,11 +49,11 @@ export default class WaveFormComponent {
             const y = height - ((a - settings.minAmplitude) * dy);
 
             axisContext.fillStyle = "rgb(245,130,32)";
-            if (12 < y && y < height) axisContext.fillText(`${(a).toFixed(digitA)}`, 4, y - 2);    // don't draw near the edge
+            if (12 < y && y < height) {axisContext.fillText(`${(a).toFixed(digitA)}`, 4, y - 2);}    // don't draw near the edge
 
             axisContext.fillStyle = "rgb(180,120,20)";
             if (12 < y && y < height) {   // don't draw on the horizontal axis
-                for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 1, 1);
+                for (let j = 0; j < width; j++) {axisContext.fillRect(j, y, 1, 1);}
             }
         }
 
@@ -85,7 +85,7 @@ export default class WaveFormComponent {
             if (numOfCh == 2) {
                 channelText = ch == 0 ? "Lch" : "Rch";
             } else {
-                channelText = "ch" + String(ch + 1)
+                channelText = "ch" + String(ch + 1);
             }
 
             axisContext.font = `12px Arial`;

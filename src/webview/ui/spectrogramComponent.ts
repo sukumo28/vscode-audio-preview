@@ -36,7 +36,7 @@ export default class WaveFormComponent {
                  however, in this case the values are too small, making the graph less readable 
                  so set minFrequency = 1
                 */
-                if (settings.minFrequency < 1) settings.minFrequency = 1;
+                if (settings.minFrequency < 1) {settings.minFrequency = 1;}
                 this.drawLogAxis(axisCanvas, settings, ch, numOfCh);
                 this.drawLogSpectrogram(canvas, sampleRate, settings, ch);
                 break;
@@ -68,7 +68,7 @@ export default class WaveFormComponent {
             axisContext.fillText(`${Math.trunc(freq)}`, 4, y - 4);
 
             axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
+            for (let j = 0; j < width; j++) {axisContext.fillRect(j, y, 2, 2);}
         }
 
         // draw channel label
@@ -120,7 +120,7 @@ export default class WaveFormComponent {
             axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
     
             axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
+            for (let j = 0; j < width; j++) {axisContext.fillRect(j, y, 2, 2);}
         }
 
         // draw channel label
@@ -180,7 +180,7 @@ export default class WaveFormComponent {
             axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
     
             axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < width; j++) axisContext.fillRect(j, y, 2, 2);
+            for (let j = 0; j < width; j++) {axisContext.fillRect(j, y, 2, 2);}
         }
 
         // draw channel label
@@ -223,10 +223,10 @@ export default class WaveFormComponent {
             const x = (t - settings.minTime) * dx;
 
             axisContext.fillStyle = "rgb(245,130,32)";
-            if (width * (5 / 100) < x  && x < width * (95 / 100)) axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);     // don't draw near the edge
+            if (width * (5 / 100) < x  && x < width * (95 / 100)) {axisContext.fillText(`${(t).toFixed(digit)}`, x, 18);}     // don't draw near the edge
 
             axisContext.fillStyle = "rgb(180,120,20)";
-            for (let j = 0; j < height; j++) axisContext.fillRect(x, j, 1, 1);
+            for (let j = 0; j < height; j++) {axisContext.fillRect(x, j, 1, 1);}
         }
     }
 
@@ -239,7 +239,7 @@ export default class WaveFormComponent {
             if (numOfCh == 2) {
                 channelText = ch == 0 ? "Lch" : "Rch";
             } else {
-                channelText = "ch" + String(ch + 1)
+                channelText = "ch" + String(ch + 1);
             }
 
             axisContext.fillStyle = "rgb(220, 220, 220)";
