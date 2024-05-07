@@ -54,12 +54,12 @@ describe("fromDefaultSettings", () => {
     test("waveformVerticalScale should be in range (check lower limit)", () => {
         defaultSettings.waveformVerticalScale = 0.0;
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
-        expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN);
+        expect(as.waveformVerticalScale).toBe(1.0);
     });
     test("waveformVerticalScale should be in range (check upper limit)", () => {
         defaultSettings.waveformVerticalScale = 10.0;
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
-        expect(as.waveformVerticalScale).toBe(AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX);
+        expect(as.waveformVerticalScale).toBe(1.0);
     });
 
     // spectrogramVisible
@@ -92,12 +92,12 @@ describe("fromDefaultSettings", () => {
     test("spectrogramVerticalScale should be in range (check lower limit)", () => {
         defaultSettings.spectrogramVerticalScale = 0.0;
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
-        expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN);
+        expect(as.spectrogramVerticalScale).toBe(1.0);
     });
     test("spectrogramVerticalScale should be in range (check upper limit)", () => {
         defaultSettings.spectrogramVerticalScale = 10.0;
         const as = AnalyzeSettingsService.fromDefaultSetting(defaultSettings, audioBuffer);
-        expect(as.spectrogramVerticalScale).toBe(AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX);
+        expect(as.spectrogramVerticalScale).toBe(1.0);
     });
 
     // windowSizeIndex

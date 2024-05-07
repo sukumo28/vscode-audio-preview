@@ -1,5 +1,6 @@
 import { EventType } from "../events";
 import { AnalyzeDefault } from "../../config";
+import { getRangeValues, getValueInEnum, getValueInRange } from "../../util";
 
 export enum WindowSizeIndex {
     W256 = 0,
@@ -66,11 +67,12 @@ export default class AnalyzeSettingsService {
     private _waveformVerticalScale: number;
     public get waveformVerticalScale() { return this._waveformVerticalScale; }
     public set waveformVerticalScale(value: number) {
-        let val = value == undefined ? 1.0 : value;      // 1.0 by default
-
-        if (val < AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN) val = AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN;
-        if (AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX < val) val = AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX; 
-        this._waveformVerticalScale = val;
+        this._waveformVerticalScale = getValueInRange(
+            value,
+            AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN,
+            AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX,
+            1.0
+        );
     }
 
     private _spectrogramVisible: boolean;
@@ -83,17 +85,18 @@ export default class AnalyzeSettingsService {
     private _spectrogramVerticalScale: number;
     public get spectrogramVerticalScale() { return this._spectrogramVerticalScale; }
     public set spectrogramVerticalScale(value: number) {
-        let val = value == undefined ? 1.0 : value;      // 1.0 by default
-
-        if (val < AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN) val = AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN;
-        if (AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX < val) val = AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX; 
-        this._spectrogramVerticalScale = val;
+        this._spectrogramVerticalScale = getValueInRange(
+            value,
+            AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN,
+            AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX,
+            1.0
+        );
     }
 
     private _windowSizeIndex: number;
     public get windowSizeIndex() { return this._windowSizeIndex; }
     public set windowSizeIndex(value: number) {
-        const windowSizeIndex = this.getValueInEnum(value, WindowSizeIndex, WindowSizeIndex.W1024);
+        const windowSizeIndex = getValueInEnum(value, WindowSizeIndex, WindowSizeIndex.W1024);
         this._windowSizeIndex = windowSizeIndex;
         this.windowSize = 2 ** (windowSizeIndex + 8);
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateWindowSizeIndex, { detail: { value: this._windowSizeIndex }}))
@@ -115,7 +118,7 @@ export default class AnalyzeSettingsService {
     private _minFrequency: number;
     public get minFrequency() { return this._minFrequency; }
     public set minFrequency(value: number) { 
-        const [minFrequency, _] = this.getRangeValues(
+        const [minFrequency, _] = getRangeValues(
             value, this.maxFrequency,
             0, this._sampleRate / 2,
             0, this._sampleRate / 2
@@ -127,7 +130,7 @@ export default class AnalyzeSettingsService {
     private _maxFrequency: number;
     public get maxFrequency() { return this._maxFrequency; }
     public set maxFrequency(value: number) {
-        const [_, maxFrequency] = this.getRangeValues(
+        const [_, maxFrequency] = getRangeValues(
             this.minFrequency, value,
             0, this._sampleRate / 2,
             0, this._sampleRate / 2
@@ -139,7 +142,7 @@ export default class AnalyzeSettingsService {
     private _minTime: number;
     public get minTime() { return this._minTime; }
     public set minTime(value: number) {
-        const [minTime, _] = this.getRangeValues(
+        const [minTime, _] = getRangeValues(
             value, this.maxTime,
             0, this._duration,
             0, this._duration
@@ -151,7 +154,7 @@ export default class AnalyzeSettingsService {
     private _maxTime: number;
     public get maxTime() { return this._maxTime; }
     public set maxTime(value: number) {
-        const [_, maxTime] = this.getRangeValues(
+        const [_, maxTime] = getRangeValues(
             this.minTime, value,
             0, this._duration,
             0, this._duration
@@ -163,7 +166,7 @@ export default class AnalyzeSettingsService {
     private _minAmplitude: number;
     public get minAmplitude() { return this._minAmplitude; }
     public set minAmplitude(value: number) {
-        const [minAmplitude, _] = this.getRangeValues(
+        const [minAmplitude, _] = getRangeValues(
             value, this.maxAmplitude,
             -100, 100,
             this._minAmplitudeOfAudioBuffer, this._maxAmplitudeOfAudioBuffer
@@ -175,7 +178,7 @@ export default class AnalyzeSettingsService {
     private _maxAmplitude: number;
     public get maxAmplitude() { return this._maxAmplitude; }
     public set maxAmplitude(value: number) {
-        const [_, maxAmplitude] = this.getRangeValues(
+        const [_, maxAmplitude] = getRangeValues(
             this.minAmplitude, value,
             -100, 100,
             this._minAmplitudeOfAudioBuffer, this._maxAmplitudeOfAudioBuffer
@@ -187,7 +190,7 @@ export default class AnalyzeSettingsService {
     private _spectrogramAmplitudeRange: number;
     public get spectrogramAmplitudeRange() { return this._spectrogramAmplitudeRange; }
     public set spectrogramAmplitudeRange(value: number) {
-        const [spectrogramAmplitudeRange, _] = this.getRangeValues(
+        const [spectrogramAmplitudeRange, _] = getRangeValues(
             value, 0,
             -1000, 0,
             -90, 0
@@ -199,7 +202,7 @@ export default class AnalyzeSettingsService {
     private _frequencyScale: FrequencyScale;
     public get frequencyScale() { return this._frequencyScale; }
     public set frequencyScale(value: FrequencyScale) {
-        const frequencyScale = this.getValueInEnum(value, FrequencyScale, FrequencyScale.Linear);
+        const frequencyScale = getValueInEnum(value, FrequencyScale, FrequencyScale.Linear);
         this._frequencyScale = frequencyScale;
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateFrequencyScale, { detail: { value: this._frequencyScale }}))
     }
@@ -207,7 +210,7 @@ export default class AnalyzeSettingsService {
     private _melFilterNum: number;
     public get melFilterNum() { return this._melFilterNum; }
     public set melFilterNum(value: number) {
-        this._melFilterNum = this.getValueInRange(Math.trunc(value), 20, 200, 40);
+        this._melFilterNum = getValueInRange(Math.trunc(value), 20, 200, 40);
         window.dispatchEvent(new CustomEvent(EventType.AS_UpdateMelFilterNum, { detail: { value: this._melFilterNum }}))
     }
 
@@ -289,44 +292,6 @@ export default class AnalyzeSettingsService {
         setting.spectrogramAmplitudeRange = defaultSetting.spectrogramAmplitudeRange;
 
         return setting;
-    }
-
-    private getRangeValues(
-        targetMin: number, targetMax: number,
-        validMin: number, validMax: number,
-        defaultMin: number, defaultMax: number
-    ): number[] {
-        let minValue = targetMin, maxValue = targetMax;
-        if (!Number.isFinite(minValue) || minValue < validMin) {
-            minValue = defaultMin;
-        }
-
-        if (!Number.isFinite(maxValue) || validMax < maxValue) {
-            maxValue = defaultMax;
-        }
-
-        if (maxValue <= minValue) {
-            minValue = defaultMin;
-            maxValue = defaultMax;
-        }
-
-        return [minValue, maxValue];
-    }
-
-    private getValueInRange(targetValue: number, validMin: number, validMax: number, defaultValue: number): number {
-        if (!Number.isFinite(targetValue) || targetValue < validMin || validMax < targetValue) {
-            return defaultValue;
-        }
-
-        return targetValue;
-    }
-
-    private getValueInEnum(targetValue: number, enumType: any, defaultValue: number): number {
-        if (Object.values(enumType).includes(targetValue)) {
-            return targetValue;
-        }
-
-        return defaultValue;
     }
 
     /*

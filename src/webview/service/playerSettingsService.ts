@@ -1,4 +1,5 @@
 import { PlayerDefault } from "../../config";
+import { getValueInRange } from "../../util";
 
 export default class PlayerSettingsService {
     public static VOLUME_DB_MAX = 0.0;
@@ -15,21 +16,23 @@ export default class PlayerSettingsService {
     private _initVolumeDb: number;
     public get initVolumeDb() { return this._initVolumeDb; }
     public set initVolumeDb(value: number) { 
-        let val = value == undefined ? PlayerSettingsService.VOLUME_DB_MAX : value;      // max by default
-
-        if (val < PlayerSettingsService.VOLUME_DB_MIN) val = PlayerSettingsService.VOLUME_DB_MIN;
-        if (PlayerSettingsService.VOLUME_DB_MAX < val) val = PlayerSettingsService.VOLUME_DB_MAX; 
-        this._initVolumeDb = val;
+        this._initVolumeDb = getValueInRange(
+            value,
+            PlayerSettingsService.VOLUME_DB_MIN,
+            PlayerSettingsService.VOLUME_DB_MAX,
+            PlayerSettingsService.VOLUME_DB_MAX
+        );
     }
 
     private _initVolume: number;
     public get initVolume() { return this._initVolume; }
     public set initVolume(value: number) { 
-        let val = value == undefined ? PlayerSettingsService.VOLUME_MAX : value;      // max by default
-
-        if (val < PlayerSettingsService.VOLUME_MIN) val = PlayerSettingsService.VOLUME_MIN;
-        if (PlayerSettingsService.VOLUME_MAX < val) val = PlayerSettingsService.VOLUME_MAX; 
-        this._initVolume = val;
+        this._initVolume = getValueInRange(
+            value,
+            PlayerSettingsService.VOLUME_MIN,
+            PlayerSettingsService.VOLUME_MAX,
+            PlayerSettingsService.VOLUME_MAX
+        );
     }
 
     private constructor(volumeUnitDb: boolean, initVolumeDb: number, initVolume: number) {

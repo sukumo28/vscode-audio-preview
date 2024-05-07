@@ -40,7 +40,7 @@ describe("fromDefaultSettings", () => {
     test("initVolumeDb should be in valid range (check lower limit)", () => {
         defaultSettings.initVolumeDb = -100.0;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolumeDb).toBe(PlayerSettingService.VOLUME_DB_MIN);
+        expect(ps.initVolumeDb).toBe(PlayerSettingService.VOLUME_DB_MAX);
     });
     test("initVolumeDb should be in valid range (check upper limit)", () => {
         defaultSettings.initVolumeDb = 10.0;
@@ -61,7 +61,7 @@ describe("fromDefaultSettings", () => {
     test("initVolume should be in valid range (check lower limit)", () => {
         defaultSettings.initVolume = -10;
         const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
-        expect(ps.initVolume).toBe(PlayerSettingService.VOLUME_MIN);
+        expect(ps.initVolume).toBe(PlayerSettingService.VOLUME_MAX);
     });
     test("initVolume should be in valid range (check upper limit)", () => {
         defaultSettings.initVolume = 200;

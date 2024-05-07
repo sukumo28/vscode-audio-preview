@@ -6,3 +6,41 @@ export function getNonce() {
 	}
 	return text;
 }
+
+export function getRangeValues(
+	targetMin: number, targetMax: number,
+	validMin: number, validMax: number,
+	defaultMin: number, defaultMax: number
+): number[] {
+	let minValue = targetMin, maxValue = targetMax;
+	if (!Number.isFinite(minValue) || minValue < validMin) {
+		minValue = defaultMin;
+	}
+
+	if (!Number.isFinite(maxValue) || validMax < maxValue) {
+		maxValue = defaultMax;
+	}
+
+	if (maxValue <= minValue) {
+		minValue = defaultMin;
+		maxValue = defaultMax;
+	}
+
+	return [minValue, maxValue];
+}
+
+export function getValueInRange(targetValue: number, validMin: number, validMax: number, defaultValue: number): number {
+	if (!Number.isFinite(targetValue) || targetValue < validMin || validMax < targetValue) {
+		return defaultValue;
+	}
+
+	return targetValue;
+}
+
+export function getValueInEnum(targetValue: number, enumType: any, defaultValue: number): number {
+	if (Object.values(enumType).includes(targetValue)) {
+		return targetValue;
+	}
+
+	return defaultValue;
+}
