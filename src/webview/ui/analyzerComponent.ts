@@ -88,7 +88,7 @@ export default class AnalyzerComponent extends Disposable {
                 <div>
                     <div>
                         spectrogram amplitude range:
-                        <input id="analyze-spectrogram-amplitude-range" type="number" step="10">dB ~ 0dB
+                        <input id="analyze-spectrogram-amplitude-range" type="number" step="10">dB ~ 0 dB
                     </div>
                     <div>
                         color:
@@ -217,7 +217,7 @@ export default class AnalyzerComponent extends Disposable {
         for (let i = 0; i < 10; i++) {
             const amp = i * settings.spectrogramAmplitudeRange / 10;
             const x = i * colorAxisCanvas.width / 10;
-            colorAxisContext.fillText(`${amp}dB`, x, colorAxisCanvas.height);
+            colorAxisContext.fillText(`${amp} dB`, x, colorAxisCanvas.height);
         }
         // draw color
         for (let i = 0; i < 100; i++) {

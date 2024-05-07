@@ -19,7 +19,7 @@ export default class PlayerComponent extends Disposable {
         const parent = document.getElementById(parentID);
 
         let volume_ui = this._playerSettingService.volumeUnitDb ?
-            `<div id="volume-text">volume 0.0dB</div>
+            `<div id="volume-text">volume 0.0 dB</div>
              <input type="range" id="volume-bar" value="0" min="-80" max="0" step="0.5">` :
             `<div id="volume-text">volume 100</div>
              <input type="range" id="volume-bar" value="100">`
@@ -60,7 +60,7 @@ export default class PlayerComponent extends Disposable {
         const updateVolume = () => {
             if (this._playerSettingService.volumeUnitDb) {
                 // convert dB setting to linear gain
-                // -80dB is treated as mute
+                // -80 dB is treated as mute
                 let voldb = Number(this._volumeBar.value)
                 let vollin = voldb == -80 ? 0 : Math.pow(10, voldb / 20)
                 this._playerService.volume = vollin;

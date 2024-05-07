@@ -123,7 +123,7 @@ You can configure default value of analyze settings like example below.
 
         /*
          Range of amplitude(dB) displayed on the spectrogram. [-1000, 0]
-         Since the maximum value of Amplitude is adjusted to be 0dB, set a negative value.
+         Since the maximum value of Amplitude is adjusted to be 0 dB, set a negative value.
          default: -90
         */
         "spectrogramAmplitudeRange": -100,
