@@ -2,7 +2,7 @@ import { Disposable } from "../dispose";
 
 export class EventType {
     // vscode
-    public static readonly VSCODE_MESSAGE: "message";
+    public static readonly VSCODE_MESSAGE = "message";
     // player
     public static readonly UPDATE_SEEKBAR = "update-seekbar";
     public static readonly INPUT_SEEKBAR = "input-seekbar";
