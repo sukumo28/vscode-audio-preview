@@ -1,5 +1,4 @@
 "use strict";
-const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
 
@@ -68,15 +67,13 @@ const webviewConfig = {
           },
         ],
       },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
     ],
   },
   plugins: [
-    new CopyPlugin({
-      patterns: [
-        "./src/webview/css/vscode.css",
-        "./src/webview/css/audioPreview.css",
-      ],
-    }),
     new webpack.ProvidePlugin({
       process: "process/browser", // provide a shim for the global `process` variable
     }),

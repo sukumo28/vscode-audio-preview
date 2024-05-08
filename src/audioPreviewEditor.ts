@@ -220,16 +220,6 @@ export class AudioPreviewEditorProvider
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._context.extensionUri, "dist", "audioPreview.js")
     );
-    const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._context.extensionUri, "dist", "vscode.css")
-    );
-    const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._context.extensionUri,
-        "dist",
-        "audioPreview.css"
-      )
-    );
 
     // Use a nonce to whitelist which scripts can be run
     const nonce = getNonce();
@@ -240,12 +230,9 @@ export class AudioPreviewEditorProvider
             <head>
                 <meta charset="UTF-8">
                 
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'wasm-unsafe-eval' 'nonce-${nonce}'; connect-src data:;">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'wasm-unsafe-eval' 'nonce-${nonce}'; connect-src data:;">
                 
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                
-                <link href="${styleVSCodeUri}" rel="stylesheet" />
-				<link href="${styleMainUri}" rel="stylesheet" />
                 
                 <title>Wav Preview</title>
             </head>
