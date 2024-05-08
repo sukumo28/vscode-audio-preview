@@ -10,7 +10,8 @@
     ],
     "extends": [
         "eslint:recommended", // https://eslint.org/docs/latest/rules/
-        "plugin:@typescript-eslint/recommended" // https://typescript-eslint.io/rules/
+        "plugin:@typescript-eslint/recommended", // https://typescript-eslint.io/rules/
+        "prettier"
     ],
     "rules": {
         "@typescript-eslint/naming-convention": [

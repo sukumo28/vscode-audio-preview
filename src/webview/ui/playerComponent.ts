@@ -1,33 +1,37 @@
-import { Disposable } from '../../dispose';
-import { Event, EventType } from '../events';
-import PlayerService from '../service/playerService';
-import PlayerSettingsService from '../service/playerSettingsService';
+import { Disposable } from "../../dispose";
+import { Event, EventType } from "../events";
+import PlayerService from "../service/playerService";
+import PlayerSettingsService from "../service/playerSettingsService";
 
 export default class PlayerComponent extends Disposable {
-    private _playButton: HTMLButtonElement;
-    private _volumeBar: HTMLInputElement;
-    private _playerService: PlayerService;
-    private _playerSettingService: PlayerSettingsService;
+  private _playButton: HTMLButtonElement;
+  private _volumeBar: HTMLInputElement;
+  private _playerService: PlayerService;
+  private _playerSettingService: PlayerSettingsService;
 
-    constructor(parentID: string, playerService: PlayerService, playerSettingService: PlayerSettingsService) {
-        super();
-        this._playerService = playerService;
-        this._playerSettingService = playerSettingService;
-        this._register(this._playerService);
-        
-        // init base html
-        const parent = document.getElementById(parentID);
+  constructor(
+    parentID: string,
+    playerService: PlayerService,
+    playerSettingService: PlayerSettingsService,
+  ) {
+    super();
+    this._playerService = playerService;
+    this._playerSettingService = playerSettingService;
+    this._register(this._playerService);
 
-        const volumeBar = this._playerSettingService.volumeUnitDb ?
-            `<div id="volume-text">volume 0.0 dB</div>
-             <input type="range" id="volume-bar" value="0" min="-80" max="0" step="0.5">` :
-            `<div id="volume-text">volume 100</div>
+    // init base html
+    const parent = document.getElementById(parentID);
+
+    const volumeBar = this._playerSettingService.volumeUnitDb
+      ? `<div id="volume-text">volume 0.0 dB</div>
+             <input type="range" id="volume-bar" value="0" min="-80" max="0" step="0.5">`
+      : `<div id="volume-text">volume 100</div>
              <input type="range" id="volume-bar" value="100">`;
 
-        parent.innerHTML = `
+    parent.innerHTML = `
             <button id="play-button">play</button>
 
-            ${ volumeBar }
+            ${volumeBar}
                         
             <div id="seek-pos-text">position 0.000 s</div>
             <div class="seek-bar-box">
@@ -36,78 +40,103 @@ export default class PlayerComponent extends Disposable {
             </div>
         `;
 
-        // init main seekbar event
-        // To avoid inconvenience when the timing of user input overlaps with the change in value over time,
-        // we separate the InputElement for display and the InputElement that actually accepts user input.
-        const userinputSeekbar = <HTMLInputElement>document.getElementById("user-input-seek-bar");
-        this._register(new Event(userinputSeekbar, EventType.CHANGE, () => {
-            this._playerService.onSeekbarInput(Number(userinputSeekbar.value));
-            // We reset the value of the input element for user input to 100 each time,
-            // because it does not respond when the user inputs exactly the same value as the previous one.
-            // Since 100 is the value at the end of playback, there is no problem if it does not respond.
-            userinputSeekbar.value = "100";
-        }));
-        const visibleSeekbar = <HTMLInputElement>document.getElementById("seek-bar");
-        const seekPosText = <HTMLInputElement>document.getElementById("seek-pos-text");
-        this._register(new Event(window, EventType.UPDATE_SEEKBAR, (e: CustomEventInit) => {
-            visibleSeekbar.value = e.detail.value;
-            seekPosText.textContent = "position " + Number(e.detail.pos).toFixed(3) + " s";
-        }));
+    // init main seekbar event
+    // To avoid inconvenience when the timing of user input overlaps with the change in value over time,
+    // we separate the InputElement for display and the InputElement that actually accepts user input.
+    const userinputSeekbar = <HTMLInputElement>(
+      document.getElementById("user-input-seek-bar")
+    );
+    this._register(
+      new Event(userinputSeekbar, EventType.CHANGE, () => {
+        this._playerService.onSeekbarInput(Number(userinputSeekbar.value));
+        // We reset the value of the input element for user input to 100 each time,
+        // because it does not respond when the user inputs exactly the same value as the previous one.
+        // Since 100 is the value at the end of playback, there is no problem if it does not respond.
+        userinputSeekbar.value = "100";
+      }),
+    );
+    const visibleSeekbar = <HTMLInputElement>(
+      document.getElementById("seek-bar")
+    );
+    const seekPosText = <HTMLInputElement>(
+      document.getElementById("seek-pos-text")
+    );
+    this._register(
+      new Event(window, EventType.UPDATE_SEEKBAR, (e: CustomEventInit) => {
+        visibleSeekbar.value = e.detail.value;
+        seekPosText.textContent =
+          "position " + Number(e.detail.pos).toFixed(3) + " s";
+      }),
+    );
 
-        // init volumebar
-        this._volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
-        const volumeText = <HTMLInputElement>document.getElementById("volume-text");
-        const updateVolume = () => {
-            if (this._playerSettingService.volumeUnitDb) {
-                // convert dB setting to linear gain
-                // -80 dB is treated as mute
-                const voldb = Number(this._volumeBar.value);
-                const vollin = voldb === -80 ? 0 : Math.pow(10, voldb / 20);
-                this._playerService.volume = vollin;
-                volumeText.textContent = "volume " + (vollin === 0 ? "muted" : voldb.toFixed(1) + " dB");
-            } else {
-                // convert seekbar value(0~100) to volume(0~1)
-                this._playerService.volume = Number(this._volumeBar.value) / 100;
-                volumeText.textContent = "volume " + this._volumeBar.value;
-            }
-        };
-        this._register(new Event(this._volumeBar, EventType.INPUT, updateVolume));
-        this._volumeBar.value = String(this._playerSettingService.volumeUnitDb ? this._playerSettingService.initialVolumeDb : this._playerSettingService.initialVolume);
-        updateVolume();
+    // init volumebar
+    this._volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
+    const volumeText = <HTMLInputElement>document.getElementById("volume-text");
+    const updateVolume = () => {
+      if (this._playerSettingService.volumeUnitDb) {
+        // convert dB setting to linear gain
+        // -80 dB is treated as mute
+        const voldb = Number(this._volumeBar.value);
+        const vollin = voldb === -80 ? 0 : Math.pow(10, voldb / 20);
+        this._playerService.volume = vollin;
+        volumeText.textContent =
+          "volume " + (vollin === 0 ? "muted" : voldb.toFixed(1) + " dB");
+      } else {
+        // convert seekbar value(0~100) to volume(0~1)
+        this._playerService.volume = Number(this._volumeBar.value) / 100;
+        volumeText.textContent = "volume " + this._volumeBar.value;
+      }
+    };
+    this._register(new Event(this._volumeBar, EventType.INPUT, updateVolume));
+    this._volumeBar.value = String(
+      this._playerSettingService.volumeUnitDb
+        ? this._playerSettingService.initialVolumeDb
+        : this._playerSettingService.initialVolume,
+    );
+    updateVolume();
 
-        // init play button
-        this._playButton = <HTMLButtonElement>document.getElementById("play-button");
-        this._register(new Event(this._playButton, EventType.CLICK, () => {
-            if (this._playerService.isPlaying) {
-                this._playerService.pause();
-            } else {
-                this._playerService.play();
-            }
-        }));
-        this._playButton.textContent = "play";
-        this._playButton.style.display = "block";
-        this._register(new Event(window, EventType.UPDATE_IS_PLAYING, () => {
-            if (this._playerService.isPlaying) {
-                this._playButton.textContent = "pause";
-            } else {
-                this._playButton.textContent = "play";
-            }
-        }));
+    // init play button
+    this._playButton = <HTMLButtonElement>(
+      document.getElementById("play-button")
+    );
+    this._register(
+      new Event(this._playButton, EventType.CLICK, () => {
+        if (this._playerService.isPlaying) {
+          this._playerService.pause();
+        } else {
+          this._playerService.play();
+        }
+      }),
+    );
+    this._playButton.textContent = "play";
+    this._playButton.style.display = "block";
+    this._register(
+      new Event(window, EventType.UPDATE_IS_PLAYING, () => {
+        if (this._playerService.isPlaying) {
+          this._playButton.textContent = "pause";
+        } else {
+          this._playButton.textContent = "play";
+        }
+      }),
+    );
 
-        // register keyboard shortcuts
-        // don't use command.register at audioPreviewEditorProvider.openCustomDocument due to command confliction
-        this._register(new Event(window, EventType.KEY_DOWN, (e: KeyboardEvent) => {
-            if (e.isComposing || e.code !== "Space") {
-                return;
-            }
-            e.preventDefault();
-            this._playButton.click();
-        }));
+    // register keyboard shortcuts
+    // don't use command.register at audioPreviewEditorProvider.openCustomDocument due to command confliction
+    this._register(
+      new Event(window, EventType.KEY_DOWN, (e: KeyboardEvent) => {
+        if (e.isComposing || e.code !== "Space") {
+          return;
+        }
+        e.preventDefault();
+        this._playButton.click();
+      }),
+    );
+  }
+
+  public dispose() {
+    if (this._playerService.isPlaying) {
+      this._playerService.pause();
     }
-
-    public dispose() {
-        if (this._playerService.isPlaying) {this._playerService.pause();}
-        super.dispose();
-    }
-
+    super.dispose();
+  }
 }

@@ -3,23 +3,23 @@ import WebView from "./ui/webview";
 import Decoder from "./decoder";
 
 export interface vscode {
-    postMessage(message): void;
+  postMessage(message): void;
 }
 
 // vscode must be passed by this special function
 declare function acquireVsCodeApi(): vscode;
 const vscode = acquireVsCodeApi();
 
-function postMessage (message: WebviewMessage) {
-    vscode.postMessage(message);
+function postMessage(message: WebviewMessage) {
+  vscode.postMessage(message);
 }
 
-function createAudioContext (sampleRate: number) {
-    return new AudioContext({ sampleRate });
+function createAudioContext(sampleRate: number) {
+  return new AudioContext({ sampleRate });
 }
 
-function createDecoder (fileData: Uint8Array) {
-    return Decoder.create(fileData);
+function createDecoder(fileData: Uint8Array) {
+  return Decoder.create(fileData);
 }
 
 // entry point
