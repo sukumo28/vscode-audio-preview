@@ -1,4 +1,3 @@
-import { AnalyzeDefault } from '../../../config';
 import { ExtMessageType, WebviewMessageType } from '../../../message';
 import Decoder from '../../../webview/decoder';
 import Webview from '../../../webview/ui/webview';
@@ -16,7 +15,7 @@ describe('webview lifecycle', () => {
     });
 
     test('request config after init', async () => {
-        const createDecoder = async (_: Uint8Array) => {
+        const createDecoder = async () => {
             return new Promise<Decoder>((resolve) => {
                 resolve({
                     numChannels: 1,
@@ -126,7 +125,7 @@ describe('webview error handling', () => {
 
     test('send error message', async () => {
         const readAudioInfo: () => void = () => { throw new Error('error in webview'); };
-        const createDecoder = async (_: Uint8Array) => {
+        const createDecoder = async () => {
             return new Promise<Decoder>((resolve) => {
                 resolve({
                     numChannels: 1,

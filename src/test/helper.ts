@@ -19,7 +19,11 @@ export function postMessageFromWebview(message: WebviewMessage) {
     postMessage(webviewMessageTarget, message);
 }
 
-export async function waitVSCodeMessageForAction(action: Function, timeout: number = 1000): Promise<ExtMessage | WebviewMessage> {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type AnyFunction = (...args: any[]) => any;
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+export async function waitVSCodeMessageForAction(action: AnyFunction, timeout: number = 1000): Promise<ExtMessage | WebviewMessage> {
     return new Promise((resolve) => {
         const timer = setTimeout(() => {
             postMessageFromWebview({ type: WebviewMessageType.ERROR, data: { message: "Timeout" } });
@@ -35,7 +39,7 @@ export async function waitVSCodeMessageForAction(action: Function, timeout: numb
     });
 }
 
-export async function waitEventForAction(action: Function, target: EventTarget, expectedEventType: string, timeout: number = 1000): Promise<any> {
+export async function waitEventForAction(action: AnyFunction, target: EventTarget, expectedEventType: string, timeout: number = 1000): Promise<ReturnType<AnyFunction>> {
     return new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
             reject("Timeout");
@@ -83,7 +87,7 @@ export class MockAudioBuffer {
 }
 
 class MockAudioNode {
-    connect(destinationNode: AudioNode, output?: number, input?: number) {}
+    connect() {}
 }
 
 class MockAudioParam {
@@ -102,7 +106,7 @@ class MockGainNode extends MockAudioNode {
 class MockAudioBufferSourceNode extends MockAudioNode {
     buffer: MockAudioBuffer;
 
-    start(when?: number, offset?: number, duration?: number): void {}
+    start(): void {}
 
     stop() {}
 }

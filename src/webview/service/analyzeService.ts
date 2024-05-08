@@ -128,7 +128,7 @@ export default class AnalyzeService {
             const spectrum: number[] = [];
             for (let j = 0; j < re.length; j++) {
                 spectrum.push(re[j] * re[j] + im[j] * im[j]);
-            };
+            }
     
             // Apply mel filter bank to the spectrum
             const melSpectrum = this.applyMelFilterBank(settings.melFilterNum, spectrum, sampleRate, minFreqIndex, maxFreqIndex);

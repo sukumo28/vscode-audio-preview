@@ -118,7 +118,7 @@ export default class AnalyzeSettingsService {
     private _minFrequency: number;
     public get minFrequency() { return this._minFrequency; }
     public set minFrequency(value: number) { 
-        const [minFrequency, _] = getRangeValues(
+        const [minFrequency] = getRangeValues(
             value, this.maxFrequency,
             0, this._sampleRate / 2,
             0, this._sampleRate / 2
@@ -130,7 +130,7 @@ export default class AnalyzeSettingsService {
     private _maxFrequency: number;
     public get maxFrequency() { return this._maxFrequency; }
     public set maxFrequency(value: number) {
-        const [_, maxFrequency] = getRangeValues(
+        const [, maxFrequency] = getRangeValues(
             this.minFrequency, value,
             0, this._sampleRate / 2,
             0, this._sampleRate / 2
@@ -142,7 +142,7 @@ export default class AnalyzeSettingsService {
     private _minTime: number;
     public get minTime() { return this._minTime; }
     public set minTime(value: number) {
-        const [minTime, _] = getRangeValues(
+        const [minTime] = getRangeValues(
             value, this.maxTime,
             0, this._duration,
             0, this._duration
@@ -154,7 +154,7 @@ export default class AnalyzeSettingsService {
     private _maxTime: number;
     public get maxTime() { return this._maxTime; }
     public set maxTime(value: number) {
-        const [_, maxTime] = getRangeValues(
+        const [, maxTime] = getRangeValues(
             this.minTime, value,
             0, this._duration,
             0, this._duration
@@ -166,7 +166,7 @@ export default class AnalyzeSettingsService {
     private _minAmplitude: number;
     public get minAmplitude() { return this._minAmplitude; }
     public set minAmplitude(value: number) {
-        const [minAmplitude, _] = getRangeValues(
+        const [minAmplitude] = getRangeValues(
             value, this.maxAmplitude,
             -100, 100,
             this._minAmplitudeOfAudioBuffer, this._maxAmplitudeOfAudioBuffer
@@ -178,7 +178,7 @@ export default class AnalyzeSettingsService {
     private _maxAmplitude: number;
     public get maxAmplitude() { return this._maxAmplitude; }
     public set maxAmplitude(value: number) {
-        const [_, maxAmplitude] = getRangeValues(
+        const [, maxAmplitude] = getRangeValues(
             this.minAmplitude, value,
             -100, 100,
             this._minAmplitudeOfAudioBuffer, this._maxAmplitudeOfAudioBuffer
@@ -190,7 +190,7 @@ export default class AnalyzeSettingsService {
     private _spectrogramAmplitudeRange: number;
     public get spectrogramAmplitudeRange() { return this._spectrogramAmplitudeRange; }
     public set spectrogramAmplitudeRange(value: number) {
-        const [spectrogramAmplitudeRange, _] = getRangeValues(
+        const [spectrogramAmplitudeRange] = getRangeValues(
             value, 0,
             -1000, 0,
             -90, 0

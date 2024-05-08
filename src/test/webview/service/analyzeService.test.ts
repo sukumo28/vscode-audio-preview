@@ -7,7 +7,7 @@ describe('analyzeService', () => {
         const expDigs: number[] = [0,  0, 3,      2,     1,     1,    1,    1,    0,    0,    0,   0,    0,   0   ];
 
         for (let i = 0; i < inputs.length; i++) {
-            let [nice, dig]: [number, number] = AnalyzeService.roundToNearestNiceNumber(inputs[i]);
+            const [nice, dig]: [number, number] = AnalyzeService.roundToNearestNiceNumber(inputs[i]);
             expect(nice).toBe(expNice[i]);
             expect(dig).toBe(expDigs[i]);
         }

@@ -47,7 +47,7 @@ export default class WebView {
         `;
         
         this._postMessage({ type: WebviewMessageType.CONFIG });
-    };
+    }
 
     private async onReceiveMessage(msg: ExtMessage) {
         switch (msg.type) {
@@ -55,8 +55,8 @@ export default class WebView {
                 this._config = msg.data;
                 console.log(msg.data);
                 this._postMessage({ type: WebviewMessageType.DATA, data: { start: 0, end: 500000 } });
-                break;
             }
+            break;
 
             case ExtMessageType.DATA: if (ExtMessageType.isDATA(msg)) {      
                 // init fileData after receiving first data
@@ -82,9 +82,8 @@ export default class WebView {
                 } catch (err) {
                     this._postMessage({ type: WebviewMessageType.ERROR, data: { message: err.message } });
                 }
-                
-                break;
             }
+            break;
     
             case ExtMessageType.RELOAD: {
                 this.dispose();

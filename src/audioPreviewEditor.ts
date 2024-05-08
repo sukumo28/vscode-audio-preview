@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
 import { AnalyzeDefault, PlayerDefault } from "./config";
-import { ExtMessage, ExtMessageType, WebviewErrorMessage, WebviewMessage, WebviewMessageType } from "./message";
+import { ExtMessage, ExtMessageType, WebviewMessage, WebviewMessageType } from "./message";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
 
@@ -87,7 +87,9 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
     async openCustomDocument(
         uri: vscode.Uri,
         openContext: { backupId?: string },
+        /* eslint-disable @typescript-eslint/no-unused-vars */
         _token: vscode.CancellationToken
+        /* eslint-enable @typescript-eslint/no-unused-vars */
     ): Promise<AudioPreviewDocument> {
         const document: AudioPreviewDocument = await AudioPreviewDocument.create(
             uri,
@@ -96,7 +98,7 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
 
         const listeners: vscode.Disposable[] = [];
 
-        listeners.push(document.onDidChange(async (e) => {
+        listeners.push(document.onDidChange(async () => {
             await document.reload();
             for (const webviewPanel of this.webviews.get(document.uri)) {
                 this.postMessage(webviewPanel.webview, {
@@ -113,7 +115,9 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
     async resolveCustomEditor(
         document: AudioPreviewDocument,
         webviewPanel: vscode.WebviewPanel,
+        /* eslint-disable @typescript-eslint/no-unused-vars */
         _token: vscode.CancellationToken
+        /* eslint-enable @typescript-eslint/no-unused-vars */
     ): Promise<void> {
         // Add the webview to our internal set of active webviews
         this.webviews.add(document.uri, webviewPanel);
@@ -171,9 +175,8 @@ export class AudioPreviewEditorProvider implements vscode.CustomReadonlyEditorPr
                         samples: samples, start: msg.data.start, end: msg.data.end, wholeLength: dd.length
                     }
                 });
-
-                break;
             }
+            break;
 
             case WebviewMessageType.ERROR: if (WebviewMessageType.isERROR(msg)) {
                 vscode.window.showErrorMessage(msg.data.message);

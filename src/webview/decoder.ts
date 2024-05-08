@@ -29,12 +29,12 @@ interface DecodeAudioResult {
 export default class Decoder {
     private static _audioFilePath = "audio";
 
-    private _module: any;
+    private _module;
 
     private _fileSize: number; // byte
     public get fileSize() { return this._fileSize; }
 
-    constructor (module: any, fileSize: number) {
+    constructor (module, fileSize: number) {
         this._module = module;
         this._fileSize = fileSize;
     }

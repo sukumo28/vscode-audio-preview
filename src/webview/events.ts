@@ -25,7 +25,7 @@ export class EventType {
     public static readonly CHANGE = "change";
     public static readonly INPUT = "input";
     public static readonly KEY_DOWN = "keydown";
-};
+}
 
 export class Event extends Disposable {
     private _target: EventTarget;

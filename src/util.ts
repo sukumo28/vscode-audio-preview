@@ -37,7 +37,7 @@ export function getValueInRange(targetValue: number, validMin: number, validMax:
 	return targetValue;
 }
 
-export function getValueInEnum(targetValue: number, enumType: any, defaultValue: number): number {
+export function getValueInEnum(targetValue: number, enumType, defaultValue: number): number {
 	if (Object.values(enumType).includes(targetValue)) {
 		return targetValue;
 	}
