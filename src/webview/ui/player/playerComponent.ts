@@ -14,12 +14,11 @@ export default class PlayerComponent extends Disposable {
   constructor(
     componentRootID: string,
     playerService: PlayerService,
-    playerSettingService: PlayerSettingsService,
+    playerSettingService: PlayerSettingsService
   ) {
     super();
     this._playerService = playerService;
     this._playerSettingService = playerSettingService;
-    this._register(this._playerService);
 
     // init base html
     this._componentRoot = document.querySelector(componentRootID);
@@ -57,7 +56,7 @@ export default class PlayerComponent extends Disposable {
         // because it does not respond when the user inputs exactly the same value as the previous one.
         // Since 100 is the value at the end of playback, there is no problem if it does not respond.
         userinputSeekbar.value = "100";
-      }),
+      })
     );
     const visibleSeekbar = <HTMLInputElement>(
       this._componentRoot.querySelector(".seekBar")
@@ -70,7 +69,7 @@ export default class PlayerComponent extends Disposable {
         visibleSeekbar.value = e.detail.value;
         seekPosText.textContent =
           "position " + Number(e.detail.pos).toFixed(3) + " s";
-      }),
+      })
     );
 
     // init volumebar
@@ -99,7 +98,7 @@ export default class PlayerComponent extends Disposable {
     this._volumeBar.value = String(
       this._playerSettingService.volumeUnitDb
         ? this._playerSettingService.initialVolumeDb
-        : this._playerSettingService.initialVolume,
+        : this._playerSettingService.initialVolume
     );
     updateVolume();
 
@@ -114,7 +113,7 @@ export default class PlayerComponent extends Disposable {
         } else {
           this._playerService.play();
         }
-      }),
+      })
     );
     this._playButton.textContent = "play";
     this._playButton.style.display = "block";
@@ -125,7 +124,7 @@ export default class PlayerComponent extends Disposable {
         } else {
           this._playButton.textContent = "play";
         }
-      }),
+      })
     );
 
     // register keyboard shortcuts
@@ -137,7 +136,7 @@ export default class PlayerComponent extends Disposable {
         }
         e.preventDefault();
         this._playButton.click();
-      }),
+      })
     );
   }
 
