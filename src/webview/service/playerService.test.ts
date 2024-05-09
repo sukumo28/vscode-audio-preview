@@ -1,6 +1,6 @@
-import { EventType } from "../../../webview/events";
-import PlayerService from "../../../webview/service/playerService";
-import { createAudioContext, waitEventForAction } from "../../helper";
+import { EventType } from "../events";
+import PlayerService from "./playerService";
+import { createAudioContext, waitEventForAction } from "../../__mocks__/helper";
 
 describe("playerService", () => {
   let playerService: PlayerService;

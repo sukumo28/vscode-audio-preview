@@ -1,12 +1,16 @@
-import { AnalyzeSettingsProps } from "../service/analyzeSettingsService";
-import { Disposable } from "../../dispose";
-import { EventType, Event } from "../events";
-import AnalyzeService from "../service/analyzeService";
-import AnalyzeSettingsService from "../service/analyzeSettingsService";
-import WaveFormComponent from "./waveFormComponent";
-import SpectrogramComponent from "./spectrogramComponent";
+import { AnalyzeSettingsProps } from "../../service/analyzeSettingsService";
+import { Disposable } from "../../../dispose";
+import { EventType, Event } from "../../events";
+import AnalyzeService from "../../service/analyzeService";
+import AnalyzeSettingsService from "../../service/analyzeSettingsService";
+import WaveFormComponent from "../waveform/waveFormComponent";
+import SpectrogramComponent from "../spectrogram/spectrogramComponent";
+import "./analyzerComponent.css";
 
 export default class AnalyzerComponent extends Disposable {
+  private _componentRootSelector: string;
+  private _componentRoot: HTMLElement;
+
   private _audioBuffer: AudioBuffer;
   private _analyzeService: AnalyzeService;
   private _analyzeSettingsService: AnalyzeSettingsService;
@@ -16,7 +20,7 @@ export default class AnalyzerComponent extends Disposable {
   private _analyzeResultBox: HTMLElement;
 
   constructor(
-    parentID: string,
+    componentRootSelector: string,
     audioBuffer: AudioBuffer,
     analyzeService: AnalyzeService,
     analyzeSettingsService: AnalyzeSettingsService,
@@ -28,85 +32,93 @@ export default class AnalyzerComponent extends Disposable {
     this._analyzeSettingsService = analyzeSettingsService;
 
     // init base html
-    const parent = document.getElementById(parentID);
-    parent.innerHTML = `
-            <div id="analyze-controller-buttons">
-                <div>analyze</div>
-                <button id="analyze-button">analyze</button>
-                <button id="analyze-setting-button">▼settings</button>
+    this._componentRootSelector = componentRootSelector;
+    this._componentRoot = document.querySelector(this._componentRootSelector);
+    this._componentRoot.innerHTML = `
+      <div class="analyzerComponent">
+        <div class="analyzeControllerButtons">
+            <div>analyze</div>
+            <button class="analyzeButton">analyze</button>
+            <button class="analyzeSettingButton">▼settings</button>
+        </div>
+        <div class="analyzeSetting">
+            <h3>Common Settings</h3>
+            <div>
+                time range:
+                <input class="analyzeSetting__input js-analyzeSetting-minTime" type="number" step="0.1">s ~
+                <input class="analyzeSetting__input js-analyzeSetting-maxTime" type="number" step="0.1">s
             </div>
-            <div id="analyze-setting">
-                <h3>Common Settings</h3>
-                <div>
-                    time range:
-                    <input id="analyze-min-time" type="number" step="0.1">s ~
-                    <input id="analyze-max-time" type="number" step="0.1">s
-                </div>
 
-                <h3>WaveForm Settings</h3>
-                <div>
-                    <input id="analyze-waveform-visible" type="checkbox">visible
-                </div>
-                <div>
-                    waveform amplitude range:
-                    <input id="analyze-min-amplitude" type="number" step="0.1"> ~
-                    <input id="analyze-max-amplitude" type="number" step="0.1">
-                </div>
+            <h3>WaveForm Settings</h3>
+            <div>
+                <input class="js-analyzeSetting-waveformVisible" type="checkbox">visible
+            </div>
+            <div>
+                waveform amplitude range:
+                <input class="analyzeSetting__input js-analyzeSetting-minAmplitude" type="number" step="0.1"> ~
+                <input class="analyzeSetting__input js-analyzeSetting-maxAmplitude" type="number" step="0.1">
+            </div>
 
-                <h3>Spectrogram Settings</h3>
+            <h3>Spectrogram Settings</h3>
+            <div>
+                <input class="js-analyzeSetting-spectrogramVisible" type="checkbox">visible
+            </div>
+            <div>
+                window size:
+                <select class="analyzeSetting__select js-analyzeSetting-windowSize">
+                    <option value="0">256</option>
+                    <option value="1">512</option>
+                    <option value="2">1024</option>
+                    <option value="3">2048</option>
+                    <option value="4">4096</option>
+                    <option value="5">8192</option>
+                    <option value="6">16384</option>
+                    <option value="7">32768</option>
+                </select>
+            </div>
+            <div>
+                frequency scale:
+                <select class="analyzeSetting__select js-analyzeSetting-frequencyScale">
+                    <option value="0">Linear</option>
+                    <option value="1">Log</option>
+                    <option value="2">Mel</option>
+                </select>
+                mel filter num:
+                <input class="analyzeSetting__input js-analyzeSetting-melFilterNum" type="number" step="10">
+            </div>
+            <div>
+                frequency range:
+                <input class="analyzeSetting__input js-analyzeSetting-minFrequency" type="number" step="1000">Hz ~
+                <input class="analyzeSetting__input js-analyzeSetting-maxFrequency" type="number" step="1000">Hz
+            </div>
+            <div>
                 <div>
-                    <input id="analyze-spectrogram-visible" type="checkbox">visible
+                    spectrogram amplitude range:
+                    <input class="analyzeSetting__input js-analyzeSetting-spectrogramAmplitudeRange" type="number" step="10">dB ~ 0 dB
                 </div>
                 <div>
-                    window size:
-                    <select id="analyze-window-size">
-                        <option value="0">256</option>
-                        <option value="1">512</option>
-                        <option value="2">1024</option>
-                        <option value="3">2048</option>
-                        <option value="4">4096</option>
-                        <option value="5">8192</option>
-                        <option value="6">16384</option>
-                        <option value="7">32768</option>
-                    </select>
-                </div>
-                <div>
-                    frequency scale:
-                    <select id="analyze-frequency-scale">
-                        <option value="0">Linear</option>
-                        <option value="1">Log</option>
-                        <option value="2">Mel</option>
-                    </select>
-                    mel filter num:
-                    <input id="analyze-mel-filter-num" type="number" step="10">
-                </div>
-                <div>
-                    frequency range:
-                    <input id="analyze-min-frequency" type="number" step="1000">Hz ~
-                    <input id="analyze-max-frequency" type="number" step="1000">Hz
-                </div>
-                <div>
-                    <div>
-                        spectrogram amplitude range:
-                        <input id="analyze-spectrogram-amplitude-range" type="number" step="10">dB ~ 0 dB
-                    </div>
-                    <div>
-                        color:
-                        <canvas id="analyze-spectrogram-color-axis" width="800px" height="40px"></canvas>
-                        <canvas id="analyze-spectrogram-color" width="100px" height="5px"></canvas>
-                    </div>
+                    color:
+                    <canvas class="analyzeSetting__canvas js-analyzeSetting-spectrogramColorAxis" width="800px" height="40px"></canvas>
+                    <canvas class="analyzeSetting__canvas js-analyzeSetting-spectrogramColor" width="100px" height="5px"></canvas>
                 </div>
             </div>
-            <div id="analyze-result-box"></div>
-        `;
+        </div>
+        <div class="analyzeResultBox"></div>
+      </div>
+    `;
 
     // init analyze setting menu
-    document.getElementById("analyze-setting").style.display = "none";
+    const analyzeSettingElement = this._componentRoot.querySelector(
+      ".analyzeSetting",
+    ) as HTMLElement;
+    analyzeSettingElement.style.display = "none";
     this._analyzeSettingButton = <HTMLButtonElement>(
-      document.getElementById("analyze-setting-button")
+      this._componentRoot.querySelector(".analyzeSettingButton")
     );
     this._analyzeSettingButton.onclick = () => {
-      const settings = document.getElementById("analyze-setting");
+      const settings = this._componentRoot.querySelector(
+        ".analyzeSetting",
+      ) as HTMLElement;
       if (settings.style.display !== "block") {
         settings.style.display = "block";
         this._analyzeSettingButton.textContent = "▲settings";
@@ -119,14 +131,15 @@ export default class AnalyzerComponent extends Disposable {
 
     // init analyze button
     this._analyzeButton = <HTMLButtonElement>(
-      document.getElementById("analyze-button")
+      this._componentRoot.querySelector(".analyzeButton")
     );
     this._analyzeButton.onclick = () => {
       this.analyze();
     };
 
     // init analyze result box
-    this._analyzeResultBox = document.getElementById("analyze-result-box");
+    this._analyzeResultBox =
+      this._componentRoot.querySelector(".analyzeResultBox");
 
     // analyze if user set autoAnalyze true
     if (autoAnalyze) {
@@ -139,7 +152,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init waveform visible checkbox
     const waveformVisible = <HTMLInputElement>(
-      document.getElementById("analyze-waveform-visible")
+      this._componentRoot.querySelector(".js-analyzeSetting-waveformVisible")
     );
     waveformVisible.checked = settings.waveformVisible;
     this._register(
@@ -159,7 +172,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init spectrogram visible checkbox
     const spectrogramVisible = <HTMLInputElement>(
-      document.getElementById("analyze-spectrogram-visible")
+      this._componentRoot.querySelector(".js-analyzeSetting-spectrogramVisible")
     );
     spectrogramVisible.checked = settings.spectrogramVisible;
     this._register(
@@ -179,7 +192,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init fft window size index select
     const windowSizeSelect = <HTMLSelectElement>(
-      document.getElementById("analyze-window-size")
+      this._componentRoot.querySelector(".js-analyzeSetting-windowSize")
     );
     windowSizeSelect.selectedIndex = settings.windowSizeIndex;
     this._register(
@@ -199,7 +212,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init frequency scale select
     const frequencyScaleSelect = <HTMLSelectElement>(
-      document.getElementById("analyze-frequency-scale")
+      this._componentRoot.querySelector(".js-analyzeSetting-frequencyScale")
     );
     frequencyScaleSelect.selectedIndex = settings.frequencyScale;
     this._register(
@@ -219,7 +232,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init mel filter num input
     const melFilterNumInput = <HTMLInputElement>(
-      document.getElementById("analyze-mel-filter-num")
+      this._componentRoot.querySelector(".js-analyzeSetting-melFilterNum")
     );
     melFilterNumInput.value = `${settings.melFilterNum}`;
     this._register(
@@ -239,7 +252,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init frequency range input
     const minFreqInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-frequency")
+      this._componentRoot.querySelector(".js-analyzeSetting-minFrequency")
     );
     minFreqInput.value = `${settings.minFrequency}`;
     this._register(
@@ -258,7 +271,7 @@ export default class AnalyzerComponent extends Disposable {
     );
 
     const maxFreqInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-frequency")
+      this._componentRoot.querySelector(".js-analyzeSetting-maxFrequency")
     );
     maxFreqInput.value = `${settings.maxFrequency}`;
     this._register(
@@ -278,7 +291,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init time range input
     const minTimeInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-time")
+      this._componentRoot.querySelector(".js-analyzeSetting-minTime")
     );
     minTimeInput.value = `${settings.minTime}`;
     this._register(
@@ -293,7 +306,7 @@ export default class AnalyzerComponent extends Disposable {
     );
 
     const maxTimeInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-time")
+      this._componentRoot.querySelector(".js-analyzeSetting-maxTime")
     );
     maxTimeInput.value = `${settings.maxTime}`;
     this._register(
@@ -309,7 +322,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init amplitude range input
     const minAmplitudeInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-amplitude")
+      this._componentRoot.querySelector(".js-analyzeSetting-minAmplitude")
     );
     minAmplitudeInput.value = `${settings.minAmplitude}`;
     this._register(
@@ -328,7 +341,7 @@ export default class AnalyzerComponent extends Disposable {
     );
 
     const maxAmplitudeInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-amplitude")
+      this._componentRoot.querySelector(".js-analyzeSetting-maxAmplitude")
     );
     maxAmplitudeInput.value = `${settings.maxAmplitude}`;
     this._register(
@@ -348,7 +361,9 @@ export default class AnalyzerComponent extends Disposable {
 
     // init spectrogram amplitude range input
     const spectrogramAmplitudeRangeInput = <HTMLInputElement>(
-      document.getElementById("analyze-spectrogram-amplitude-range")
+      this._componentRoot.querySelector(
+        ".js-analyzeSetting-spectrogramAmplitudeRange",
+      )
     );
     spectrogramAmplitudeRangeInput.value = `${settings.spectrogramAmplitudeRange}`;
     this.updateColorBar(settings);
@@ -374,10 +389,12 @@ export default class AnalyzerComponent extends Disposable {
   private updateColorBar(settings: AnalyzeSettingsProps) {
     // init color bar
     const colorCanvas = <HTMLCanvasElement>(
-      document.getElementById("analyze-spectrogram-color")
+      this._componentRoot.querySelector(".js-analyzeSetting-spectrogramColor")
     );
     const colorAxisCanvas = <HTMLCanvasElement>(
-      document.getElementById("analyze-spectrogram-color-axis")
+      this._componentRoot.querySelector(
+        ".js-analyzeSetting-spectrogramColorAxis",
+      )
     );
     const colorContext = colorCanvas.getContext("2d", { alpha: false });
     const colorAxisContext = colorAxisCanvas.getContext("2d", { alpha: false });
@@ -426,7 +443,7 @@ export default class AnalyzerComponent extends Disposable {
     for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {
       if (this._analyzeSettingsService.waveformVisible) {
         new WaveFormComponent(
-          "analyze-result-box",
+          `${this._componentRootSelector} .analyzeResultBox`,
           AnalyzeSettingsService.WAVEFORM_CANVAS_WIDTH,
           AnalyzeSettingsService.WAVEFORM_CANVAS_HEIGHT *
             this._analyzeSettingsService.waveformVerticalScale,
@@ -440,7 +457,7 @@ export default class AnalyzerComponent extends Disposable {
 
       if (this._analyzeSettingsService.spectrogramVisible) {
         new SpectrogramComponent(
-          "analyze-result-box",
+          `${this._componentRootSelector} .analyzeResultBox`,
           AnalyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH,
           AnalyzeSettingsService.SPECTROGRAM_CANVAS_HEIGHT *
             this._analyzeSettingsService.spectrogramVerticalScale,
@@ -455,12 +472,12 @@ export default class AnalyzerComponent extends Disposable {
 
     // register seekbar on figures
     const visibleBar = document.createElement("div");
-    visibleBar.className = "seek-div";
+    visibleBar.className = "seekDiv";
     this._analyzeResultBox.appendChild(visibleBar);
 
     const inputSeekbar = document.createElement("input");
     inputSeekbar.type = "range";
-    inputSeekbar.className = "input-seek-bar";
+    inputSeekbar.className = "inputSeekBar";
     inputSeekbar.step = "0.00001";
     this._analyzeResultBox.appendChild(inputSeekbar);
 

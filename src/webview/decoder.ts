@@ -74,11 +74,11 @@ export default class Decoder {
 
   public readAudioInfo() {
     const { status, ...info }: AudioInfoResult = this._module.getAudioInfo(
-      Decoder._audioFilePath
+      Decoder._audioFilePath,
     );
     if (status.status < 0) {
       throw new Error(
-        `failed to get audio info: ${status.status}: ${status.error}`
+        `failed to get audio info: ${status.status}: ${status.error}`,
       );
     }
     this._encoding = info.encoding;
@@ -100,12 +100,12 @@ export default class Decoder {
 
   public decode() {
     const { status, samples }: DecodeAudioResult = this._module.decodeAudio(
-      Decoder._audioFilePath
+      Decoder._audioFilePath,
     );
     if (status.status < 0) {
       samples.delete();
       throw new Error(
-        `failed to decode audio: ${status.status}: ${status.error}`
+        `failed to decode audio: ${status.status}: ${status.error}`,
       );
     }
 

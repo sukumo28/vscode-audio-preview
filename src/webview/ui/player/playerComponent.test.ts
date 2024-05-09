@@ -1,8 +1,11 @@
-import { EventType } from "../../../webview/events";
-import PlayerService from "../../../webview/service/playerService";
-import PlayerSettingsService from "../../../webview/service/playerSettingsService";
-import PlayerComponent from "../../../webview/ui/playerComponent";
-import { createAudioContext, waitEventForAction } from "../../helper";
+import { EventType } from "../../events";
+import PlayerService from "../../service/playerService";
+import PlayerSettingsService from "../../service/playerSettingsService";
+import PlayerComponent from "./playerComponent";
+import {
+  createAudioContext,
+  waitEventForAction,
+} from "../../../__mocks__/helper";
 
 describe("player", () => {
   describe('general test with "volumeUnitDb = false"', () => {
@@ -21,7 +24,7 @@ describe("player", () => {
       playerService = new PlayerService(audioContext, audioBuffer);
       playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
       playerComponent = new PlayerComponent(
-        "player",
+        "#player",
         playerService,
         playerSettingService,
       );
@@ -33,25 +36,25 @@ describe("player", () => {
     });
 
     test("player should have play button", () => {
-      expect(document.getElementById("play-button")).toBeTruthy();
+      expect(document.querySelector(".playButton")).toBeTruthy();
     });
 
     test("player should have volume bar", () => {
-      expect(document.getElementById("volume-bar")).toBeTruthy();
-      expect(document.getElementById("volume-text")).toBeTruthy();
+      expect(document.querySelector(".volumeBar")).toBeTruthy();
+      expect(document.querySelector(".volumeText")).toBeTruthy();
     });
 
     test("player should have seek bar", () => {
-      expect(document.getElementById("seek-bar")).toBeTruthy();
-      expect(document.getElementById("user-input-seek-bar")).toBeTruthy();
-      expect(document.getElementById("seek-pos-text")).toBeTruthy();
+      expect(document.querySelector(".seekBar")).toBeTruthy();
+      expect(document.querySelector(".userInputSeekBar")).toBeTruthy();
+      expect(document.querySelector(".seekPosText")).toBeTruthy();
     });
 
     test("dispatch update-seekbar event when user change user-input-seek-bar", async () => {
       const detail = await waitEventForAction(
         () => {
           const userinputSeekbar = <HTMLInputElement>(
-            document.getElementById("user-input-seek-bar")
+            document.querySelector(".userInputSeekBar")
           );
           userinputSeekbar.value = "50";
           userinputSeekbar.dispatchEvent(new Event("change"));
@@ -64,7 +67,7 @@ describe("player", () => {
 
     test("update visible-seekbar when seekbar value is updated", () => {
       const visibleSeekbar = <HTMLInputElement>(
-        document.getElementById("seek-bar")
+        document.querySelector(".seekBar")
       );
       window.dispatchEvent(
         new CustomEvent(EventType.UPDATE_SEEKBAR, {
@@ -77,7 +80,7 @@ describe("player", () => {
     });
 
     test("change volume when volume-bar is changed (volumeUnitDb = false)", () => {
-      const volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
+      const volumeBar = <HTMLInputElement>document.querySelector(".volumeBar");
       volumeBar.value = "100";
       volumeBar.dispatchEvent(new Event("input"));
       expect(playerService.volume).toBe(1.0);
@@ -94,7 +97,7 @@ describe("player", () => {
         playerService.pause();
       }
       const playButton = <HTMLButtonElement>(
-        document.getElementById("play-button")
+        document.querySelector(".playButton")
       );
       playButton.dispatchEvent(new Event("click"));
       expect(playerService.isPlaying).toBe(true);
@@ -103,7 +106,7 @@ describe("player", () => {
     test("pause when play button is clicked while playing", () => {
       playerService.play();
       const playButton = <HTMLButtonElement>(
-        document.getElementById("play-button")
+        document.querySelector(".playButton")
       );
       playButton.dispatchEvent(new Event("click"));
       expect(playerService.isPlaying).toBe(false);
@@ -114,7 +117,7 @@ describe("player", () => {
         playerService.pause();
       }
       const playButton = <HTMLButtonElement>(
-        document.getElementById("play-button")
+        document.querySelector(".playButton")
       );
       expect(playButton.textContent).toBe("play");
       playerService.play();
@@ -148,7 +151,7 @@ describe("player", () => {
       playerService = new PlayerService(audioContext, audioBuffer);
       playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
       playerComponent = new PlayerComponent(
-        "player",
+        "#player",
         playerService,
         playerSettingService,
       );
@@ -160,7 +163,7 @@ describe("player", () => {
     });
 
     test("change volume when volume-bar is changed (volumeUnitDb = true)", () => {
-      const volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
+      const volumeBar = <HTMLInputElement>document.querySelector(".volumeBar");
       volumeBar.value = "0";
       volumeBar.dispatchEvent(new Event("input"));
       expect(playerService.volume).toBe(1.0);

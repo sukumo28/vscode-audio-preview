@@ -2,7 +2,6 @@ import { WebviewMessage } from "../message";
 import WebView from "./ui/webview";
 import Decoder from "./decoder";
 import "./css/vscode.css";
-import "./css/audioPreview.css";
 
 export interface vscode {
   postMessage(message): void;

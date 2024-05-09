@@ -1,13 +1,13 @@
-import { ExtMessageType, WebviewMessageType } from "../../../message";
-import Decoder from "../../../webview/decoder";
-import Webview from "../../../webview/ui/webview";
+import { ExtMessageType, WebviewMessageType } from "../../message";
+import Decoder from "../decoder";
+import Webview from "./webview";
 import {
   waitVSCodeMessageForAction,
   postMessageFromWebview,
   postMessageFromExt,
   createAudioContext,
   wait,
-} from "../../helper";
+} from "../../__mocks__/helper";
 
 describe("webview lifecycle", () => {
   let webview: Webview;
@@ -112,7 +112,7 @@ describe("webview lifecycle", () => {
       },
     });
     await wait(100);
-    expect(document.getElementById("info-table")?.innerHTML).not.toBe("");
+    expect(document.getElementById("infoTable")?.innerHTML).not.toBe("");
   });
 
   test("init player after finish receiving data", async () => {
@@ -131,7 +131,7 @@ describe("webview lifecycle", () => {
   });
 
   test("infoTable is empty after reload", async () => {
-    expect(document.getElementById("info-table")?.innerHTML).toBe("");
+    expect(document.getElementById("infoTable")?.innerHTML).toBe("");
   });
 
   test("player is empty after reload", async () => {

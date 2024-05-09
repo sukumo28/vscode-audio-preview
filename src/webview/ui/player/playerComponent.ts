@@ -1,16 +1,18 @@
-import { Disposable } from "../../dispose";
-import { Event, EventType } from "../events";
-import PlayerService from "../service/playerService";
-import PlayerSettingsService from "../service/playerSettingsService";
+import { Disposable } from "../../../dispose";
+import { Event, EventType } from "../../events";
+import PlayerService from "../../service/playerService";
+import PlayerSettingsService from "../../service/playerSettingsService";
+import "./playerComponent.css";
 
 export default class PlayerComponent extends Disposable {
+  private _componentRoot: HTMLElement;
   private _playButton: HTMLButtonElement;
   private _volumeBar: HTMLInputElement;
   private _playerService: PlayerService;
   private _playerSettingService: PlayerSettingsService;
 
   constructor(
-    parentID: string,
+    componentRootID: string,
     playerService: PlayerService,
     playerSettingService: PlayerSettingsService,
   ) {
@@ -20,31 +22,33 @@ export default class PlayerComponent extends Disposable {
     this._register(this._playerService);
 
     // init base html
-    const parent = document.getElementById(parentID);
+    this._componentRoot = document.querySelector(componentRootID);
 
     const volumeBar = this._playerSettingService.volumeUnitDb
-      ? `<div id="volume-text">volume 0.0 dB</div>
-             <input type="range" id="volume-bar" value="0" min="-80" max="0" step="0.5">`
-      : `<div id="volume-text">volume 100</div>
-             <input type="range" id="volume-bar" value="100">`;
+      ? `<div class="volumeText">volume 0.0 dB</div>
+             <input type="range" class="volumeBar" value="0" min="-80" max="0" step="0.5">`
+      : `<div class="volumeText">volume 100</div>
+             <input type="range" class="volumeBar" value="100">`;
 
-    parent.innerHTML = `
-            <button id="play-button">play</button>
+    this._componentRoot.innerHTML = `
+      <div class="playerComponent">
+        <button class="playButton">play</button>
 
-            ${volumeBar}
-                        
-            <div id="seek-pos-text">position 0.000 s</div>
-            <div class="seek-bar-box">
-                <input type="range" id="seek-bar" value="0" />
-                <input type="range" id="user-input-seek-bar" class="input-seek-bar" value="0" />
-            </div>
-        `;
+        ${volumeBar}
+                    
+        <div class="seekPosText">position 0.000 s</div>
+        <div class="seekBarBox">
+            <input type="range" class="seekBar" value="0" />
+            <input type="range" class="userInputSeekBar inputSeekBar" value="0" />
+        </div>
+      </div>
+    `;
 
     // init main seekbar event
     // To avoid inconvenience when the timing of user input overlaps with the change in value over time,
     // we separate the InputElement for display and the InputElement that actually accepts user input.
     const userinputSeekbar = <HTMLInputElement>(
-      document.getElementById("user-input-seek-bar")
+      this._componentRoot.querySelector(".userInputSeekBar")
     );
     this._register(
       new Event(userinputSeekbar, EventType.CHANGE, () => {
@@ -56,10 +60,10 @@ export default class PlayerComponent extends Disposable {
       }),
     );
     const visibleSeekbar = <HTMLInputElement>(
-      document.getElementById("seek-bar")
+      this._componentRoot.querySelector(".seekBar")
     );
     const seekPosText = <HTMLInputElement>(
-      document.getElementById("seek-pos-text")
+      this._componentRoot.querySelector(".seekPosText")
     );
     this._register(
       new Event(window, EventType.UPDATE_SEEKBAR, (e: CustomEventInit) => {
@@ -70,8 +74,12 @@ export default class PlayerComponent extends Disposable {
     );
 
     // init volumebar
-    this._volumeBar = <HTMLInputElement>document.getElementById("volume-bar");
-    const volumeText = <HTMLInputElement>document.getElementById("volume-text");
+    this._volumeBar = <HTMLInputElement>(
+      this._componentRoot.querySelector(".volumeBar")
+    );
+    const volumeText = <HTMLInputElement>(
+      this._componentRoot.querySelector(".volumeText")
+    );
     const updateVolume = () => {
       if (this._playerSettingService.volumeUnitDb) {
         // convert dB setting to linear gain
@@ -97,7 +105,7 @@ export default class PlayerComponent extends Disposable {
 
     // init play button
     this._playButton = <HTMLButtonElement>(
-      document.getElementById("play-button")
+      this._componentRoot.querySelector(".playButton")
     );
     this._register(
       new Event(this._playButton, EventType.CLICK, () => {

@@ -1,0 +1,10 @@
+.infoTable {
+  width: 100%;
+  padding: 0.5em;
+  border-collapse: collapse;
+}
+
+.infoTableData {
+  border: solid 1px var(--vscode-foreground);
+  padding: 0.5em;
+}

@@ -75,11 +75,18 @@ button.secondary:hover {
 
 input:not([type="checkbox"]),
 textarea {
-  display: block;
-  width: 100%;
-  border: none;
+  box-sizing: border-box;
+  border: solid 1px var(--vscode-foreground);
   font-family: var(--vscode-font-family);
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  color: var(--vscode-input-foreground);
+  outline-color: var(--vscode-input-border);
+  background-color: var(--vscode-input-background);
+}
+
+select {
+  border: solid 1px var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
   color: var(--vscode-input-foreground);
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);

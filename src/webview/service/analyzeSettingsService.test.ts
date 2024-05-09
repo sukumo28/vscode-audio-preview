@@ -4,13 +4,13 @@ import {
   getRandomFloatOutOf,
   getRandomInt,
   waitEventForAction,
-} from "../../helper";
-import { AnalyzeDefault } from "../../../config";
+} from "../../__mocks__/helper";
+import { AnalyzeDefault } from "../../config";
 import AnalyzeSettingsService, {
   FrequencyScale,
   WindowSizeIndex,
-} from "../../../webview/service/analyzeSettingsService";
-import { EventType } from "../../../webview/events";
+} from "./analyzeSettingsService";
+import { EventType } from "../events";
 
 describe("fromDefaultSettings", () => {
   let defaultSettings: AnalyzeDefault;

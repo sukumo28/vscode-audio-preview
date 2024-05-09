@@ -15,17 +15,6 @@
         "kind": "build",
         "isDefault": true
       }
-    },
-    {
-      "label": "test-compile",
-      "type": "npm",
-      "script": "test-compile",
-      "problemMatcher": "$tsc",
-      "isBackground": false,
-      "presentation": {
-        "echo": true,
-        "reveal": "always"
-      }
     }
   ]
 }

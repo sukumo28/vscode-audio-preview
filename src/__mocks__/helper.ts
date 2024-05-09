@@ -22,9 +22,8 @@ export function postMessageFromWebview(message: WebviewMessage) {
   postMessage(webviewMessageTarget, message);
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export async function waitVSCodeMessageForAction(
   action: AnyFunction,

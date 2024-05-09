@@ -1,38 +1,40 @@
-import { AnalyzeSettingsProps } from "../service/analyzeSettingsService";
-import AnalyzeService from "../service/analyzeService";
-import { FrequencyScale } from "../service/analyzeSettingsService";
+import { AnalyzeSettingsProps } from "../../service/analyzeSettingsService";
+import AnalyzeService from "../../service/analyzeService";
+import { FrequencyScale } from "../../service/analyzeSettingsService";
+import "../../css/figure.css";
 
 export default class WaveFormComponent {
   private _analyzeService: AnalyzeService;
 
   constructor(
-    parentID: string,
+    componentRootSelector: string,
     width: number,
     height: number,
     analyzeService: AnalyzeService,
     settings: AnalyzeSettingsProps,
     sampleRate: number,
     ch: number,
-    numOfCh: number
+    numOfCh: number,
   ) {
-    const parent = document.getElementById(parentID);
+    const componentRoot = document.querySelector(componentRootSelector);
     this._analyzeService = analyzeService;
 
     const canvasBox = document.createElement("div");
-    canvasBox.className = "canvas-box";
+    canvasBox.className = "canvasBox";
 
     const canvas = document.createElement("canvas");
+    canvas.className = "mainCanvas";
     canvas.width = width;
     canvas.height = height;
     canvasBox.appendChild(canvas);
 
     const axisCanvas = document.createElement("canvas");
-    axisCanvas.className = "axis-canvas";
+    axisCanvas.className = "axisCanvas";
     axisCanvas.width = width;
     axisCanvas.height = height;
     canvasBox.appendChild(axisCanvas);
 
-    parent.appendChild(canvasBox);
+    componentRoot.appendChild(canvasBox);
 
     switch (settings.frequencyScale) {
       case FrequencyScale.Linear:
@@ -62,7 +64,7 @@ export default class WaveFormComponent {
     axisCanvas: HTMLCanvasElement,
     settings: AnalyzeSettingsProps,
     ch: number,
-    numOfCh: number
+    numOfCh: number,
   ) {
     // draw horizontal axis
     this.drawTimeAxis(axisCanvas, settings);
@@ -97,7 +99,7 @@ export default class WaveFormComponent {
     canvas: HTMLCanvasElement,
     sampleRate: number,
     settings: AnalyzeSettingsProps,
-    ch: number
+    ch: number,
   ) {
     const context = canvas.getContext("2d", { alpha: false });
     const spectrogram = this._analyzeService.getSpectrogram(ch, settings);
@@ -115,7 +117,7 @@ export default class WaveFormComponent {
         const value = spectrogram[i][j];
         context.fillStyle = this._analyzeService.getSpectrogramColor(
           value,
-          settings.spectrogramAmplitudeRange
+          settings.spectrogramAmplitudeRange,
         );
         context.fillRect(x, y, rectWidth, rectHeight);
       }
@@ -126,7 +128,7 @@ export default class WaveFormComponent {
     axisCanvas: HTMLCanvasElement,
     settings: AnalyzeSettingsProps,
     ch: number,
-    numOfCh: number
+    numOfCh: number,
   ) {
     // draw horizontal axis
     this.drawTimeAxis(axisCanvas, settings);
@@ -164,7 +166,7 @@ export default class WaveFormComponent {
     canvas: HTMLCanvasElement,
     sampleRate: number,
     settings: AnalyzeSettingsProps,
-    ch: number
+    ch: number,
   ) {
     const context = canvas.getContext("2d", { alpha: false });
     const spectrogram = this._analyzeService.getSpectrogram(ch, settings);
@@ -193,7 +195,7 @@ export default class WaveFormComponent {
         const value = spectrogram[i][j];
         context.fillStyle = this._analyzeService.getSpectrogramColor(
           value,
-          settings.spectrogramAmplitudeRange
+          settings.spectrogramAmplitudeRange,
         );
         context.fillRect(x, y, rectWidth, rectHeight);
       }
@@ -204,7 +206,7 @@ export default class WaveFormComponent {
     axisCanvas: HTMLCanvasElement,
     settings: AnalyzeSettingsProps,
     ch: number,
-    numOfCh: number
+    numOfCh: number,
   ) {
     // draw horizontal axis
     this.drawTimeAxis(axisCanvas, settings);
@@ -239,7 +241,7 @@ export default class WaveFormComponent {
     canvas: HTMLCanvasElement,
     sampleRate: number,
     settings: AnalyzeSettingsProps,
-    ch: number
+    ch: number,
   ) {
     const context = canvas.getContext("2d", { alpha: false });
     const spectrogram = this._analyzeService.getMelSpectrogram(ch, settings);
@@ -257,7 +259,7 @@ export default class WaveFormComponent {
         const value = spectrogram[i][j];
         context.fillStyle = this._analyzeService.getSpectrogramColor(
           value,
-          settings.spectrogramAmplitudeRange
+          settings.spectrogramAmplitudeRange,
         );
         context.fillRect(x, y, rectWidth, rectHeight);
       }
@@ -266,7 +268,7 @@ export default class WaveFormComponent {
 
   private drawTimeAxis(
     axisCanvas: HTMLCanvasElement,
-    settings: AnalyzeSettingsProps
+    settings: AnalyzeSettingsProps,
   ) {
     const axisContext = axisCanvas.getContext("2d");
     const width = axisCanvas.width;
@@ -274,7 +276,7 @@ export default class WaveFormComponent {
     axisContext.font = `20px Arial`;
 
     const [niceT, digit] = AnalyzeService.roundToNearestNiceNumber(
-      (settings.maxTime - settings.minTime) / 10
+      (settings.maxTime - settings.minTime) / 10,
     );
     const dx = width / (settings.maxTime - settings.minTime);
     const t0 = Math.ceil(settings.minTime / niceT) * niceT;
@@ -298,7 +300,7 @@ export default class WaveFormComponent {
   private drawChannelLabel(
     axisCanvas: HTMLCanvasElement,
     ch: number,
-    numOfCh: number
+    numOfCh: number,
   ) {
     const axisContext = axisCanvas.getContext("2d");
     axisContext.font = `20px Arial`;

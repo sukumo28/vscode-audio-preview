@@ -98,19 +98,9 @@
     "vscode:prepublish": "webpack --mode production --devtool hidden-source-map",
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch",
-    "test-compile": "tsc -p ./",
-    "jest": "jest",
-    "test": "npm run test-compile && jest",
+    "test": "jest",
     "lint": "eslint \"src/**/*.{js,ts}\"",
     "format": "prettier --write \"src/**/*.{js,ts,css}\""
-  },
-  "jest": {
-    "automock": false,
-    "rootDir": "out",
-    "testEnvironment": "jsdom",
-    "setupFiles": [
-      "jest-canvas-mock"
-    ]
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
@@ -127,6 +117,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.2.5",
     "style-loader": "^4.0.0",
+    "ts-jest": "^29.1.2",
     "ts-loader": "^9.2.6",
     "typescript": "^5.3.3",
     "webpack": "^5.64.0",

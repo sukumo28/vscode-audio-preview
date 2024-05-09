@@ -12,7 +12,7 @@ import {
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
   static async create(
     uri: vscode.Uri,
-    backupId: string | undefined
+    backupId: string | undefined,
   ): Promise<AudioPreviewDocument | PromiseLike<AudioPreviewDocument>> {
     // If we have a backup, read that. Otherwise read the resource from the workspace
     const dataFile =
@@ -43,7 +43,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
       uri.fsPath,
       true,
       false,
-      true
+      true,
     );
     this.onDidChange = this._fsWatcher.onDidChange;
   }
@@ -59,7 +59,7 @@ class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
   }
 
   private readonly _onDidDispose = this._register(
-    new vscode.EventEmitter<void>()
+    new vscode.EventEmitter<void>(),
   );
   public readonly onDidDispose = this._onDidDispose.event;
 
@@ -86,7 +86,7 @@ export class AudioPreviewEditorProvider
         webviewOptions: {
           retainContextWhenHidden: true,
         },
-      }
+      },
     );
   }
 
@@ -99,13 +99,12 @@ export class AudioPreviewEditorProvider
   async openCustomDocument(
     uri: vscode.Uri,
     openContext: { backupId?: string },
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    _token: vscode.CancellationToken
-    /* eslint-enable @typescript-eslint/no-unused-vars */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _token: vscode.CancellationToken,
   ): Promise<AudioPreviewDocument> {
     const document: AudioPreviewDocument = await AudioPreviewDocument.create(
       uri,
-      openContext.backupId
+      openContext.backupId,
     );
 
     const listeners: vscode.Disposable[] = [];
@@ -118,7 +117,7 @@ export class AudioPreviewEditorProvider
             type: ExtMessageType.RELOAD,
           });
         }
-      })
+      }),
     );
 
     document.onDidDispose(() => disposeAll(listeners));
@@ -129,9 +128,8 @@ export class AudioPreviewEditorProvider
   async resolveCustomEditor(
     document: AudioPreviewDocument,
     webviewPanel: vscode.WebviewPanel,
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    _token: vscode.CancellationToken
-    /* eslint-enable @typescript-eslint/no-unused-vars */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _token: vscode.CancellationToken,
   ): Promise<void> {
     // Add the webview to our internal set of active webviews
     this.webviews.add(document.uri, webviewPanel);
@@ -155,7 +153,7 @@ export class AudioPreviewEditorProvider
   private onReceiveMessage(
     msg: WebviewMessage,
     webviewPanel: vscode.WebviewPanel,
-    document: AudioPreviewDocument
+    document: AudioPreviewDocument,
   ) {
     switch (msg.type) {
       case WebviewMessageType.CONFIG: {
@@ -218,7 +216,11 @@ export class AudioPreviewEditorProvider
   private getHtmlForWebview(webview: vscode.Webview): string {
     // Local path to script and css for the webview
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._context.extensionUri, "dist", "audioPreview.js")
+      vscode.Uri.joinPath(
+        this._context.extensionUri,
+        "dist",
+        "audioPreview.js",
+      ),
     );
 
     // Use a nonce to whitelist which scripts can be run

@@ -1,9 +1,12 @@
+import "./infoTableComponent.css";
+
 export default class InfoTableComponent {
   private _infoTable: HTMLTableElement;
 
-  constructor(parentID: string) {
-    const parent = document.getElementById(parentID);
+  constructor(componentRootSelector: string) {
+    const parent = document.querySelector(componentRootSelector);
     this._infoTable = document.createElement("table");
+    this._infoTable.classList.add("infoTable");
     parent.appendChild(this._infoTable);
   }
 
@@ -45,13 +48,19 @@ export default class InfoTableComponent {
 
   private insertTableData(name: string, value: string) {
     const tr = document.createElement("tr");
+    tr.classList.add("infoTableRow");
+
     const nameTd = document.createElement("td");
+    nameTd.classList.add("infoTableData");
     nameTd.textContent = name;
     tr.appendChild(nameTd);
+
     const valueTd = document.createElement("td");
     valueTd.textContent = value;
-    valueTd.id = `info-table-${name}`;
+    valueTd.classList.add("infoTableData");
+    valueTd.classList.add(`js-infoTableData-${name}`);
     tr.appendChild(valueTd);
+
     this._infoTable.appendChild(tr);
   }
 }

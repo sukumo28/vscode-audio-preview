@@ -1,7 +1,7 @@
-import InfoTableComponent from "./infoTableComponent";
-import PlayerComponent from "./playerComponent";
+import InfoTableComponent from "./infoTable/infoTableComponent";
+import PlayerComponent from "./player/playerComponent";
 import PlayerService from "../service/playerService";
-import AnalyzerComponent from "./analyzerComponent";
+import AnalyzerComponent from "./analyzer/analyzerComponent";
 import { Event, EventType } from "../events";
 import {
   ExtMessage,
@@ -15,6 +15,7 @@ import Decoder from "../decoder";
 import AnalyzeSettingsService from "../service/analyzeSettingsService";
 import AnalyzeService from "../service/analyzeService";
 import PlayerSettingsService from "../service/playerSettingsService";
+import "./webview.css";
 
 type CreateAudioContext = (sampleRate: number) => AudioContext;
 type CreateDecoder = (fileData: Uint8Array) => Promise<Decoder>;
@@ -54,12 +55,12 @@ export default class WebView {
 
     const root = document.getElementById("root");
     root.innerHTML = `
-        <div id="info-table"></div>
-        
-        <div id="player"></div>
-        
-        <div id="analyzer"></div>
-        `;
+      <div id="infoTable"></div>
+      
+      <div id="player"></div>
+      
+      <div id="analyzer"></div>
+    `;
 
     this._postMessage({ type: WebviewMessageType.CONFIG });
   }
@@ -127,7 +128,7 @@ export default class WebView {
     // show header info
     console.log("read header info");
     decoder.readAudioInfo();
-    const infoTableComponent = new InfoTableComponent("info-table");
+    const infoTableComponent = new InfoTableComponent("#infoTable");
     infoTableComponent.showInfo(
       decoder.numChannels,
       decoder.sampleRate,
@@ -160,7 +161,7 @@ export default class WebView {
       this._config.playerDefault,
     );
     const playerComponent = new PlayerComponent(
-      "player",
+      "#player",
       playerService,
       playerSettingsService,
     );
@@ -172,7 +173,7 @@ export default class WebView {
       audioBuffer,
     );
     const analyzerComponent = new AnalyzerComponent(
-      "analyzer",
+      "#analyzer",
       audioBuffer,
       analyzeService,
       analyzeSettingsService,

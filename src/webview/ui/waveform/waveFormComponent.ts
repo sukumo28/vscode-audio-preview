@@ -1,9 +1,10 @@
-import AnalyzeService from "../service/analyzeService";
-import { AnalyzeSettingsProps } from "../service/analyzeSettingsService";
+import AnalyzeService from "../../service/analyzeService";
+import { AnalyzeSettingsProps } from "../../service/analyzeSettingsService";
+import "../../css/figure.css";
 
 export default class WaveFormComponent {
   constructor(
-    parentID: string,
+    componentRootSelector: string,
     width: number,
     height: number,
     settings: AnalyzeSettingsProps,
@@ -12,12 +13,13 @@ export default class WaveFormComponent {
     ch: number,
     numOfCh: number,
   ) {
-    const parent = document.getElementById(parentID);
+    const componentRoot = document.querySelector(componentRootSelector);
 
     const canvasBox = document.createElement("div");
-    canvasBox.className = "canvas-box";
+    canvasBox.className = "canvasBox";
 
     const canvas = document.createElement("canvas");
+    canvas.className = "mainCanvas";
     canvas.width = width;
     canvas.height = height;
     const context = canvas.getContext("2d", { alpha: false });
@@ -25,7 +27,7 @@ export default class WaveFormComponent {
     canvasBox.appendChild(canvas);
 
     const axisCanvas = document.createElement("canvas");
-    axisCanvas.className = "axis-canvas";
+    axisCanvas.className = "axisCanvas";
     axisCanvas.width = width;
     axisCanvas.height = height;
     const axisContext = axisCanvas.getContext("2d");
@@ -82,7 +84,7 @@ export default class WaveFormComponent {
     }
 
     canvasBox.appendChild(axisCanvas);
-    parent.appendChild(canvasBox);
+    componentRoot.appendChild(canvasBox);
 
     const startIndex = Math.floor(settings.minTime * sampleRate);
     const endIndex = Math.floor(settings.maxTime * sampleRate);

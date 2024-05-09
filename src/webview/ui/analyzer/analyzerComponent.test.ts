@@ -1,13 +1,13 @@
-import { EventType } from "../../../webview/events";
-import AnalyzeService from "../../../webview/service/analyzeService";
-import AnalyzeSettingsService from "../../../webview/service/analyzeSettingsService";
-import AnalyzerComponent from "../../../webview/ui/analyzerComponent";
+import { EventType } from "../../events";
+import AnalyzeService from "../../service/analyzeService";
+import AnalyzeSettingsService from "../../service/analyzeSettingsService";
+import AnalyzerComponent from "./analyzerComponent";
 import {
   createAudioContext,
   getRandomFloat,
   getRandomInt,
   waitEventForAction,
-} from "../../helper";
+} from "../../../__mocks__/helper";
 
 describe("analyser", () => {
   let audioBuffer: AudioBuffer;
@@ -37,7 +37,7 @@ describe("analyser", () => {
       audioBuffer,
     );
     analyzerComponent = new AnalyzerComponent(
-      "analyzer",
+      "#analyzer",
       audioBuffer,
       analyzeService,
       analyzeSettingsService,
@@ -50,21 +50,23 @@ describe("analyser", () => {
   });
 
   test("analyzer should have analyze-button", () => {
-    expect(document.getElementById("analyze-button")).toBeTruthy();
+    expect(document.querySelector(".analyzeButton")).toBeTruthy();
   });
 
   test("analyzer should have analyze-setting-button", () => {
-    expect(document.getElementById("analyze-setting-button")).toBeTruthy();
+    expect(document.querySelector(".analyzeSettingButton")).toBeTruthy();
   });
 
   test("analyzer should have analyze-setting", () => {
-    expect(document.getElementById("analyze-setting")).toBeTruthy();
+    expect(document.querySelector(".analyzeSetting")).toBeTruthy();
   });
 
   test("display of analyze-setting should be controled by analyze-setting-button", () => {
-    const analyzeSetting = document.getElementById("analyze-setting");
-    const analyzeSettingButton = document.getElementById(
-      "analyze-setting-button",
+    const analyzeSetting = document.querySelector(
+      ".analyzeSetting",
+    ) as HTMLElement;
+    const analyzeSettingButton = document.querySelector(
+      ".analyzeSettingButton",
     );
     // at first, analyze-setting should be hidden
     expect(analyzeSetting?.style.display).toBe("none");
@@ -78,7 +80,7 @@ describe("analyser", () => {
   test("figures in analyze-result-box should be created after analyze", () => {
     analyzerComponent.analyze();
     const figures = document
-      .getElementById("analyze-result-box")
+      .querySelector(".analyzeResultBox")
       ?.querySelectorAll("canvas");
     // figures: waveform+axis and spectrogram+axis for each channels
     expect(figures.length).toBe(audioBuffer.numberOfChannels * 4);
@@ -86,8 +88,8 @@ describe("analyser", () => {
 
   test("seek-bar on the figures should be created after analyze", () => {
     analyzerComponent.analyze();
-    expect(document.querySelector(".seek-div")).toBeTruthy();
-    expect(document.querySelector(".input-seek-bar")).toBeTruthy();
+    expect(document.querySelector(".seekDiv")).toBeTruthy();
+    expect(document.querySelector(".inputSeekBar")).toBeTruthy();
   });
 
   test("waveform-visible should be updated when recieving update-waveform-visible event", () => {
@@ -99,7 +101,7 @@ describe("analyser", () => {
       }),
     );
     const waveformVisible = <HTMLInputElement>(
-      document.getElementById("analyze-waveform-visible")
+      document.querySelector(".js-analyzeSetting-waveformVisible")
     );
     expect(waveformVisible.checked).toBe(true);
 
@@ -122,7 +124,7 @@ describe("analyser", () => {
       }),
     );
     const spectrogramVisible = <HTMLInputElement>(
-      document.getElementById("analyze-spectrogram-visible")
+      document.querySelector(".js-analyzeSetting-spectrogramVisible")
     );
     expect(spectrogramVisible.checked).toBe(true);
 
@@ -140,7 +142,7 @@ describe("analyser", () => {
     const index = getRandomInt(0, 7);
     const windowSize = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768][index];
     const windowSizeSelect = <HTMLSelectElement>(
-      document.getElementById("analyze-window-size")
+      document.querySelector(".js-analyzeSetting-windowSize")
     );
     windowSizeSelect.selectedIndex = index;
     windowSizeSelect.dispatchEvent(new Event(EventType.CHANGE));
@@ -156,7 +158,7 @@ describe("analyser", () => {
       }),
     );
     const windowSizeSelect = <HTMLSelectElement>(
-      document.getElementById("analyze-window-size")
+      document.querySelector(".js-analyzeSetting-windowSize")
     );
     expect(windowSizeSelect.selectedIndex).toBe(index);
   });
@@ -164,7 +166,7 @@ describe("analyser", () => {
   test("frequency scale should be updated when user change frequency-scale-select", () => {
     const frequencyScale = getRandomInt(0, 2);
     const frequencyScaleSelect = <HTMLSelectElement>(
-      document.getElementById("analyze-frequency-scale")
+      document.querySelector(".js-analyzeSetting-frequencyScale")
     );
     frequencyScaleSelect.selectedIndex = frequencyScale;
     frequencyScaleSelect.dispatchEvent(new Event(EventType.CHANGE));
@@ -180,7 +182,7 @@ describe("analyser", () => {
       }),
     );
     const frequencyScaleSelect = <HTMLSelectElement>(
-      document.getElementById("analyze-frequency-scale")
+      document.querySelector(".js-analyzeSetting-frequencyScale")
     );
     expect(frequencyScaleSelect.selectedIndex).toBe(frequencyScale);
   });
@@ -188,7 +190,7 @@ describe("analyser", () => {
   test("mel-filter-num should be updated when user change mel-filter-num-input", () => {
     const melFilterNum = getRandomFloat(20, 200);
     const melFilterNumInput = <HTMLInputElement>(
-      document.getElementById("analyze-mel-filter-num")
+      document.querySelector(".js-analyzeSetting-melFilterNum")
     );
     melFilterNumInput.value = melFilterNum.toString();
     melFilterNumInput.dispatchEvent(new Event(EventType.CHANGE));
@@ -204,7 +206,7 @@ describe("analyser", () => {
       }),
     );
     const melFilterNumInput = <HTMLInputElement>(
-      document.getElementById("analyze-mel-filter-num")
+      document.querySelector(".js-analyzeSetting-melFilterNum")
     );
     expect(Number(melFilterNumInput.value)).toBe(melFilterNum);
   });
@@ -212,7 +214,7 @@ describe("analyser", () => {
   test("min-frequency should be updated when user change min-frequency-input", () => {
     const minFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
     const minFrequencyInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-frequency")
+      document.querySelector(".js-analyzeSetting-minFrequency")
     );
     minFrequencyInput.value = minFrequency.toString();
     minFrequencyInput.dispatchEvent(new Event(EventType.CHANGE));
@@ -228,7 +230,7 @@ describe("analyser", () => {
       }),
     );
     const minFrequencyInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-frequency")
+      document.querySelector(".js-analyzeSetting-minFrequency")
     );
     expect(Number(minFrequencyInput.value)).toBeCloseTo(minFrequency);
   });
@@ -239,7 +241,7 @@ describe("analyser", () => {
       audioBuffer.sampleRate / 2,
     );
     const maxFrequencyInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-frequency")
+      document.querySelector(".js-analyzeSetting-maxFrequency")
     );
     maxFrequencyInput.value = maxFrequency.toString();
     maxFrequencyInput.dispatchEvent(new Event(EventType.CHANGE));
@@ -258,7 +260,7 @@ describe("analyser", () => {
       }),
     );
     const maxFrequencyInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-frequency")
+      document.querySelector(".js-analyzeSetting-maxFrequency")
     );
     expect(Number(maxFrequencyInput.value)).toBeCloseTo(maxFrequency);
   });
@@ -266,7 +268,7 @@ describe("analyser", () => {
   test("min-time should be updated when user change min-time-input", () => {
     const minTime = getRandomFloat(0, audioBuffer.duration);
     const minTimeInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-time")
+      document.querySelector(".js-analyzeSetting-minTime")
     );
     minTimeInput.value = minTime.toString();
     minTimeInput.dispatchEvent(new Event(EventType.CHANGE));
@@ -282,7 +284,7 @@ describe("analyser", () => {
       }),
     );
     const minTimeInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-time")
+      document.querySelector(".js-analyzeSetting-minTime")
     );
     expect(Number(minTimeInput.value)).toBeCloseTo(minTime);
   });
@@ -293,7 +295,7 @@ describe("analyser", () => {
       audioBuffer.duration,
     );
     const maxTimeInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-time")
+      document.querySelector(".js-analyzeSetting-maxTime")
     );
     maxTimeInput.value = maxTime.toString();
     maxTimeInput.dispatchEvent(new Event(EventType.CHANGE));
@@ -312,7 +314,7 @@ describe("analyser", () => {
       }),
     );
     const maxTimeInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-time")
+      document.querySelector(".js-analyzeSetting-maxTime")
     );
     expect(Number(maxTimeInput.value)).toBeCloseTo(maxTime);
   });
@@ -323,7 +325,7 @@ describe("analyser", () => {
       analyzeSettingsService.maxAmplitude,
     );
     const minAmplitudeInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-amplitude")
+      document.querySelector(".js-analyzeSetting-minAmplitude")
     );
     minAmplitudeInput.value = minAmplitude.toString();
     minAmplitudeInput.dispatchEvent(new Event(EventType.CHANGE));
@@ -342,7 +344,7 @@ describe("analyser", () => {
       }),
     );
     const minAmplitudeInput = <HTMLInputElement>(
-      document.getElementById("analyze-min-amplitude")
+      document.querySelector(".js-analyzeSetting-minAmplitude")
     );
     expect(Number(minAmplitudeInput.value)).toBeCloseTo(minAmplitude);
   });
@@ -350,7 +352,7 @@ describe("analyser", () => {
   test("max-amplitude should be updated when user change max-amplitude-input", () => {
     const maxAmplitude = getRandomFloat(analyzeSettingsService.minAmplitude, 1);
     const maxAmplitudeInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-amplitude")
+      document.querySelector(".js-analyzeSetting-maxAmplitude")
     );
     maxAmplitudeInput.value = maxAmplitude.toString();
     maxAmplitudeInput.dispatchEvent(new Event(EventType.CHANGE));
@@ -366,7 +368,7 @@ describe("analyser", () => {
       }),
     );
     const maxAmplitudeInput = <HTMLInputElement>(
-      document.getElementById("analyze-max-amplitude")
+      document.querySelector(".js-analyzeSetting-maxAmplitude")
     );
     expect(Number(maxAmplitudeInput.value)).toBeCloseTo(maxAmplitude);
   });
@@ -374,7 +376,7 @@ describe("analyser", () => {
   test("spectrogram-amplitude-range should be updated when user change spectrogram-amplitude-range-input", () => {
     const spectrogramAmplitudeRange = getRandomFloat(-90, 0);
     const spectrogramAmplitudeRangeInput = <HTMLInputElement>(
-      document.getElementById("analyze-spectrogram-amplitude-range")
+      document.querySelector(".js-analyzeSetting-spectrogramAmplitudeRange")
     );
     spectrogramAmplitudeRangeInput.value = spectrogramAmplitudeRange.toString();
     spectrogramAmplitudeRangeInput.dispatchEvent(new Event(EventType.CHANGE));
@@ -392,7 +394,7 @@ describe("analyser", () => {
       }),
     );
     const spectrogramAmplitudeRangeInput = <HTMLInputElement>(
-      document.getElementById("analyze-spectrogram-amplitude-range")
+      document.querySelector(".js-analyzeSetting-spectrogramAmplitudeRange")
     );
     expect(Number(spectrogramAmplitudeRangeInput.value)).toBeCloseTo(
       spectrogramAmplitudeRange,
@@ -424,14 +426,14 @@ describe("auto analyze", () => {
       audioBuffer,
     );
     const ac = new AnalyzerComponent(
-      "analyzer",
+      "#analyzer",
       audioBuffer,
       analyzeService,
       analyzeSettingsService,
       true,
     );
     expect(
-      document.getElementById("analyze-result-box")?.querySelectorAll("canvas")
+      document.querySelector(".analyzeResultBox")?.querySelectorAll("canvas")
         .length,
     ).toBe(8);
     ac.dispose();
@@ -460,14 +462,14 @@ describe("auto analyze", () => {
       audioBuffer,
     );
     const ac = new AnalyzerComponent(
-      "analyzer",
+      "#analyzer",
       audioBuffer,
       analyzeService,
       analyzeSettingsService,
       false,
     );
     expect(
-      document.getElementById("analyze-result-box")?.querySelectorAll("canvas")
+      document.querySelector(".analyzeResultBox")?.querySelectorAll("canvas")
         .length,
     ).toBe(0);
     ac.dispose();
@@ -505,7 +507,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
     analyzeSettingsService.maxTime = 6;
     // audio: 10s, minTime: 2s, maxTime: 6s
     analyzerComponent = new AnalyzerComponent(
-      "analyzer",
+      "#analyzer",
       audioBuffer,
       analyzeService,
       analyzeSettingsService,
@@ -519,9 +521,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
   });
 
   test("value: 50(5s), position: 75%", () => {
-    const visibleSeekbar = <HTMLInputElement>(
-      document.querySelector(".seek-div")
-    );
+    const visibleSeekbar = <HTMLInputElement>document.querySelector(".seekDiv");
     window.dispatchEvent(
       new CustomEvent("update-seekbar", {
         detail: {
@@ -533,9 +533,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
   });
 
   test("value: 5(0.5s), position: 0%", () => {
-    const visibleSeekbar = <HTMLInputElement>(
-      document.querySelector(".seek-div")
-    );
+    const visibleSeekbar = <HTMLInputElement>document.querySelector(".seekDiv");
     window.dispatchEvent(
       new CustomEvent("update-seekbar", {
         detail: {
@@ -547,9 +545,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
   });
 
   test("value: 90(9s), position: 100%", () => {
-    const visibleSeekbar = <HTMLInputElement>(
-      document.querySelector(".seek-div")
-    );
+    const visibleSeekbar = <HTMLInputElement>document.querySelector(".seekDiv");
     window.dispatchEvent(
       new CustomEvent("update-seekbar", {
         detail: {
@@ -592,7 +588,7 @@ describe("input-seekbar event should be dispatched when user change seek-bar on 
     analyzeSettingsService.maxTime = 6;
     // audio: 10s, minTime: 2s, maxTime: 6s
     analyzerComponent = new AnalyzerComponent(
-      "analyzer",
+      "#analyzer",
       audioBuffer,
       analyzeService,
       analyzeSettingsService,
@@ -609,7 +605,7 @@ describe("input-seekbar event should be dispatched when user change seek-bar on 
     const detail = await waitEventForAction(
       () => {
         const inputSeekbar = <HTMLInputElement>(
-          document.querySelector(".input-seek-bar")
+          document.querySelector(".inputSeekBar")
         );
         inputSeekbar.value = "0";
         inputSeekbar.dispatchEvent(new Event(EventType.CHANGE));
@@ -624,7 +620,7 @@ describe("input-seekbar event should be dispatched when user change seek-bar on 
     const detail = await waitEventForAction(
       () => {
         const inputSeekbar = <HTMLInputElement>(
-          document.querySelector(".input-seek-bar")
+          document.querySelector(".inputSeekBar")
         );
         inputSeekbar.value = "25";
         inputSeekbar.dispatchEvent(new Event(EventType.CHANGE));
@@ -639,7 +635,7 @@ describe("input-seekbar event should be dispatched when user change seek-bar on 
     const detail = await waitEventForAction(
       () => {
         const inputSeekbar = <HTMLInputElement>(
-          document.querySelector(".input-seek-bar")
+          document.querySelector(".inputSeekBar")
         );
         inputSeekbar.value = "100";
         inputSeekbar.dispatchEvent(new Event(EventType.CHANGE));

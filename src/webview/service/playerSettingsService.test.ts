@@ -1,5 +1,5 @@
-import { PlayerDefault } from "../../../config";
-import PlayerSettingService from "../../../webview/service/playerSettingsService";
+import { PlayerDefault } from "../../config";
+import PlayerSettingService from "./playerSettingsService";
 
 describe("fromDefaultSettings", () => {
   let defaultSettings: PlayerDefault;
