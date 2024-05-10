@@ -45,23 +45,23 @@ You can configure default value of player settings like example below.
 ```jsonc
 "WavPreview.playerDefault": {
     /*
-        Choose the scale of the volume bar
-        true: dB scale, false: linear scale
-        default: false
+    Choose the scale of the volume bar
+    true: dB scale, false: linear scale
+    default: false
     */
     "volumeUnitDb": false,
 
     /*
-        Initial player volume in dB scale. [-80.0, 0.0]
-        This setting is valid when volumeUnitDb is true.
-        default: 0.0
+    Initial player volume in dB scale. [-80.0, 0.0]
+    This setting is valid when volumeUnitDb is true.
+    default: 0.0
     */
     "initialVolumeDb": 0.0,
 
     /*
-        Initial player volume in linear scale. [0, 100]
-        This setting is valid when volumeUnitDb is false.
-        default: 100
+    Initial player volume in linear scale. [0, 100]
+    This setting is valid when volumeUnitDb is false.
+    default: 100
     */
     "initialVolume": 100,
 
@@ -74,79 +74,80 @@ You can configure default value of analyze settings like example below.
 
 ```jsonc
 "WavPreview.analyzeDefault": {
-        // Settings about WaveForm
-        /*
-         Make the waveform visible or hidden.
-         true: visible, false: hidden
-         default: true
-        */
-        "waveformVisible": true,
+    // Settings about WaveForm
 
-        /*
-         Adjust height of the waveform.
-         The valid range of [0.2, 2.0] scales the default height.
-         default: 1.0
-         This option can only be configured through the settings file.
-        */
-        "waveformVerticalScale": 1.0,
+    /*
+    Make the waveform visible or hidden.
+    true: visible, false: hidden
+    default: true
+    */
+    "waveformVisible": true,
 
-        /*
-         Range of amplitude displayed on the figure. [-100,100]
-         Default value is automatically expanded to fit min and max value of audio data.
-        */
-        // default: min amplitude of audio data
-        "minAmplitude": -1,
-        // default: max amplitude of audio data
-        "maxAmplitude": 1,
+    /*
+    Adjust height of the waveform.
+    The valid range of [0.2, 2.0] scales the default height.
+    default: 1.0
+    This option can only be configured through the settings file.
+    */
+    "waveformVerticalScale": 1.0,
 
-        // Settings about Spectrogram
-        /*
-         Make the spectrogram visible or hidden.
-         true: visible, false: hidden
-         default: true
-        */
-        "spectrogramVisible": true,
+    /*
+    Range of amplitude displayed on the figure. [-100,100]
+    Default value is automatically expanded to fit min and max value of audio data.
+    */
+    // default: min amplitude of audio data
+    "minAmplitude": -1,
+    // default: max amplitude of audio data
+    "maxAmplitude": 1,
 
-        /*
-         The valid range of [0.2, 2.0] scales the default height.
-         default: 1.0
-         This option can only be configured through the settings file.
-        */
-        "spectrogramVerticalScale": 1.0,
+    // Settings about Spectrogram
 
-        /*
-         FFT window sizw. [0,7]
-         You can choose from values below.
-         0:256, 1:512, 2:1024, 3:2048, 4:4096, 5:8192, 6:16384, 7:32768
-         default: 2
-        */
-        "windowSizeIndex": 5,
+    /*
+    Make the spectrogram visible or hidden.
+    true: visible, false: hidden
+    default: true
+    */
+    "spectrogramVisible": true,
 
-        // Range of frequency displayed on the figure. [0,sampleRate/2]
-        // default: 0
-        "minFrequency": 1000,
-        // default: sampleRate/2
-        "maxFrequency": 8000,
+    /*
+    The valid range of [0.2, 2.0] scales the default height.
+    default: 1.0
+    This option can only be configured through the settings file.
+    */
+    "spectrogramVerticalScale": 1.0,
 
-        /*
-         Range of amplitude(dB) displayed on the spectrogram. [-1000, 0]
-         Since the maximum value of Amplitude is adjusted to be 0 dB, set a negative value.
-         default: -90
-        */
-        "spectrogramAmplitudeRange": -100,
+    /*
+    FFT window sizw. [0,7]
+    You can choose from values below.
+    0:256, 1:512, 2:1024, 3:2048, 4:4096, 5:8192, 6:16384, 7:32768
+    default: 2
+    */
+    "windowSizeIndex": 5,
 
-        /*
-         Frequency Scale of spectrogram. [0,2]
-         You can choose from values below.
-         0:Linear, 1:Log, 2:Mel
-         default: 0
-        */
-        "frequencyScale": 1,
+    // Range of frequency displayed on the figure. [0,sampleRate/2]
+    // default: 0
+    "minFrequency": 1000,
+    // default: sampleRate/2
+    "maxFrequency": 8000,
 
-        // Number of filter in melFilterBank. [20, 200]
-        // default: 40
-        "melFilterNum": 100
-    }
+    /*
+    Range of amplitude(dB) displayed on the spectrogram. [-1000, 0]
+    Since the maximum value of Amplitude is adjusted to be 0 dB, set a negative value.
+    default: -90
+    */
+    "spectrogramAmplitudeRange": -100,
+
+    /*
+    Frequency Scale of spectrogram. [0,2]
+    You can choose from values below.
+    0:Linear, 1:Log, 2:Mel
+    default: 0
+    */
+    "frequencyScale": 1,
+
+    // Number of filter in melFilterBank. [20, 200]
+    // default: 40
+    "melFilterNum": 100
 }
 ```
 
