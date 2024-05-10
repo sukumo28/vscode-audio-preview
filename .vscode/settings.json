@@ -7,6 +7,7 @@
   "typescript.tsc.autoDetect": "off",
 
   "editor.formatOnSave": true,
+  "prettier.configPath": ".prettierrc",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
