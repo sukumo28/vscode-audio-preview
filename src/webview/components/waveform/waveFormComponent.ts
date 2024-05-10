@@ -15,16 +15,13 @@ export default class WaveFormComponent {
   ) {
     const componentRoot = document.querySelector(componentRootSelector);
 
-    const canvasBox = document.createElement("div");
-    canvasBox.className = "canvasBox";
-
     const canvas = document.createElement("canvas");
     canvas.className = "mainCanvas";
     canvas.width = width;
     canvas.height = height;
     const context = canvas.getContext("2d", { alpha: false });
     context.fillStyle = "rgb(160,60,200)";
-    canvasBox.appendChild(canvas);
+    componentRoot.appendChild(canvas);
 
     const axisCanvas = document.createElement("canvas");
     axisCanvas.className = "axisCanvas";
@@ -32,6 +29,7 @@ export default class WaveFormComponent {
     axisCanvas.height = height;
     const axisContext = axisCanvas.getContext("2d");
     axisContext.font = `12px Arial`;
+    componentRoot.appendChild(axisCanvas);
 
     // draw horizontal axis
     const [niceT, digitT] = AnalyzeService.roundToNearestNiceNumber(
@@ -82,9 +80,6 @@ export default class WaveFormComponent {
         }
       }
     }
-
-    canvasBox.appendChild(axisCanvas);
-    componentRoot.appendChild(canvasBox);
 
     const startIndex = Math.floor(settings.minTime * sampleRate);
     const endIndex = Math.floor(settings.maxTime * sampleRate);

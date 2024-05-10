@@ -8,6 +8,7 @@ import AnalyzeSettingsService, {
 } from "../../services/analyzeSettingsService";
 import WaveFormComponent from "../waveform/waveFormComponent";
 import SpectrogramComponent from "../spectrogram/spectrogramComponent";
+import FigureInteractionComponent from "../figureInteraction/figureInteractionComponent";
 
 export default class AnalyzerComponent extends Component {
   private _componentRootSelector: string;
@@ -411,8 +412,13 @@ export default class AnalyzerComponent extends Component {
 
     for (let ch = 0; ch < this._audioBuffer.numberOfChannels; ch++) {
       if (this._analyzeSettingsService.waveformVisible) {
+        const canvasBox = document.createElement("div");
+        const canvasBoxClass = `js-canvasBoxWaveform${ch}`;
+        canvasBox.classList.add("canvasBox", canvasBoxClass);
+        this._analyzeResultBox.appendChild(canvasBox);
+
         new WaveFormComponent(
-          `${this._componentRootSelector} .analyzeResultBox`,
+          `${this._componentRootSelector} .analyzeResultBox .${canvasBoxClass}`,
           AnalyzeSettingsService.WAVEFORM_CANVAS_WIDTH,
           AnalyzeSettingsService.WAVEFORM_CANVAS_HEIGHT *
             this._analyzeSettingsService.waveformVerticalScale,
@@ -422,11 +428,24 @@ export default class AnalyzerComponent extends Component {
           ch,
           this._audioBuffer.numberOfChannels,
         );
+
+        new FigureInteractionComponent(
+          `${this._componentRootSelector} .analyzeResultBox .${canvasBoxClass}`,
+          this._playerService,
+          this._audioBuffer,
+          settings.minTime,
+          settings.maxTime,
+        );
       }
 
       if (this._analyzeSettingsService.spectrogramVisible) {
+        const canvasBox = document.createElement("div");
+        const canvasBoxClass = `js-canvasBoxSpectrogram${ch}`;
+        canvasBox.classList.add("canvasBox", canvasBoxClass);
+        this._analyzeResultBox.appendChild(canvasBox);
+
         new SpectrogramComponent(
-          `${this._componentRootSelector} .analyzeResultBox`,
+          `${this._componentRootSelector} .analyzeResultBox .${canvasBoxClass}`,
           AnalyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH,
           AnalyzeSettingsService.SPECTROGRAM_CANVAS_HEIGHT *
             this._analyzeSettingsService.spectrogramVerticalScale,
@@ -436,49 +455,16 @@ export default class AnalyzerComponent extends Component {
           ch,
           this._audioBuffer.numberOfChannels,
         );
+
+        new FigureInteractionComponent(
+          `${this._componentRootSelector} .analyzeResultBox .${canvasBoxClass}`,
+          this._playerService,
+          this._audioBuffer,
+          settings.minTime,
+          settings.maxTime,
+        );
       }
     }
-
-    // register seekbar on figures
-    const visibleBar = document.createElement("div");
-    visibleBar.className = "seekDiv";
-    this._analyzeResultBox.appendChild(visibleBar);
-
-    const inputSeekbar = document.createElement("input");
-    inputSeekbar.type = "range";
-    inputSeekbar.className = "inputSeekBar";
-    inputSeekbar.step = "0.00001";
-    this._analyzeResultBox.appendChild(inputSeekbar);
-
-    this._addEventlistener(
-      this._playerService,
-      EventType.UPDATE_SEEKBAR,
-      (e: CustomEventInit) => {
-        const percentInFullRange = e.detail.value;
-        const sec = (percentInFullRange * this._audioBuffer.duration) / 100;
-        const percentInFigureRange =
-          ((sec - settings.minTime) / (settings.maxTime - settings.minTime)) *
-          100;
-        if (percentInFigureRange < 0) {
-          visibleBar.style.width = `0%`;
-          return;
-        }
-        if (100 < percentInFigureRange) {
-          visibleBar.style.width = `100%`;
-          return;
-        }
-        visibleBar.style.width = `${percentInFigureRange}%`;
-      },
-    );
-    this._addEventlistener(inputSeekbar, EventType.CHANGE, () => {
-      const percentInFigureRange = Number(inputSeekbar.value);
-      const sec =
-        (percentInFigureRange / 100) * (settings.maxTime - settings.minTime) +
-        settings.minTime;
-      const percentInFullRange = (sec / this._audioBuffer.duration) * 100;
-      this._playerService.onSeekbarInput(percentInFullRange);
-      inputSeekbar.value = "100";
-    });
 
     // enable analyze button
     this._analyzeButton.style.display = "block";

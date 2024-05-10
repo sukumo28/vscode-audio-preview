@@ -21,22 +21,17 @@ export default class WaveFormComponent {
     const componentRoot = document.querySelector(componentRootSelector);
     this._analyzeService = analyzeService;
 
-    const canvasBox = document.createElement("div");
-    canvasBox.className = "canvasBox";
-
     const canvas = document.createElement("canvas");
     canvas.className = "mainCanvas";
     canvas.width = width;
     canvas.height = height;
-    canvasBox.appendChild(canvas);
+    componentRoot.appendChild(canvas);
 
     const axisCanvas = document.createElement("canvas");
     axisCanvas.className = "axisCanvas";
     axisCanvas.width = width;
     axisCanvas.height = height;
-    canvasBox.appendChild(axisCanvas);
-
-    componentRoot.appendChild(canvasBox);
+    componentRoot.appendChild(axisCanvas);
 
     switch (settings.frequencyScale) {
       case FrequencyScale.Linear:
