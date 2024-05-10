@@ -9,7 +9,7 @@ export default class Component extends Disposable {
   protected _addEventlistener(
     target: EventTarget,
     type: string,
-    handler: EventListenerOrEventListenerObject
+    handler: EventListenerOrEventListenerObject,
   ) {
     this._register(new DisposableEventListener(target, type, handler));
   }

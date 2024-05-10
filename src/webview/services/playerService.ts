@@ -64,7 +64,7 @@ export default class PlayerService extends Service {
         detail: {
           value: this._isPlaying,
         },
-      })
+      }),
     );
 
     // move seek bar
@@ -87,7 +87,7 @@ export default class PlayerService extends Service {
         detail: {
           value: this._isPlaying,
         },
-      })
+      }),
     );
   }
 
@@ -103,7 +103,7 @@ export default class PlayerService extends Service {
           value: this._seekbarValue,
           pos: current,
         },
-      })
+      }),
     );
 
     // pause if finish playing

@@ -9,7 +9,7 @@ export default class Service extends Disposable implements EventTarget {
 
   public addEventListener(
     type: string,
-    listener: EventListenerOrEventListenerObject
+    listener: EventListenerOrEventListenerObject,
   ): void {
     if (!this._listeners.has(type)) {
       this._listeners.set(type, []);
@@ -30,7 +30,7 @@ export default class Service extends Disposable implements EventTarget {
 
   public removeEventListener(
     type: string,
-    callback: EventListenerOrEventListenerObject
+    callback: EventListenerOrEventListenerObject,
   ): void {
     const listeners = this._listeners.get(type);
     if (!listeners) {

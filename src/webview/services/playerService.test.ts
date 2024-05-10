@@ -20,7 +20,7 @@ describe("playerService", () => {
         playerService.play();
       },
       playerService,
-      EventType.UPDATE_IS_PLAYING
+      EventType.UPDATE_IS_PLAYING,
     );
 
     expect(detail.value).toBe(true);
@@ -32,7 +32,7 @@ describe("playerService", () => {
         playerService.tick();
       },
       playerService,
-      EventType.UPDATE_SEEKBAR
+      EventType.UPDATE_SEEKBAR,
     );
 
     expect(detail.value).toBeDefined();
@@ -44,7 +44,7 @@ describe("playerService", () => {
         playerService.pause();
       },
       playerService,
-      EventType.UPDATE_IS_PLAYING
+      EventType.UPDATE_IS_PLAYING,
     );
 
     expect(detail.value).toBe(false);

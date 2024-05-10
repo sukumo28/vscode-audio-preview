@@ -39,7 +39,7 @@ export class DisposableEventListener extends Disposable {
   constructor(
     target: EventTarget,
     type: string,
-    handler: EventListenerOrEventListenerObject
+    handler: EventListenerOrEventListenerObject,
   ) {
     super();
     this._target = target;

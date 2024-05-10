@@ -14,7 +14,7 @@ export default class PlayerComponent extends Component {
   constructor(
     componentRootID: string,
     playerService: PlayerService,
-    playerSettingService: PlayerSettingsService
+    playerSettingService: PlayerSettingsService,
   ) {
     super();
     this._playerService = playerService;
@@ -69,7 +69,7 @@ export default class PlayerComponent extends Component {
         visibleSeekbar.value = e.detail.value;
         seekPosText.textContent =
           "position " + Number(e.detail.pos).toFixed(3) + " s";
-      }
+      },
     );
 
     // init volumebar
@@ -98,7 +98,7 @@ export default class PlayerComponent extends Component {
     this._volumeBar.value = String(
       this._playerSettingService.volumeUnitDb
         ? this._playerSettingService.initialVolumeDb
-        : this._playerSettingService.initialVolume
+        : this._playerSettingService.initialVolume,
     );
     updateVolume();
 
@@ -124,7 +124,7 @@ export default class PlayerComponent extends Component {
         } else {
           this._playButton.textContent = "play";
         }
-      }
+      },
     );
 
     // register keyboard shortcuts

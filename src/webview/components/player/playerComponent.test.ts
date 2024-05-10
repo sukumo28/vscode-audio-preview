@@ -25,7 +25,7 @@ describe("playerComponent", () => {
     playerComponent = new PlayerComponent(
       "#player",
       playerService,
-      playerSettingService
+      playerSettingService,
     );
   });
 
@@ -59,7 +59,7 @@ describe("playerComponent", () => {
         userinputSeekbar.dispatchEvent(new Event("change"));
       },
       playerService,
-      EventType.UPDATE_SEEKBAR
+      EventType.UPDATE_SEEKBAR,
     );
     expect(detail.value).toBeGreaterThanOrEqual(50);
   });
@@ -71,7 +71,7 @@ describe("playerComponent", () => {
         detail: {
           value: 50,
         },
-      })
+      }),
     );
     expect(visibleSeekbar.value).toBe("50");
   });
@@ -106,7 +106,7 @@ describe("playerComponent", () => {
     const playerComponent = new PlayerComponent(
       "#player2",
       playerService,
-      playerSettingService
+      playerSettingService,
     );
 
     const volumeBar = <HTMLInputElement>player2.querySelector(".volumeBar");
@@ -156,7 +156,7 @@ describe("playerComponent", () => {
       playerService.pause();
     }
     window.dispatchEvent(
-      new KeyboardEvent("keydown", { isComposing: false, code: "Space" })
+      new KeyboardEvent("keydown", { isComposing: false, code: "Space" }),
     );
     expect(playerService.isPlaying).toBe(true);
   });

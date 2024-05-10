@@ -23,7 +23,7 @@ export default class AnalyzeService {
 
     // find which number in niceNumbers is nearest
     const dist: number[] = niceNumbers.map((value) =>
-      Math.abs(Math.log10(mantissa) - Math.log10(value))
+      Math.abs(Math.log10(mantissa) - Math.log10(value)),
     );
     const niceNumber = niceNumbers[dist.indexOf(Math.min(...dist))];
 
@@ -178,7 +178,7 @@ export default class AnalyzeService {
         spectrum,
         sampleRate,
         minFreqIndex,
-        maxFreqIndex
+        maxFreqIndex,
       );
 
       spectrogram.push(melSpectrum);
@@ -207,7 +207,7 @@ export default class AnalyzeService {
     spectrum: number[],
     sampleRate: number,
     minFreqIndex: number,
-    maxFreqIndex: number
+    maxFreqIndex: number,
   ) {
     const minMel = this.hzToMel((minFreqIndex * sampleRate) / spectrum.length);
     const maxMel = this.hzToMel((maxFreqIndex * sampleRate) / spectrum.length);
@@ -220,13 +220,13 @@ export default class AnalyzeService {
       const centerMel = minMel + (i + 1) * melStep;
       const endMel = minMel + (i + 2) * melStep;
       const startIndex = Math.round(
-        (this.melToHz(startMel) * spectrum.length) / sampleRate
+        (this.melToHz(startMel) * spectrum.length) / sampleRate,
       );
       const centerIndex = Math.round(
-        (this.melToHz(centerMel) * spectrum.length) / sampleRate
+        (this.melToHz(centerMel) * spectrum.length) / sampleRate,
       );
       const endIndex = Math.round(
-        (this.melToHz(endMel) * spectrum.length) / sampleRate
+        (this.melToHz(endMel) * spectrum.length) / sampleRate,
       );
       for (let j = 0; j < spectrum.length; j++) {
         if (j < startIndex || j > endIndex) {

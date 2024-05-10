@@ -34,7 +34,7 @@ describe("analyserComponent", () => {
     const analyzeService = new AnalyzeService(audioBuffer);
     analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(
       ad,
-      audioBuffer
+      audioBuffer,
     );
     const playerService = new PlayerService(audioContext, audioBuffer);
     analyzerComponent = new AnalyzerComponent(
@@ -43,7 +43,7 @@ describe("analyserComponent", () => {
       analyzeService,
       analyzeSettingsService,
       playerService,
-      false
+      false,
     );
   });
 
@@ -65,10 +65,10 @@ describe("analyserComponent", () => {
 
   test("display of analyze-setting should be controled by analyze-setting-button", () => {
     const analyzeSetting = document.querySelector(
-      ".analyzeSetting"
+      ".analyzeSetting",
     ) as HTMLElement;
     const analyzeSettingButton = document.querySelector(
-      ".analyzeSettingButton"
+      ".analyzeSettingButton",
     );
     // at first, analyze-setting should be hidden
     expect(analyzeSetting?.style.display).toBe("none");
@@ -100,7 +100,7 @@ describe("analyserComponent", () => {
         detail: {
           value: true,
         },
-      })
+      }),
     );
     const waveformVisible = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-waveformVisible")
@@ -112,7 +112,7 @@ describe("analyserComponent", () => {
         detail: {
           value: false,
         },
-      })
+      }),
     );
     expect(waveformVisible.checked).toBe(false);
   });
@@ -123,7 +123,7 @@ describe("analyserComponent", () => {
         detail: {
           value: true,
         },
-      })
+      }),
     );
     const spectrogramVisible = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-spectrogramVisible")
@@ -135,7 +135,7 @@ describe("analyserComponent", () => {
         detail: {
           value: false,
         },
-      })
+      }),
     );
     expect(spectrogramVisible.checked).toBe(false);
   });
@@ -157,7 +157,7 @@ describe("analyserComponent", () => {
         detail: {
           value: index,
         },
-      })
+      }),
     );
     const windowSizeSelect = <HTMLSelectElement>(
       document.querySelector(".js-analyzeSetting-windowSize")
@@ -181,7 +181,7 @@ describe("analyserComponent", () => {
         detail: {
           value: frequencyScale,
         },
-      })
+      }),
     );
     const frequencyScaleSelect = <HTMLSelectElement>(
       document.querySelector(".js-analyzeSetting-frequencyScale")
@@ -205,7 +205,7 @@ describe("analyserComponent", () => {
         detail: {
           value: melFilterNum,
         },
-      })
+      }),
     );
     const melFilterNumInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-melFilterNum")
@@ -229,7 +229,7 @@ describe("analyserComponent", () => {
         detail: {
           value: minFrequency,
         },
-      })
+      }),
     );
     const minFrequencyInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-minFrequency")
@@ -240,7 +240,7 @@ describe("analyserComponent", () => {
   test("max-frequency should be updated when user change max-frequency-input", () => {
     const maxFrequency = getRandomFloat(
       analyzeSettingsService.minFrequency,
-      audioBuffer.sampleRate / 2
+      audioBuffer.sampleRate / 2,
     );
     const maxFrequencyInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-maxFrequency")
@@ -252,14 +252,14 @@ describe("analyserComponent", () => {
   test("max-frequency-input should be updated when recieving update-max-frequency event", () => {
     const maxFrequency = getRandomFloat(
       analyzeSettingsService.minFrequency,
-      audioBuffer.sampleRate / 2
+      audioBuffer.sampleRate / 2,
     );
     analyzeSettingsService.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MAX_FREQUENCY, {
         detail: {
           value: maxFrequency,
         },
-      })
+      }),
     );
     const maxFrequencyInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-maxFrequency")
@@ -283,7 +283,7 @@ describe("analyserComponent", () => {
         detail: {
           value: minTime,
         },
-      })
+      }),
     );
     const minTimeInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-minTime")
@@ -294,7 +294,7 @@ describe("analyserComponent", () => {
   test("max-time should be updated when user change max-time-input", () => {
     const maxTime = getRandomFloat(
       analyzeSettingsService.minTime,
-      audioBuffer.duration
+      audioBuffer.duration,
     );
     const maxTimeInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-maxTime")
@@ -306,14 +306,14 @@ describe("analyserComponent", () => {
   test("max-time-input should be updated when recieving update-max-time event", () => {
     const maxTime = getRandomFloat(
       analyzeSettingsService.minTime,
-      audioBuffer.duration
+      audioBuffer.duration,
     );
     analyzeSettingsService.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MAX_TIME, {
         detail: {
           value: maxTime,
         },
-      })
+      }),
     );
     const maxTimeInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-maxTime")
@@ -324,7 +324,7 @@ describe("analyserComponent", () => {
   test("min-amplitude should be updated when user change min-amplitude-input", () => {
     const minAmplitude = getRandomFloat(
       -1,
-      analyzeSettingsService.maxAmplitude
+      analyzeSettingsService.maxAmplitude,
     );
     const minAmplitudeInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-minAmplitude")
@@ -336,14 +336,14 @@ describe("analyserComponent", () => {
   test("min-amplitude-input should be updated when recieving update-min-amplitude event", () => {
     const minAmplitude = getRandomFloat(
       -1,
-      analyzeSettingsService.maxAmplitude
+      analyzeSettingsService.maxAmplitude,
     );
     analyzeSettingsService.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MIN_AMPLITUDE, {
         detail: {
           value: minAmplitude,
         },
-      })
+      }),
     );
     const minAmplitudeInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-minAmplitude")
@@ -367,7 +367,7 @@ describe("analyserComponent", () => {
         detail: {
           value: maxAmplitude,
         },
-      })
+      }),
     );
     const maxAmplitudeInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-maxAmplitude")
@@ -383,7 +383,7 @@ describe("analyserComponent", () => {
     spectrogramAmplitudeRangeInput.value = spectrogramAmplitudeRange.toString();
     spectrogramAmplitudeRangeInput.dispatchEvent(new Event(EventType.CHANGE));
     expect(analyzeSettingsService.spectrogramAmplitudeRange).toBeCloseTo(
-      spectrogramAmplitudeRange
+      spectrogramAmplitudeRange,
     );
   });
   test("spectrogram-amplitude-range-input should be updated when recieving update-spectrogram-amplitude-range event", () => {
@@ -393,13 +393,13 @@ describe("analyserComponent", () => {
         detail: {
           value: spectrogramAmplitudeRange,
         },
-      })
+      }),
     );
     const spectrogramAmplitudeRangeInput = <HTMLInputElement>(
       document.querySelector(".js-analyzeSetting-spectrogramAmplitudeRange")
     );
     expect(Number(spectrogramAmplitudeRangeInput.value)).toBeCloseTo(
-      spectrogramAmplitudeRange
+      spectrogramAmplitudeRange,
     );
   });
 });
@@ -425,7 +425,7 @@ describe("auto analyze", () => {
     const analyzeService = new AnalyzeService(audioBuffer);
     const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(
       ad,
-      audioBuffer
+      audioBuffer,
     );
     const playerService = new PlayerService(audioContext, audioBuffer);
     const ac = new AnalyzerComponent(
@@ -434,11 +434,11 @@ describe("auto analyze", () => {
       analyzeService,
       analyzeSettingsService,
       playerService,
-      true
+      true,
     );
     expect(
       document.querySelector(".analyzeResultBox")?.querySelectorAll("canvas")
-        .length
+        .length,
     ).toBe(8);
     ac.dispose();
   });
@@ -463,7 +463,7 @@ describe("auto analyze", () => {
     const analyzeService = new AnalyzeService(audioBuffer);
     const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(
       ad,
-      audioBuffer
+      audioBuffer,
     );
     const playerService = new PlayerService(audioContext, audioBuffer);
     const ac = new AnalyzerComponent(
@@ -472,11 +472,11 @@ describe("auto analyze", () => {
       analyzeService,
       analyzeSettingsService,
       playerService,
-      false
+      false,
     );
     expect(
       document.querySelector(".analyzeResultBox")?.querySelectorAll("canvas")
-        .length
+        .length,
     ).toBe(0);
     ac.dispose();
   });
@@ -508,7 +508,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
     const analyzeService = new AnalyzeService(audioBuffer);
     analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(
       ad,
-      audioBuffer
+      audioBuffer,
     );
     playerService = new PlayerService(audioContext, audioBuffer);
     analyzeSettingsService.minTime = 2;
@@ -520,7 +520,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
       analyzeService,
       analyzeSettingsService,
       playerService,
-      false
+      false,
     );
     analyzerComponent.analyze();
   });
@@ -537,7 +537,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
         detail: {
           value: 50,
         },
-      })
+      }),
     );
     expect(visibleSeekbar.style.width).toBe("75%");
   });
@@ -549,7 +549,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
         detail: {
           value: 5,
         },
-      })
+      }),
     );
     expect(visibleSeekbar.style.width).toBe("0%");
   });
@@ -561,7 +561,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
         detail: {
           value: 90,
         },
-      })
+      }),
     );
     expect(visibleSeekbar.style.width).toBe("100%");
   });

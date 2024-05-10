@@ -28,7 +28,7 @@ export default class AnalyzerComponent extends Component {
     analyzeService: AnalyzeService,
     analyzeSettingsService: AnalyzeSettingsService,
     playerService: PlayerService,
-    autoAnalyze: boolean
+    autoAnalyze: boolean,
   ) {
     super();
     this._audioBuffer = audioBuffer;
@@ -114,7 +114,7 @@ export default class AnalyzerComponent extends Component {
 
     // init analyze setting menu
     const analyzeSettingElement = this._componentRoot.querySelector(
-      ".analyzeSetting"
+      ".analyzeSetting",
     ) as HTMLElement;
     analyzeSettingElement.style.display = "none";
     this._analyzeSettingButton = <HTMLButtonElement>(
@@ -122,7 +122,7 @@ export default class AnalyzerComponent extends Component {
     );
     this._analyzeSettingButton.onclick = () => {
       const settings = this._componentRoot.querySelector(
-        ".analyzeSetting"
+        ".analyzeSetting",
       ) as HTMLElement;
       if (settings.style.display !== "block") {
         settings.style.display = "block";
@@ -168,7 +168,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_WAVEFORM_VISIBLE,
       (e: CustomEventInit) => {
         waveformVisible.checked = e.detail.value;
-      }
+      },
     );
 
     // init spectrogram visible checkbox
@@ -184,7 +184,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_SPECTROGRAM_VISIBLE,
       (e: CustomEventInit) => {
         spectrogramVisible.checked = e.detail.value;
-      }
+      },
     );
 
     // init fft window size index select
@@ -200,7 +200,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_WINDOW_SIZE_INDEX,
       (e: CustomEventInit) => {
         windowSizeSelect.selectedIndex = e.detail.value;
-      }
+      },
     );
 
     // init frequency scale select
@@ -216,7 +216,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_FREQUENCY_SCALE,
       (e: CustomEventInit) => {
         frequencyScaleSelect.selectedIndex = e.detail.value;
-      }
+      },
     );
 
     // init mel filter num input
@@ -232,7 +232,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_MEL_FILTER_NUM,
       (e: CustomEventInit) => {
         melFilterNumInput.value = `${e.detail.value}`;
-      }
+      },
     );
 
     // init frequency range input
@@ -248,7 +248,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_MIN_FREQUENCY,
       (e: CustomEventInit) => {
         minFreqInput.value = `${e.detail.value}`;
-      }
+      },
     );
 
     const maxFreqInput = <HTMLInputElement>(
@@ -263,7 +263,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_MAX_FREQUENCY,
       (e: CustomEventInit) => {
         maxFreqInput.value = `${e.detail.value}`;
-      }
+      },
     );
 
     // init time range input
@@ -279,7 +279,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_MIN_TIME,
       (e: CustomEventInit) => {
         minTimeInput.value = `${e.detail.value}`;
-      }
+      },
     );
 
     const maxTimeInput = <HTMLInputElement>(
@@ -294,7 +294,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_MAX_TIME,
       (e: CustomEventInit) => {
         maxTimeInput.value = `${e.detail.value}`;
-      }
+      },
     );
 
     // init amplitude range input
@@ -310,7 +310,7 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_MIN_AMPLITUDE,
       (e: CustomEventInit) => {
         minAmplitudeInput.value = `${e.detail.value}`;
-      }
+      },
     );
 
     const maxAmplitudeInput = <HTMLInputElement>(
@@ -325,13 +325,13 @@ export default class AnalyzerComponent extends Component {
       EventType.AS_UPDATE_MAX_AMPLITUDE,
       (e: CustomEventInit) => {
         maxAmplitudeInput.value = `${e.detail.value}`;
-      }
+      },
     );
 
     // init spectrogram amplitude range input
     const spectrogramAmplitudeRangeInput = <HTMLInputElement>(
       this._componentRoot.querySelector(
-        ".js-analyzeSetting-spectrogramAmplitudeRange"
+        ".js-analyzeSetting-spectrogramAmplitudeRange",
       )
     );
     spectrogramAmplitudeRangeInput.value = `${settings.spectrogramAmplitudeRange}`;
@@ -341,9 +341,9 @@ export default class AnalyzerComponent extends Component {
       EventType.CHANGE,
       () => {
         settings.spectrogramAmplitudeRange = Number(
-          spectrogramAmplitudeRangeInput.value
+          spectrogramAmplitudeRangeInput.value,
         );
-      }
+      },
     );
     this._addEventlistener(
       settings,
@@ -351,7 +351,7 @@ export default class AnalyzerComponent extends Component {
       (e: CustomEventInit) => {
         spectrogramAmplitudeRangeInput.value = `${e.detail.value}`;
         this.updateColorBar(settings);
-      }
+      },
     );
   }
 
@@ -362,7 +362,7 @@ export default class AnalyzerComponent extends Component {
     );
     const colorAxisCanvas = <HTMLCanvasElement>(
       this._componentRoot.querySelector(
-        ".js-analyzeSetting-spectrogramColorAxis"
+        ".js-analyzeSetting-spectrogramColorAxis",
       )
     );
     const colorContext = colorCanvas.getContext("2d", { alpha: false });
@@ -372,7 +372,7 @@ export default class AnalyzerComponent extends Component {
       0,
       0,
       colorAxisCanvas.width,
-      colorAxisCanvas.height
+      colorAxisCanvas.height,
     );
     // draw axis label
     colorAxisContext.font = `15px Arial`;
@@ -388,7 +388,7 @@ export default class AnalyzerComponent extends Component {
       const x = (i * colorCanvas.width) / 100;
       colorContext.fillStyle = this._analyzeService.getSpectrogramColor(
         amp,
-        settings.spectrogramAmplitudeRange
+        settings.spectrogramAmplitudeRange,
       );
       colorContext.fillRect(x, 0, colorCanvas.width / 100, colorCanvas.height);
     }
@@ -420,7 +420,7 @@ export default class AnalyzerComponent extends Component {
           this._audioBuffer.sampleRate,
           this._audioBuffer.getChannelData(ch),
           ch,
-          this._audioBuffer.numberOfChannels
+          this._audioBuffer.numberOfChannels,
         );
       }
 
@@ -434,7 +434,7 @@ export default class AnalyzerComponent extends Component {
           settings,
           this._audioBuffer.sampleRate,
           ch,
-          this._audioBuffer.numberOfChannels
+          this._audioBuffer.numberOfChannels,
         );
       }
     }
@@ -468,7 +468,7 @@ export default class AnalyzerComponent extends Component {
           return;
         }
         visibleBar.style.width = `${percentInFigureRange}%`;
-      }
+      },
     );
     this._addEventlistener(inputSeekbar, EventType.CHANGE, () => {
       const percentInFigureRange = Number(inputSeekbar.value);

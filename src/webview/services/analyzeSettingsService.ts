@@ -73,7 +73,7 @@ export default class AnalyzeSettingsService extends Service {
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_WAVEFORM_VISIBLE, {
         detail: { value: this._waveformVisible },
-      })
+      }),
     );
   }
 
@@ -86,7 +86,7 @@ export default class AnalyzeSettingsService extends Service {
       value,
       AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN,
       AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX,
-      1.0
+      1.0,
     );
   }
 
@@ -99,7 +99,7 @@ export default class AnalyzeSettingsService extends Service {
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_SPECTROGRAM_VISIBLE, {
         detail: { value: this._spectrogramVisible },
-      })
+      }),
     );
   }
 
@@ -112,7 +112,7 @@ export default class AnalyzeSettingsService extends Service {
       value,
       AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN,
       AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX,
-      1.0
+      1.0,
     );
   }
 
@@ -124,14 +124,14 @@ export default class AnalyzeSettingsService extends Service {
     const windowSizeIndex = getValueInEnum(
       value,
       WindowSizeIndex,
-      WindowSizeIndex.W1024
+      WindowSizeIndex.W1024,
     );
     this._windowSizeIndex = windowSizeIndex;
     this.windowSize = 2 ** (windowSizeIndex + 8);
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_WINDOW_SIZE_INDEX, {
         detail: { value: this._windowSizeIndex },
-      })
+      }),
     );
   }
 
@@ -165,13 +165,13 @@ export default class AnalyzeSettingsService extends Service {
       0,
       this._sampleRate / 2,
       0,
-      this._sampleRate / 2
+      this._sampleRate / 2,
     );
     this._minFrequency = minFrequency;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MIN_FREQUENCY, {
         detail: { value: this._minFrequency },
-      })
+      }),
     );
   }
 
@@ -186,13 +186,13 @@ export default class AnalyzeSettingsService extends Service {
       0,
       this._sampleRate / 2,
       0,
-      this._sampleRate / 2
+      this._sampleRate / 2,
     );
     this._maxFrequency = maxFrequency;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MAX_FREQUENCY, {
         detail: { value: this._maxFrequency },
-      })
+      }),
     );
   }
 
@@ -207,13 +207,13 @@ export default class AnalyzeSettingsService extends Service {
       0,
       this._duration,
       0,
-      this._duration
+      this._duration,
     );
     this._minTime = minTime;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MIN_TIME, {
         detail: { value: this._minTime },
-      })
+      }),
     );
   }
 
@@ -228,13 +228,13 @@ export default class AnalyzeSettingsService extends Service {
       0,
       this._duration,
       0,
-      this._duration
+      this._duration,
     );
     this._maxTime = maxTime;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MAX_TIME, {
         detail: { value: this._maxTime },
-      })
+      }),
     );
   }
 
@@ -249,13 +249,13 @@ export default class AnalyzeSettingsService extends Service {
       -100,
       100,
       this._minAmplitudeOfAudioBuffer,
-      this._maxAmplitudeOfAudioBuffer
+      this._maxAmplitudeOfAudioBuffer,
     );
     this._minAmplitude = minAmplitude;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MIN_AMPLITUDE, {
         detail: { value: this._minAmplitude },
-      })
+      }),
     );
   }
 
@@ -270,13 +270,13 @@ export default class AnalyzeSettingsService extends Service {
       -100,
       100,
       this._minAmplitudeOfAudioBuffer,
-      this._maxAmplitudeOfAudioBuffer
+      this._maxAmplitudeOfAudioBuffer,
     );
     this._maxAmplitude = maxAmplitude;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MAX_AMPLITUDE, {
         detail: { value: this._maxAmplitude },
-      })
+      }),
     );
   }
 
@@ -291,13 +291,13 @@ export default class AnalyzeSettingsService extends Service {
       -1000,
       0,
       -90,
-      0
+      0,
     );
     this._spectrogramAmplitudeRange = spectrogramAmplitudeRange;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_RANGE, {
         detail: { value: this._spectrogramAmplitudeRange },
-      })
+      }),
     );
   }
 
@@ -309,13 +309,13 @@ export default class AnalyzeSettingsService extends Service {
     const frequencyScale = getValueInEnum(
       value,
       FrequencyScale,
-      FrequencyScale.Linear
+      FrequencyScale.Linear,
     );
     this._frequencyScale = frequencyScale;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_FREQUENCY_SCALE, {
         detail: { value: this._frequencyScale },
-      })
+      }),
     );
   }
 
@@ -328,7 +328,7 @@ export default class AnalyzeSettingsService extends Service {
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MEL_FILTER_NUM, {
         detail: { value: this._melFilterNum },
-      })
+      }),
     );
   }
 
@@ -345,7 +345,7 @@ export default class AnalyzeSettingsService extends Service {
     maxTime: number,
     minAmplitude: number,
     maxAmplitude: number,
-    spectrogramAmplitudeRange: number
+    spectrogramAmplitudeRange: number,
   ) {
     super();
     this._waveformVisible = waveformVisible;
@@ -365,7 +365,7 @@ export default class AnalyzeSettingsService extends Service {
 
   public static fromDefaultSetting(
     defaultSetting: AnalyzeDefault,
-    audioBuffer: AudioBuffer
+    audioBuffer: AudioBuffer,
   ) {
     // calc min & max amplitude
     let min = Number.POSITIVE_INFINITY,
@@ -397,7 +397,7 @@ export default class AnalyzeSettingsService extends Service {
       audioBuffer.duration,
       min,
       max,
-      -90
+      -90,
     );
 
     // set min & max amplitude of audio buffer to instance
@@ -461,7 +461,7 @@ export default class AnalyzeSettingsService extends Service {
     const fullSampleNum = (this.maxTime - this.minTime) * this._sampleRate;
     const enoughHopSize = Math.trunc(
       (minRectWidth * fullSampleNum) /
-        AnalyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH
+        AnalyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH,
     );
     const minHopSize = this.windowSize / 32;
     const hopSize = Math.max(enoughHopSize, minHopSize);

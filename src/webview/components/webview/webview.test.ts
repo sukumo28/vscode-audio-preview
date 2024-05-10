@@ -43,7 +43,7 @@ describe("webview", () => {
       webview = new Webview(
         postMessageFromWebview,
         createAudioContext,
-        createDecoder
+        createDecoder,
       );
     });
     expect(msg.type).toBe(WebviewMessageType.CONFIG);
@@ -181,7 +181,7 @@ describe("webview error handling", () => {
       webview = new Webview(
         postMessageFromWebview,
         createAudioContext,
-        createDecoder
+        createDecoder,
       );
     });
     // get config

@@ -32,7 +32,7 @@ export default class WebView extends Component {
   constructor(
     postMessage: PostMessage,
     createAudioContext: CreateAudioContext,
-    createDecoder: CreateDecoder
+    createDecoder: CreateDecoder,
   ) {
     super();
     this._postMessage = postMessage;
@@ -48,7 +48,7 @@ export default class WebView extends Component {
     this._addEventlistener(
       window,
       EventType.VSCODE_MESSAGE,
-      (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data)
+      (e: MessageEvent<ExtMessage>) => this.onReceiveMessage(e.data),
     );
 
     const root = document.getElementById("root");
@@ -86,7 +86,7 @@ export default class WebView extends Component {
 
           // set fileData
           console.log(
-            `received data: ${msg.data.start} ~ ${msg.data.end} / ${msg.data.wholeLength}`
+            `received data: ${msg.data.start} ~ ${msg.data.end} / ${msg.data.wholeLength}`,
           );
           const samples = new Uint8Array(msg.data.samples);
           this._fileData.set(samples, msg.data.start);
@@ -132,7 +132,7 @@ export default class WebView extends Component {
       decoder.sampleRate,
       decoder.fileSize,
       decoder.format,
-      decoder.encoding
+      decoder.encoding,
     );
 
     // decode
@@ -147,7 +147,7 @@ export default class WebView extends Component {
     const audioBuffer = audioContext.createBuffer(
       decoder.numChannels,
       decoder.length,
-      decoder.sampleRate
+      decoder.sampleRate,
     );
     for (let ch = 0; ch < decoder.numChannels; ch++) {
       const d = Float32Array.from(decoder.samples[ch]);
@@ -156,19 +156,19 @@ export default class WebView extends Component {
     // init player
     const playerService = new PlayerService(audioContext, audioBuffer);
     const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
-      this._config.playerDefault
+      this._config.playerDefault,
     );
     const playerComponent = new PlayerComponent(
       "#player",
       playerService,
-      playerSettingsService
+      playerSettingsService,
     );
     this._disposables.push(playerService, playerComponent);
     // init analyzer
     const analyzeService = new AnalyzeService(audioBuffer);
     const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(
       this._config.analyzeDefault,
-      audioBuffer
+      audioBuffer,
     );
     const analyzerComponent = new AnalyzerComponent(
       "#analyzer",
@@ -176,7 +176,7 @@ export default class WebView extends Component {
       analyzeService,
       analyzeSettingsService,
       playerService,
-      this._config.autoAnalyze
+      this._config.autoAnalyze,
     );
     this._disposables.push(analyzerComponent);
     // dispose decoder

@@ -11,7 +11,7 @@ export default class WaveFormComponent {
     sampleRate: number,
     channelData: Float32Array,
     ch: number,
-    numOfCh: number
+    numOfCh: number,
   ) {
     const componentRoot = document.querySelector(componentRootSelector);
 
@@ -35,7 +35,7 @@ export default class WaveFormComponent {
 
     // draw horizontal axis
     const [niceT, digitT] = AnalyzeService.roundToNearestNiceNumber(
-      (settings.maxTime - settings.minTime) / 10
+      (settings.maxTime - settings.minTime) / 10,
     );
     const dx = width / (settings.maxTime - settings.minTime);
     const t0 = Math.ceil(settings.minTime / niceT) * niceT;
@@ -58,12 +58,12 @@ export default class WaveFormComponent {
     // draw vertical axis
     const [niceA, digitA] = AnalyzeService.roundToNearestNiceNumber(
       (settings.maxAmplitude - settings.minAmplitude) /
-        (10 * settings.waveformVerticalScale)
+        (10 * settings.waveformVerticalScale),
     );
     const dy = height / (settings.maxAmplitude - settings.minAmplitude);
     const a0 = Math.ceil(settings.minAmplitude / niceA) * niceA;
     const numAAxis = Math.floor(
-      (settings.maxAmplitude - settings.minAmplitude) / niceA
+      (settings.maxAmplitude - settings.minAmplitude) / niceA,
     );
     for (let i = 0; i <= numAAxis; i++) {
       const a = a0 + niceA * i;
