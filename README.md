@@ -63,7 +63,10 @@ You can configure default value of player settings like example below.
         This setting is valid when volumeUnitDb is false.
         default: 100
     */
-    "initialVolume": 100
+    "initialVolume": 100,
+
+    // When set to true, you can play the audio with the space key
+    "enableSpacekeyPlay": true,
 }
 ```
 

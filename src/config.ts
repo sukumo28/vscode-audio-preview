@@ -8,6 +8,7 @@ export interface PlayerDefault {
   volumeUnitDb: boolean;
   initialVolumeDb: number;
   initialVolume: number;
+  enableSpacekeyPlay: boolean;
 }
 
 export interface AnalyzeDefault {

@@ -59,6 +59,7 @@ describe("webview", () => {
             volumeUnitDb: undefined,
             initialVolumeDb: 0.0,
             initialVolume: 1.0,
+            enableSpacekeyPlay: true,
           },
           analyzeDefault: {
             waveformVisible: undefined,
@@ -194,6 +195,7 @@ describe("webview error handling", () => {
             volumeUnitDb: undefined,
             initialVolumeDb: 0.0,
             initialVolume: 1.0,
+            enableSpacekeyPlay: true,
           },
           analyzeDefault: {
             waveformVisible: undefined,

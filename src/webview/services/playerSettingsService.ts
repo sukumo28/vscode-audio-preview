@@ -41,6 +41,14 @@ export default class PlayerSettingsService {
     );
   }
 
+  private _enableSpacekeyPlay: boolean;
+  public get enableSpacekeyPlay() {
+    return this._enableSpacekeyPlay;
+  }
+  public set enableSpacekeyPlay(value: boolean) {
+    this._enableSpacekeyPlay = value === undefined ? true : value; // true by default
+  }
+
   private constructor(
     volumeUnitDb: boolean,
     initialVolumeDb: number,
@@ -61,6 +69,9 @@ export default class PlayerSettingsService {
     // init initial volume
     setting.initialVolumeDb = defaultSetting.initialVolumeDb;
     setting.initialVolume = defaultSetting.initialVolume;
+
+    // init space key play
+    setting.enableSpacekeyPlay = defaultSetting.enableSpacekeyPlay;
 
     return setting;
   }

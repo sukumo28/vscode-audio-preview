@@ -129,13 +129,15 @@ export default class PlayerComponent extends Component {
 
     // register keyboard shortcuts
     // don't use command.register at audioPreviewEditorProvider.openCustomDocument due to command confliction
-    this._addEventlistener(window, EventType.KEY_DOWN, (e: KeyboardEvent) => {
-      if (e.isComposing || e.code !== "Space") {
-        return;
-      }
-      e.preventDefault();
-      this._playButton.click();
-    });
+    if (this._playerSettingService.enableSpacekeyPlay) {
+      this._addEventlistener(window, EventType.KEY_DOWN, (e: KeyboardEvent) => {
+        if (e.isComposing || e.code !== "Space") {
+          return;
+        }
+        e.preventDefault();
+        this._playButton.click();
+      });
+    }
   }
 
   public dispose() {

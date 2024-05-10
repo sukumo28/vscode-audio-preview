@@ -8,6 +8,7 @@ describe("playerSettingsService", () => {
       volumeUnitDb: undefined,
       initialVolumeDb: undefined,
       initialVolume: undefined,
+      enableSpacekeyPlay: true,
     };
   });
 
