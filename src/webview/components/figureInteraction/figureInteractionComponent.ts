@@ -16,7 +16,7 @@ export default class FigureInteractionComponent extends Component {
 
     // register seekbar on figures
     const visibleBar = document.createElement("div");
-    visibleBar.className = "seekDiv";
+    visibleBar.className = "visibleBar";
     componentRoot.appendChild(visibleBar);
 
     const inputSeekbar = document.createElement("input");

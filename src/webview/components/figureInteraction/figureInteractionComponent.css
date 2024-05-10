@@ -9,7 +9,7 @@
   opacity: 0;
 }
 
-.seekDiv {
+.visibleBar {
   position: absolute;
   top: 0;
   left: 0;

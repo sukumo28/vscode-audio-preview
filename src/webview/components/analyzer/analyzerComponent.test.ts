@@ -90,7 +90,7 @@ describe("analyserComponent", () => {
 
   test("seek-bar on the figures should be created after analyze", () => {
     analyzerComponent.analyze();
-    expect(document.querySelector(".seekDiv")).toBeTruthy();
+    expect(document.querySelector(".visibleBar")).toBeTruthy();
     expect(document.querySelector(".inputSeekBar")).toBeTruthy();
   });
 
@@ -531,7 +531,9 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
   });
 
   test("value: 50(5s), position: 75%", () => {
-    const visibleSeekbar = <HTMLInputElement>document.querySelector(".seekDiv");
+    const visibleSeekbar = <HTMLInputElement>(
+      document.querySelector(".visibleBar")
+    );
     playerService.dispatchEvent(
       new CustomEvent("update-seekbar", {
         detail: {
@@ -543,7 +545,9 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
   });
 
   test("value: 5(0.5s), position: 0%", () => {
-    const visibleSeekbar = <HTMLInputElement>document.querySelector(".seekDiv");
+    const visibleSeekbar = <HTMLInputElement>(
+      document.querySelector(".visibleBar")
+    );
     playerService.dispatchEvent(
       new CustomEvent("update-seekbar", {
         detail: {
@@ -555,7 +559,9 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
   });
 
   test("value: 90(9s), position: 100%", () => {
-    const visibleSeekbar = <HTMLInputElement>document.querySelector(".seekDiv");
+    const visibleSeekbar = <HTMLInputElement>(
+      document.querySelector(".visibleBar")
+    );
     playerService.dispatchEvent(
       new CustomEvent("update-seekbar", {
         detail: {
