@@ -1,19 +1,22 @@
-import { AnalyzeSettingsProps } from "../../service/analyzeSettingsService";
-import { Disposable } from "../../../dispose";
-import { EventType, Event } from "../../events";
-import AnalyzeService from "../../service/analyzeService";
-import AnalyzeSettingsService from "../../service/analyzeSettingsService";
+import "./analyzerComponent.css";
+import { EventType } from "../../events";
+import Component from "../../component";
+import PlayerService from "../../services/playerService";
+import AnalyzeService from "../../services/analyzeService";
+import AnalyzeSettingsService, {
+  AnalyzeSettingsProps,
+} from "../../services/analyzeSettingsService";
 import WaveFormComponent from "../waveform/waveFormComponent";
 import SpectrogramComponent from "../spectrogram/spectrogramComponent";
-import "./analyzerComponent.css";
 
-export default class AnalyzerComponent extends Disposable {
+export default class AnalyzerComponent extends Component {
   private _componentRootSelector: string;
   private _componentRoot: HTMLElement;
 
   private _audioBuffer: AudioBuffer;
   private _analyzeService: AnalyzeService;
   private _analyzeSettingsService: AnalyzeSettingsService;
+  private _playerService: PlayerService;
 
   private _analyzeButton: HTMLButtonElement;
   private _analyzeSettingButton: HTMLButtonElement;
@@ -24,12 +27,14 @@ export default class AnalyzerComponent extends Disposable {
     audioBuffer: AudioBuffer,
     analyzeService: AnalyzeService,
     analyzeSettingsService: AnalyzeSettingsService,
-    autoAnalyze: boolean,
+    playerService: PlayerService,
+    autoAnalyze: boolean
   ) {
     super();
     this._audioBuffer = audioBuffer;
     this._analyzeService = analyzeService;
     this._analyzeSettingsService = analyzeSettingsService;
+    this._playerService = playerService;
 
     // init base html
     this._componentRootSelector = componentRootSelector;
@@ -109,7 +114,7 @@ export default class AnalyzerComponent extends Disposable {
 
     // init analyze setting menu
     const analyzeSettingElement = this._componentRoot.querySelector(
-      ".analyzeSetting",
+      ".analyzeSetting"
     ) as HTMLElement;
     analyzeSettingElement.style.display = "none";
     this._analyzeSettingButton = <HTMLButtonElement>(
@@ -117,7 +122,7 @@ export default class AnalyzerComponent extends Disposable {
     );
     this._analyzeSettingButton.onclick = () => {
       const settings = this._componentRoot.querySelector(
-        ".analyzeSetting",
+        ".analyzeSetting"
       ) as HTMLElement;
       if (settings.style.display !== "block") {
         settings.style.display = "block";
@@ -155,19 +160,15 @@ export default class AnalyzerComponent extends Disposable {
       this._componentRoot.querySelector(".js-analyzeSetting-waveformVisible")
     );
     waveformVisible.checked = settings.waveformVisible;
-    this._register(
-      new Event(waveformVisible, EventType.CHANGE, () => {
-        settings.waveformVisible = waveformVisible.checked;
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_WAVEFORM_VISIBLE,
-        (e: CustomEventInit) => {
-          waveformVisible.checked = e.detail.value;
-        },
-      ),
+    this._addEventlistener(waveformVisible, EventType.CHANGE, () => {
+      settings.waveformVisible = waveformVisible.checked;
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_WAVEFORM_VISIBLE,
+      (e: CustomEventInit) => {
+        waveformVisible.checked = e.detail.value;
+      }
     );
 
     // init spectrogram visible checkbox
@@ -175,19 +176,15 @@ export default class AnalyzerComponent extends Disposable {
       this._componentRoot.querySelector(".js-analyzeSetting-spectrogramVisible")
     );
     spectrogramVisible.checked = settings.spectrogramVisible;
-    this._register(
-      new Event(spectrogramVisible, EventType.CHANGE, () => {
-        settings.spectrogramVisible = spectrogramVisible.checked;
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_SPECTROGRAM_VISIBLE,
-        (e: CustomEventInit) => {
-          spectrogramVisible.checked = e.detail.value;
-        },
-      ),
+    this._addEventlistener(spectrogramVisible, EventType.CHANGE, () => {
+      settings.spectrogramVisible = spectrogramVisible.checked;
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_SPECTROGRAM_VISIBLE,
+      (e: CustomEventInit) => {
+        spectrogramVisible.checked = e.detail.value;
+      }
     );
 
     // init fft window size index select
@@ -195,19 +192,15 @@ export default class AnalyzerComponent extends Disposable {
       this._componentRoot.querySelector(".js-analyzeSetting-windowSize")
     );
     windowSizeSelect.selectedIndex = settings.windowSizeIndex;
-    this._register(
-      new Event(windowSizeSelect, EventType.CHANGE, () => {
-        settings.windowSizeIndex = Number(windowSizeSelect.selectedIndex);
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_WINDOW_SIZE_INDEX,
-        (e: CustomEventInit) => {
-          windowSizeSelect.selectedIndex = e.detail.value;
-        },
-      ),
+    this._addEventlistener(windowSizeSelect, EventType.CHANGE, () => {
+      settings.windowSizeIndex = Number(windowSizeSelect.selectedIndex);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_WINDOW_SIZE_INDEX,
+      (e: CustomEventInit) => {
+        windowSizeSelect.selectedIndex = e.detail.value;
+      }
     );
 
     // init frequency scale select
@@ -215,19 +208,15 @@ export default class AnalyzerComponent extends Disposable {
       this._componentRoot.querySelector(".js-analyzeSetting-frequencyScale")
     );
     frequencyScaleSelect.selectedIndex = settings.frequencyScale;
-    this._register(
-      new Event(frequencyScaleSelect, EventType.CHANGE, () => {
-        settings.frequencyScale = Number(frequencyScaleSelect.selectedIndex);
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_FREQUENCY_SCALE,
-        (e: CustomEventInit) => {
-          frequencyScaleSelect.selectedIndex = e.detail.value;
-        },
-      ),
+    this._addEventlistener(frequencyScaleSelect, EventType.CHANGE, () => {
+      settings.frequencyScale = Number(frequencyScaleSelect.selectedIndex);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_FREQUENCY_SCALE,
+      (e: CustomEventInit) => {
+        frequencyScaleSelect.selectedIndex = e.detail.value;
+      }
     );
 
     // init mel filter num input
@@ -235,19 +224,15 @@ export default class AnalyzerComponent extends Disposable {
       this._componentRoot.querySelector(".js-analyzeSetting-melFilterNum")
     );
     melFilterNumInput.value = `${settings.melFilterNum}`;
-    this._register(
-      new Event(melFilterNumInput, EventType.CHANGE, () => {
-        settings.melFilterNum = Number(melFilterNumInput.value);
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_MEL_FILTER_NUM,
-        (e: CustomEventInit) => {
-          melFilterNumInput.value = `${e.detail.value}`;
-        },
-      ),
+    this._addEventlistener(melFilterNumInput, EventType.CHANGE, () => {
+      settings.melFilterNum = Number(melFilterNumInput.value);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_MEL_FILTER_NUM,
+      (e: CustomEventInit) => {
+        melFilterNumInput.value = `${e.detail.value}`;
+      }
     );
 
     // init frequency range input
@@ -255,38 +240,30 @@ export default class AnalyzerComponent extends Disposable {
       this._componentRoot.querySelector(".js-analyzeSetting-minFrequency")
     );
     minFreqInput.value = `${settings.minFrequency}`;
-    this._register(
-      new Event(minFreqInput, EventType.CHANGE, () => {
-        settings.minFrequency = Number(minFreqInput.value);
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_MIN_FREQUENCY,
-        (e: CustomEventInit) => {
-          minFreqInput.value = `${e.detail.value}`;
-        },
-      ),
+    this._addEventlistener(minFreqInput, EventType.CHANGE, () => {
+      settings.minFrequency = Number(minFreqInput.value);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_MIN_FREQUENCY,
+      (e: CustomEventInit) => {
+        minFreqInput.value = `${e.detail.value}`;
+      }
     );
 
     const maxFreqInput = <HTMLInputElement>(
       this._componentRoot.querySelector(".js-analyzeSetting-maxFrequency")
     );
     maxFreqInput.value = `${settings.maxFrequency}`;
-    this._register(
-      new Event(maxFreqInput, EventType.CHANGE, () => {
-        settings.maxFrequency = Number(maxFreqInput.value);
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_MAX_FREQUENCY,
-        (e: CustomEventInit) => {
-          maxFreqInput.value = `${e.detail.value}`;
-        },
-      ),
+    this._addEventlistener(maxFreqInput, EventType.CHANGE, () => {
+      settings.maxFrequency = Number(maxFreqInput.value);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_MAX_FREQUENCY,
+      (e: CustomEventInit) => {
+        maxFreqInput.value = `${e.detail.value}`;
+      }
     );
 
     // init time range input
@@ -294,30 +271,30 @@ export default class AnalyzerComponent extends Disposable {
       this._componentRoot.querySelector(".js-analyzeSetting-minTime")
     );
     minTimeInput.value = `${settings.minTime}`;
-    this._register(
-      new Event(minTimeInput, EventType.CHANGE, () => {
-        settings.minTime = Number(minTimeInput.value);
-      }),
-    );
-    this._register(
-      new Event(window, EventType.AS_UPDATE_MIN_TIME, (e: CustomEventInit) => {
+    this._addEventlistener(minTimeInput, EventType.CHANGE, () => {
+      settings.minTime = Number(minTimeInput.value);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_MIN_TIME,
+      (e: CustomEventInit) => {
         minTimeInput.value = `${e.detail.value}`;
-      }),
+      }
     );
 
     const maxTimeInput = <HTMLInputElement>(
       this._componentRoot.querySelector(".js-analyzeSetting-maxTime")
     );
     maxTimeInput.value = `${settings.maxTime}`;
-    this._register(
-      new Event(maxTimeInput, EventType.CHANGE, () => {
-        settings.maxTime = Number(maxTimeInput.value);
-      }),
-    );
-    this._register(
-      new Event(window, EventType.AS_UPDATE_MAX_TIME, (e: CustomEventInit) => {
+    this._addEventlistener(maxTimeInput, EventType.CHANGE, () => {
+      settings.maxTime = Number(maxTimeInput.value);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_MAX_TIME,
+      (e: CustomEventInit) => {
         maxTimeInput.value = `${e.detail.value}`;
-      }),
+      }
     );
 
     // init amplitude range input
@@ -325,64 +302,56 @@ export default class AnalyzerComponent extends Disposable {
       this._componentRoot.querySelector(".js-analyzeSetting-minAmplitude")
     );
     minAmplitudeInput.value = `${settings.minAmplitude}`;
-    this._register(
-      new Event(minAmplitudeInput, EventType.CHANGE, () => {
-        settings.minAmplitude = Number(minAmplitudeInput.value);
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_MIN_AMPLITUDE,
-        (e: CustomEventInit) => {
-          minAmplitudeInput.value = `${e.detail.value}`;
-        },
-      ),
+    this._addEventlistener(minAmplitudeInput, EventType.CHANGE, () => {
+      settings.minAmplitude = Number(minAmplitudeInput.value);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_MIN_AMPLITUDE,
+      (e: CustomEventInit) => {
+        minAmplitudeInput.value = `${e.detail.value}`;
+      }
     );
 
     const maxAmplitudeInput = <HTMLInputElement>(
       this._componentRoot.querySelector(".js-analyzeSetting-maxAmplitude")
     );
     maxAmplitudeInput.value = `${settings.maxAmplitude}`;
-    this._register(
-      new Event(maxAmplitudeInput, EventType.CHANGE, () => {
-        settings.maxAmplitude = Number(maxAmplitudeInput.value);
-      }),
-    );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_MAX_AMPLITUDE,
-        (e: CustomEventInit) => {
-          maxAmplitudeInput.value = `${e.detail.value}`;
-        },
-      ),
+    this._addEventlistener(maxAmplitudeInput, EventType.CHANGE, () => {
+      settings.maxAmplitude = Number(maxAmplitudeInput.value);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_MAX_AMPLITUDE,
+      (e: CustomEventInit) => {
+        maxAmplitudeInput.value = `${e.detail.value}`;
+      }
     );
 
     // init spectrogram amplitude range input
     const spectrogramAmplitudeRangeInput = <HTMLInputElement>(
       this._componentRoot.querySelector(
-        ".js-analyzeSetting-spectrogramAmplitudeRange",
+        ".js-analyzeSetting-spectrogramAmplitudeRange"
       )
     );
     spectrogramAmplitudeRangeInput.value = `${settings.spectrogramAmplitudeRange}`;
     this.updateColorBar(settings);
-    this._register(
-      new Event(spectrogramAmplitudeRangeInput, EventType.CHANGE, () => {
+    this._addEventlistener(
+      spectrogramAmplitudeRangeInput,
+      EventType.CHANGE,
+      () => {
         settings.spectrogramAmplitudeRange = Number(
-          spectrogramAmplitudeRangeInput.value,
+          spectrogramAmplitudeRangeInput.value
         );
-      }),
+      }
     );
-    this._register(
-      new Event(
-        window,
-        EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_RANGE,
-        (e: CustomEventInit) => {
-          spectrogramAmplitudeRangeInput.value = `${e.detail.value}`;
-          this.updateColorBar(settings);
-        },
-      ),
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_RANGE,
+      (e: CustomEventInit) => {
+        spectrogramAmplitudeRangeInput.value = `${e.detail.value}`;
+        this.updateColorBar(settings);
+      }
     );
   }
 
@@ -393,7 +362,7 @@ export default class AnalyzerComponent extends Disposable {
     );
     const colorAxisCanvas = <HTMLCanvasElement>(
       this._componentRoot.querySelector(
-        ".js-analyzeSetting-spectrogramColorAxis",
+        ".js-analyzeSetting-spectrogramColorAxis"
       )
     );
     const colorContext = colorCanvas.getContext("2d", { alpha: false });
@@ -403,7 +372,7 @@ export default class AnalyzerComponent extends Disposable {
       0,
       0,
       colorAxisCanvas.width,
-      colorAxisCanvas.height,
+      colorAxisCanvas.height
     );
     // draw axis label
     colorAxisContext.font = `15px Arial`;
@@ -419,7 +388,7 @@ export default class AnalyzerComponent extends Disposable {
       const x = (i * colorCanvas.width) / 100;
       colorContext.fillStyle = this._analyzeService.getSpectrogramColor(
         amp,
-        settings.spectrogramAmplitudeRange,
+        settings.spectrogramAmplitudeRange
       );
       colorContext.fillRect(x, 0, colorCanvas.width / 100, colorCanvas.height);
     }
@@ -451,7 +420,7 @@ export default class AnalyzerComponent extends Disposable {
           this._audioBuffer.sampleRate,
           this._audioBuffer.getChannelData(ch),
           ch,
-          this._audioBuffer.numberOfChannels,
+          this._audioBuffer.numberOfChannels
         );
       }
 
@@ -465,7 +434,7 @@ export default class AnalyzerComponent extends Disposable {
           settings,
           this._audioBuffer.sampleRate,
           ch,
-          this._audioBuffer.numberOfChannels,
+          this._audioBuffer.numberOfChannels
         );
       }
     }
@@ -481,35 +450,35 @@ export default class AnalyzerComponent extends Disposable {
     inputSeekbar.step = "0.00001";
     this._analyzeResultBox.appendChild(inputSeekbar);
 
-    this._register(
-      new Event(window, EventType.UPDATE_SEEKBAR, (e: CustomEventInit) => {
-        const value = e.detail.value;
-        const t = (value * this._audioBuffer.duration) / 100;
-        const v =
-          ((t - settings.minTime) / (settings.maxTime - settings.minTime)) *
+    this._addEventlistener(
+      this._playerService,
+      EventType.UPDATE_SEEKBAR,
+      (e: CustomEventInit) => {
+        const percentInFullRange = e.detail.value;
+        const sec = (percentInFullRange * this._audioBuffer.duration) / 100;
+        const percentInFigureRange =
+          ((sec - settings.minTime) / (settings.maxTime - settings.minTime)) *
           100;
-        const vv = v < 0 ? 0 : 100 < v ? 100 : v;
-        visibleBar.style.width = `${vv}%`;
-        return 100 < v;
-      }),
+        if (percentInFigureRange < 0) {
+          visibleBar.style.width = `0%`;
+          return;
+        }
+        if (100 < percentInFigureRange) {
+          visibleBar.style.width = `100%`;
+          return;
+        }
+        visibleBar.style.width = `${percentInFigureRange}%`;
+      }
     );
-    this._register(
-      new Event(inputSeekbar, EventType.CHANGE, () => {
-        const rv = Number(inputSeekbar.value);
-        const nv =
-          (((rv / 100) * (settings.maxTime - settings.minTime) +
-            settings.minTime) /
-            this._audioBuffer.duration) *
-          100;
-        const inputSeekbarEvent = new CustomEvent(EventType.INPUT_SEEKBAR, {
-          detail: {
-            value: nv,
-          },
-        });
-        window.dispatchEvent(inputSeekbarEvent);
-        inputSeekbar.value = "100";
-      }),
-    );
+    this._addEventlistener(inputSeekbar, EventType.CHANGE, () => {
+      const percentInFigureRange = Number(inputSeekbar.value);
+      const sec =
+        (percentInFigureRange / 100) * (settings.maxTime - settings.minTime) +
+        settings.minTime;
+      const percentInFullRange = (sec / this._audioBuffer.duration) * 100;
+      this._playerService.onSeekbarInput(percentInFullRange);
+      inputSeekbar.value = "100";
+    });
 
     // enable analyze button
     this._analyzeButton.style.display = "block";

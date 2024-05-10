@@ -1,7 +1,7 @@
-import { Disposable } from "../../dispose";
-import { EventType, Event } from "../events";
+import { EventType } from "../events";
+import Service from "../service";
 
-export default class PlayerService extends Disposable {
+export default class PlayerService extends Service {
   private _audioContext: AudioContext;
   private _audioBuffer: AudioBuffer;
 
@@ -40,13 +40,6 @@ export default class PlayerService extends Disposable {
     this._audioContext = audioContext;
     this._audioBuffer = audioBuffer;
 
-    // register seekbar event
-    this._register(
-      new Event(window, EventType.INPUT_SEEKBAR, (e: CustomEventInit) => {
-        this.onSeekbarInput(e.detail.value);
-      }),
-    );
-
     // init volume
     this._gainNode = this._audioContext.createGain();
     this._gainNode.connect(this._audioContext.destination);
@@ -66,12 +59,13 @@ export default class PlayerService extends Disposable {
     this._source.start(this._audioContext.currentTime, this._currentSec);
 
     // update playing status
-    const updatePlayingEvent = new CustomEvent(EventType.UPDATE_IS_PLAYING, {
-      detail: {
-        value: this._isPlaying,
-      },
-    });
-    window.dispatchEvent(updatePlayingEvent);
+    this.dispatchEvent(
+      new CustomEvent(EventType.UPDATE_IS_PLAYING, {
+        detail: {
+          value: this._isPlaying,
+        },
+      })
+    );
 
     // move seek bar
     this._animationFrameID = requestAnimationFrame(() => this.tick());
@@ -88,12 +82,13 @@ export default class PlayerService extends Disposable {
     this._source = undefined;
 
     // update playing status
-    const updatePlayingEvent = new CustomEvent(EventType.UPDATE_IS_PLAYING, {
-      detail: {
-        value: this._isPlaying,
-      },
-    });
-    window.dispatchEvent(updatePlayingEvent);
+    this.dispatchEvent(
+      new CustomEvent(EventType.UPDATE_IS_PLAYING, {
+        detail: {
+          value: this._isPlaying,
+        },
+      })
+    );
   }
 
   public tick() {
@@ -102,13 +97,14 @@ export default class PlayerService extends Disposable {
     this._seekbarValue = (100 * current) / this._audioBuffer.duration;
 
     // update seek bar value
-    const updateSeekbarEvent = new CustomEvent(EventType.UPDATE_SEEKBAR, {
-      detail: {
-        value: this._seekbarValue,
-        pos: current,
-      },
-    });
-    window.dispatchEvent(updateSeekbarEvent);
+    this.dispatchEvent(
+      new CustomEvent(EventType.UPDATE_SEEKBAR, {
+        detail: {
+          value: this._seekbarValue,
+          pos: current,
+        },
+      })
+    );
 
     // pause if finish playing
     if (current > this._audioBuffer.duration) {

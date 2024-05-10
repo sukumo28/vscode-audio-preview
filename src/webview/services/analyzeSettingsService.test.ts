@@ -5,14 +5,14 @@ import {
   getRandomInt,
   waitEventForAction,
 } from "../../__mocks__/helper";
+import { EventType } from "../events";
 import { AnalyzeDefault } from "../../config";
 import AnalyzeSettingsService, {
   FrequencyScale,
   WindowSizeIndex,
 } from "./analyzeSettingsService";
-import { EventType } from "../events";
 
-describe("fromDefaultSettings", () => {
+describe("analyzeSettingsService", () => {
   let defaultSettings: AnalyzeDefault;
   let audioBuffer: AudioBuffer;
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe("fromDefaultSettings", () => {
     audioBuffer = new MockAudioBuffer(
       1,
       44100,
-      44100,
+      44100
     ) as unknown as AudioBuffer;
   });
 
@@ -41,7 +41,7 @@ describe("fromDefaultSettings", () => {
   test("waveformVisible should be true if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.waveformVisible).toBe(true);
   });
@@ -49,7 +49,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.waveformVisible = true;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.waveformVisible).toBe(true);
   });
@@ -57,7 +57,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.waveformVisible = false;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.waveformVisible).toBe(false);
   });
@@ -66,19 +66,19 @@ describe("fromDefaultSettings", () => {
   test("waveformVerticalScale should be 1.0 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.waveformVerticalScale).toBe(1.0);
   });
   test("waveformVerticalScale should be default value", () => {
     const waveformVerticalScale = getRandomFloat(
       AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MIN,
-      AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX,
+      AnalyzeSettingsService.WAVEFORM_CANVAS_VERTICAL_SCALE_MAX
     );
     defaultSettings.waveformVerticalScale = waveformVerticalScale;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.waveformVerticalScale).toBe(waveformVerticalScale);
   });
@@ -86,7 +86,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.waveformVerticalScale = 0.0;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.waveformVerticalScale).toBe(1.0);
   });
@@ -94,7 +94,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.waveformVerticalScale = 10.0;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.waveformVerticalScale).toBe(1.0);
   });
@@ -103,7 +103,7 @@ describe("fromDefaultSettings", () => {
   test("spectrogramVisible should be true if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramVisible).toBe(true);
   });
@@ -111,7 +111,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.spectrogramVisible = true;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramVisible).toBe(true);
   });
@@ -119,7 +119,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.spectrogramVisible = false;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramVisible).toBe(false);
   });
@@ -128,19 +128,19 @@ describe("fromDefaultSettings", () => {
   test("spectrogramVerticalScale should be 1.0 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramVerticalScale).toBe(1.0);
   });
   test("spectrogramVerticalScale should be default value", () => {
     const spectrogramVerticalScale = getRandomFloat(
       AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MIN,
-      AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX,
+      AnalyzeSettingsService.SPECTROGRAM_CANVAS_VERTICAL_SCALE_MAX
     );
     defaultSettings.spectrogramVerticalScale = spectrogramVerticalScale;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramVerticalScale).toBe(spectrogramVerticalScale);
   });
@@ -148,7 +148,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.spectrogramVerticalScale = 0.0;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramVerticalScale).toBe(1.0);
   });
@@ -156,7 +156,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.spectrogramVerticalScale = 10.0;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramVerticalScale).toBe(1.0);
   });
@@ -165,7 +165,7 @@ describe("fromDefaultSettings", () => {
   test("windowSizeIndex should be W1024 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.windowSizeIndex).toBe(WindowSizeIndex.W1024);
   });
@@ -174,7 +174,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.windowSizeIndex = index;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.windowSizeIndex).toBe(index);
   });
@@ -183,7 +183,7 @@ describe("fromDefaultSettings", () => {
   test("windowSize should be 1024 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.windowSize).toBe(1024);
   });
@@ -193,7 +193,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.windowSizeIndex = index;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.windowSize).toBe(windowSize);
   });
@@ -202,7 +202,7 @@ describe("fromDefaultSettings", () => {
   test("frequencyScale should be Linear if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.frequencyScale).toBe(FrequencyScale.Linear);
   });
@@ -211,7 +211,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.frequencyScale = frequencyScale;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.frequencyScale).toBe(frequencyScale);
   });
@@ -220,7 +220,7 @@ describe("fromDefaultSettings", () => {
   test("melFilterNum should be 40 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.melFilterNum).toBe(40);
   });
@@ -229,7 +229,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.melFilterNum = melFilterNum;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.melFilterNum).toBe(Math.trunc(melFilterNum));
   });
@@ -238,21 +238,21 @@ describe("fromDefaultSettings", () => {
     defaultSettings.melFilterNum = melFilterNum;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.melFilterNum).toBe(40);
   });
   test("AS_UpdateMelFilterNum event should be sent", async () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     const detail = await waitEventForAction(
       () => {
         as.melFilterNum = getRandomFloat(20, 200);
       },
-      window,
-      EventType.AS_UPDATE_MEL_FILTER_NUM,
+      as,
+      EventType.AS_UPDATE_MEL_FILTER_NUM
     );
     expect(detail.value).toBe(as.melFilterNum);
   });
@@ -261,7 +261,7 @@ describe("fromDefaultSettings", () => {
   test("minFrequency should be 0 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.minFrequency).toBe(0);
   });
@@ -270,7 +270,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.minFrequency = minFrequency;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.minFrequency).toBeCloseTo(minFrequency);
   });
@@ -279,21 +279,21 @@ describe("fromDefaultSettings", () => {
     defaultSettings.minFrequency = minFrequency;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.minFrequency).toBeCloseTo(0);
   });
   test("AS_UpdateMinFrequency event should be sent", async () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     const detail = await waitEventForAction(
       () => {
         as.minFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
       },
-      window,
-      EventType.AS_UPDATE_MIN_FREQUENCY,
+      as,
+      EventType.AS_UPDATE_MIN_FREQUENCY
     );
     expect(detail.value).toBeCloseTo(as.minFrequency);
   });
@@ -302,7 +302,7 @@ describe("fromDefaultSettings", () => {
   test("maxFrequency should be sampleRate/2 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.maxFrequency).toBeCloseTo(audioBuffer.sampleRate / 2);
   });
@@ -311,7 +311,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.maxFrequency = maxFrequency;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.maxFrequency).toBeCloseTo(maxFrequency);
   });
@@ -320,21 +320,21 @@ describe("fromDefaultSettings", () => {
     defaultSettings.minFrequency = maxFrequency;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.maxFrequency).toBeCloseTo(audioBuffer.sampleRate / 2);
   });
   test("AS_UpdateMaxFrequency event should be sent", async () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     const detail = await waitEventForAction(
       () => {
         as.maxFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
       },
-      window,
-      EventType.AS_UPDATE_MAX_FREQUENCY,
+      as,
+      EventType.AS_UPDATE_MAX_FREQUENCY
     );
     expect(detail.value).toBeCloseTo(as.maxFrequency);
   });
@@ -343,21 +343,21 @@ describe("fromDefaultSettings", () => {
   test("minTime should be 0 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.minTime).toBe(0);
   });
   test("AS_UpdateMinTime event should be sent", async () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     const detail = await waitEventForAction(
       () => {
         as.minTime = getRandomFloat(0, audioBuffer.duration);
       },
-      window,
-      EventType.AS_UPDATE_MIN_TIME,
+      as,
+      EventType.AS_UPDATE_MIN_TIME
     );
     expect(detail.value).toBeCloseTo(as.minTime);
   });
@@ -366,21 +366,21 @@ describe("fromDefaultSettings", () => {
   test("maxTime should be duration if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.maxTime).toBeCloseTo(audioBuffer.duration);
   });
   test("AS_UpdateMaxTime event should be sent", async () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     const detail = await waitEventForAction(
       () => {
         as.maxTime = getRandomFloat(0, audioBuffer.duration);
       },
-      window,
-      EventType.AS_UPDATE_MAX_TIME,
+      as,
+      EventType.AS_UPDATE_MAX_TIME
     );
     expect(detail.value).toBeCloseTo(as.maxTime);
   });
@@ -392,7 +392,7 @@ describe("fromDefaultSettings", () => {
       minAmplitude;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.minAmplitude).toBeCloseTo(as.minAmplitudeOfAudioBuffer);
   });
@@ -405,7 +405,7 @@ describe("fromDefaultSettings", () => {
     data[0], (data[1] = maxAmplitude), minAmplitude;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.minAmplitude).toBeCloseTo(minAmplitude);
   });
@@ -418,7 +418,7 @@ describe("fromDefaultSettings", () => {
     data[0], (data[1] = maxAmplitude), minAmplitude;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.minAmplitude).toBeCloseTo(as.minAmplitudeOfAudioBuffer);
   });
@@ -427,21 +427,21 @@ describe("fromDefaultSettings", () => {
     defaultSettings.minAmplitude = minAmplitude;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.minAmplitude).toBeCloseTo(as.minAmplitudeOfAudioBuffer);
   });
   test("AS_UpdateMinAmplitude event should be sent", async () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     const detail = await waitEventForAction(
       () => {
         as.minAmplitude = getRandomFloat(-100, 100);
       },
-      window,
-      EventType.AS_UPDATE_MIN_AMPLITUDE,
+      as,
+      EventType.AS_UPDATE_MIN_AMPLITUDE
     );
     expect(detail.value).toBeCloseTo(as.minAmplitude);
   });
@@ -453,7 +453,7 @@ describe("fromDefaultSettings", () => {
       maxAmplitude;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.maxAmplitude).toBeCloseTo(as.maxAmplitudeOfAudioBuffer);
   });
@@ -466,7 +466,7 @@ describe("fromDefaultSettings", () => {
     data[0], (data[1] = maxAmplitude), minAmplitude;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.maxAmplitude).toBeCloseTo(maxAmplitude);
   });
@@ -479,7 +479,7 @@ describe("fromDefaultSettings", () => {
     data[0], (data[1] = maxAmplitude), minAmplitude;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.maxAmplitude).toBeCloseTo(as.maxAmplitudeOfAudioBuffer);
   });
@@ -488,21 +488,21 @@ describe("fromDefaultSettings", () => {
     defaultSettings.maxAmplitude = maxAmplitude;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.maxAmplitude).toBeCloseTo(as.maxAmplitudeOfAudioBuffer);
   });
   test("AS_UpdateMaxAmplitude event should be sent", async () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     const detail = await waitEventForAction(
       () => {
         as.maxAmplitude = getRandomFloat(-100, 100);
       },
-      window,
-      EventType.AS_UPDATE_MAX_AMPLITUDE,
+      as,
+      EventType.AS_UPDATE_MAX_AMPLITUDE
     );
     expect(detail.value).toBeCloseTo(as.maxAmplitude);
   });
@@ -511,7 +511,7 @@ describe("fromDefaultSettings", () => {
   test("spectrogramAmplitudeRange should be -90 if no default value is provided", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramAmplitudeRange).toBe(-90);
   });
@@ -520,7 +520,7 @@ describe("fromDefaultSettings", () => {
     defaultSettings.spectrogramAmplitudeRange = spectrogramAmplitudeRange;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramAmplitudeRange).toBeCloseTo(spectrogramAmplitudeRange);
   });
@@ -529,21 +529,21 @@ describe("fromDefaultSettings", () => {
     defaultSettings.spectrogramAmplitudeRange = spectrogramAmplitudeRange;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     expect(as.spectrogramAmplitudeRange).toBe(-90);
   });
   test("AS_UpdateSpectrogramAmplitudeRange event should be sent", async () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
-      audioBuffer,
+      audioBuffer
     );
     const detail = await waitEventForAction(
       () => {
         as.spectrogramAmplitudeRange = getRandomFloat(-1000, 0);
       },
-      window,
-      EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_RANGE,
+      as,
+      EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_RANGE
     );
     expect(detail.value).toBeCloseTo(as.spectrogramAmplitudeRange);
   });

@@ -10,7 +10,7 @@ export function disposeAll(disposables: vscode.Disposable[]): void {
 }
 
 export abstract class Disposable {
-  private _isDisposed = false;
+  protected _isDisposed = false;
 
   protected _disposables: vscode.Disposable[] = [];
 
@@ -29,9 +29,5 @@ export abstract class Disposable {
       this._disposables.push(value);
     }
     return value;
-  }
-
-  protected get isDisposed(): boolean {
-    return this._isDisposed;
   }
 }

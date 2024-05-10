@@ -5,7 +5,6 @@ export class EventType {
   public static readonly VSCODE_MESSAGE = "message";
   // player
   public static readonly UPDATE_SEEKBAR = "update-seekbar";
-  public static readonly INPUT_SEEKBAR = "input-seekbar";
   public static readonly UPDATE_IS_PLAYING = "update-is-playing";
   // analyzeSettings
   public static readonly AS_UPDATE_WAVEFORM_VISIBLE =
@@ -32,7 +31,7 @@ export class EventType {
   public static readonly KEY_DOWN = "keydown";
 }
 
-export class Event extends Disposable {
+export class DisposableEventListener extends Disposable {
   private _target: EventTarget;
   private _type: string;
   private _handler: EventListenerOrEventListenerObject;
@@ -40,7 +39,7 @@ export class Event extends Disposable {
   constructor(
     target: EventTarget,
     type: string,
-    handler: EventListenerOrEventListenerObject,
+    handler: EventListenerOrEventListenerObject
   ) {
     super();
     this._target = target;

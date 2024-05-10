@@ -1,7 +1,7 @@
+import "./styles/vscode.css";
 import { WebviewMessage } from "../message";
-import WebView from "./ui/webview";
 import Decoder from "./decoder";
-import "./css/vscode.css";
+import WebView from "./components/webview/webview";
 
 export interface vscode {
   postMessage(message): void;

@@ -1,7 +1,7 @@
 import { PlayerDefault } from "../../config";
 import PlayerSettingService from "./playerSettingsService";
 
-describe("fromDefaultSettings", () => {
+describe("playerSettingsService", () => {
   let defaultSettings: PlayerDefault;
   beforeEach(() => {
     defaultSettings = {

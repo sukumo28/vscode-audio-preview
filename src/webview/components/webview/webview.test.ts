@@ -1,5 +1,5 @@
-import { ExtMessageType, WebviewMessageType } from "../../message";
-import Decoder from "../decoder";
+import { ExtMessageType, WebviewMessageType } from "../../../message";
+import Decoder from "../../decoder";
 import Webview from "./webview";
 import {
   waitVSCodeMessageForAction,
@@ -7,9 +7,9 @@ import {
   postMessageFromExt,
   createAudioContext,
   wait,
-} from "../../__mocks__/helper";
+} from "../../../__mocks__/helper";
 
-describe("webview lifecycle", () => {
+describe("webview", () => {
   let webview: Webview;
 
   beforeAll(() => {
@@ -43,7 +43,7 @@ describe("webview lifecycle", () => {
       webview = new Webview(
         postMessageFromWebview,
         createAudioContext,
-        createDecoder,
+        createDecoder
       );
     });
     expect(msg.type).toBe(WebviewMessageType.CONFIG);
@@ -181,7 +181,7 @@ describe("webview error handling", () => {
       webview = new Webview(
         postMessageFromWebview,
         createAudioContext,
-        createDecoder,
+        createDecoder
       );
     });
     // get config

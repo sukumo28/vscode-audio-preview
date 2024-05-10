@@ -1,11 +1,37 @@
 import Ooura from "ooura";
-import { AnalyzeSettingsProps } from "../service/analyzeSettingsService";
+import { AnalyzeSettingsProps } from "./analyzeSettingsService";
 
 export default class AnalyzeService {
   private _audioBuffer: AudioBuffer;
 
   constructor(audioBuffer: AudioBuffer) {
     this._audioBuffer = audioBuffer;
+  }
+
+  // round input value to the nearest nice number, which has the most significant digit of 1, 2, 5
+  // return the number of decimal digits as well, for display purpose
+  public static roundToNearestNiceNumber(input: number): [number, number] {
+    const niceNumbers = [1.0, 2.0, 5.0, 10.0];
+
+    if (input <= 0) {
+      return [0, 0];
+    } // this function only works for positive number
+
+    // input = mantissa * 10^exponent
+    const exponent = Math.floor(Math.log10(input));
+    const mantissa = input / Math.pow(10, exponent);
+
+    // find which number in niceNumbers is nearest
+    const dist: number[] = niceNumbers.map((value) =>
+      Math.abs(Math.log10(mantissa) - Math.log10(value))
+    );
+    const niceNumber = niceNumbers[dist.indexOf(Math.min(...dist))];
+
+    const rounded = niceNumber * Math.pow(10, exponent);
+    let digit = niceNumber === 10.0 ? -exponent - 1 : -exponent;
+    digit = digit <= 0 ? 0 : digit; // avoid -0
+
+    return [rounded, digit];
   }
 
   public getSpectrogramColor(amp: number, range: number): string {
@@ -152,7 +178,7 @@ export default class AnalyzeService {
         spectrum,
         sampleRate,
         minFreqIndex,
-        maxFreqIndex,
+        maxFreqIndex
       );
 
       spectrogram.push(melSpectrum);
@@ -181,7 +207,7 @@ export default class AnalyzeService {
     spectrum: number[],
     sampleRate: number,
     minFreqIndex: number,
-    maxFreqIndex: number,
+    maxFreqIndex: number
   ) {
     const minMel = this.hzToMel((minFreqIndex * sampleRate) / spectrum.length);
     const maxMel = this.hzToMel((maxFreqIndex * sampleRate) / spectrum.length);
@@ -194,13 +220,13 @@ export default class AnalyzeService {
       const centerMel = minMel + (i + 1) * melStep;
       const endMel = minMel + (i + 2) * melStep;
       const startIndex = Math.round(
-        (this.melToHz(startMel) * spectrum.length) / sampleRate,
+        (this.melToHz(startMel) * spectrum.length) / sampleRate
       );
       const centerIndex = Math.round(
-        (this.melToHz(centerMel) * spectrum.length) / sampleRate,
+        (this.melToHz(centerMel) * spectrum.length) / sampleRate
       );
       const endIndex = Math.round(
-        (this.melToHz(endMel) * spectrum.length) / sampleRate,
+        (this.melToHz(endMel) * spectrum.length) / sampleRate
       );
       for (let j = 0; j < spectrum.length; j++) {
         if (j < startIndex || j > endIndex) {
@@ -232,31 +258,5 @@ export default class AnalyzeService {
 
   public melToHz(mel: number) {
     return 700 * (Math.pow(10, mel / 2595) - 1);
-  }
-
-  // round input value to the nearest nice number, which has the most significant digit of 1, 2, 5
-  // return the number of decimal digits as well, for display purpose
-  public static roundToNearestNiceNumber(input: number): [number, number] {
-    const niceNumbers = [1.0, 2.0, 5.0, 10.0];
-
-    if (input <= 0) {
-      return [0, 0];
-    } // this function only works for positive number
-
-    // input = mantissa * 10^exponent
-    const exponent = Math.floor(Math.log10(input));
-    const mantissa = input / Math.pow(10, exponent);
-
-    // find which number in niceNumbers is nearest
-    const dist: number[] = niceNumbers.map((value) =>
-      Math.abs(Math.log10(mantissa) - Math.log10(value)),
-    );
-    const niceNumber = niceNumbers[dist.indexOf(Math.min(...dist))];
-
-    const rounded = niceNumber * Math.pow(10, exponent);
-    let digit = niceNumber === 10.0 ? -exponent - 1 : -exponent;
-    digit = digit <= 0 ? 0 : digit; // avoid -0
-
-    return [rounded, digit];
   }
 }

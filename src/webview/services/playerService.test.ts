@@ -1,6 +1,6 @@
 import { EventType } from "../events";
-import PlayerService from "./playerService";
 import { createAudioContext, waitEventForAction } from "../../__mocks__/helper";
+import PlayerService from "./playerService";
 
 describe("playerService", () => {
   let playerService: PlayerService;
@@ -19,8 +19,8 @@ describe("playerService", () => {
       () => {
         playerService.play();
       },
-      window,
-      EventType.UPDATE_IS_PLAYING,
+      playerService,
+      EventType.UPDATE_IS_PLAYING
     );
 
     expect(detail.value).toBe(true);
@@ -31,8 +31,8 @@ describe("playerService", () => {
       () => {
         playerService.tick();
       },
-      window,
-      EventType.UPDATE_SEEKBAR,
+      playerService,
+      EventType.UPDATE_SEEKBAR
     );
 
     expect(detail.value).toBeDefined();
@@ -43,8 +43,8 @@ describe("playerService", () => {
       () => {
         playerService.pause();
       },
-      window,
-      EventType.UPDATE_IS_PLAYING,
+      playerService,
+      EventType.UPDATE_IS_PLAYING
     );
 
     expect(detail.value).toBe(false);
