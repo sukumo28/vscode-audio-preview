@@ -1,0 +1,23 @@
+.analyzeSetting {
+  margin: 0.5em;
+}
+
+.analyzeSettingButton {
+  background: none;
+  color: var(--vscode-foreground);
+}
+
+.analyzeSetting__input {
+  width: auto;
+  display: inline-block;
+  margin: 0.5em;
+}
+
+.analyzeSetting__select {
+  margin: 0.5em;
+}
+
+.analyzeSetting__canvas {
+  width: 100%;
+  border: 1px solid var(--vscode-foreground);
+}
