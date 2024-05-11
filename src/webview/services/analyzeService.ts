@@ -1,10 +1,13 @@
 import Ooura from "ooura";
+import { EventType } from "../events";
 import { AnalyzeSettingsProps } from "./analyzeSettingsService";
+import Service from "../service";
 
-export default class AnalyzeService {
+export default class AnalyzeService extends Service {
   private _audioBuffer: AudioBuffer;
 
   constructor(audioBuffer: AudioBuffer) {
+    super();
     this._audioBuffer = audioBuffer;
   }
 
@@ -59,6 +62,10 @@ export default class AnalyzeService {
       default:
         return `rgb(0,0,0)`;
     }
+  }
+
+  public analyze() {
+    this.dispatchEvent(new CustomEvent(EventType.ANALYZE));
   }
 
   public getSpectrogram(ch: number, settings: AnalyzeSettingsProps) {

@@ -135,12 +135,16 @@ export default class AnalyzerComponent extends Component {
     };
     this.initAnalyzerSetting();
 
+    this._addEventlistener(this._analyzeService, EventType.ANALYZE, () => {
+      this.renderAnalyzeResult();
+    });
+
     // init analyze button
     this._analyzeButton = <HTMLButtonElement>(
       this._componentRoot.querySelector(".analyzeButton")
     );
     this._analyzeButton.onclick = () => {
-      this.analyze();
+      this._analyzeService.analyze();
     };
 
     // init analyze result box
@@ -149,7 +153,7 @@ export default class AnalyzerComponent extends Component {
 
     // analyze if user set autoAnalyze true
     if (autoAnalyze) {
-      this.analyze();
+      this._analyzeService.analyze();
     }
   }
 
@@ -401,7 +405,7 @@ export default class AnalyzerComponent extends Component {
     }
   }
 
-  public analyze() {
+  private renderAnalyzeResult() {
     // disable analyze button
     this._analyzeButton.style.display = "none";
     // clear previous result
@@ -431,10 +435,12 @@ export default class AnalyzerComponent extends Component {
 
         new FigureInteractionComponent(
           `${this._componentRootSelector} .analyzeResultBox .${canvasBoxClass}`,
+          true,
           this._playerService,
+          this._analyzeService,
+          this._analyzeSettingsService,
           this._audioBuffer,
-          settings.minTime,
-          settings.maxTime,
+          settings,
         );
       }
 
@@ -458,10 +464,12 @@ export default class AnalyzerComponent extends Component {
 
         new FigureInteractionComponent(
           `${this._componentRootSelector} .analyzeResultBox .${canvasBoxClass}`,
+          false,
           this._playerService,
+          this._analyzeService,
+          this._analyzeSettingsService,
           this._audioBuffer,
-          settings.minTime,
-          settings.maxTime,
+          settings,
         );
       }
     }

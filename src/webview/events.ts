@@ -6,6 +6,8 @@ export class EventType {
   // player
   public static readonly UPDATE_SEEKBAR = "update-seekbar";
   public static readonly UPDATE_IS_PLAYING = "update-is-playing";
+  // analyzer
+  public static readonly ANALYZE = "analyze";
   // analyzeSettings
   public static readonly AS_UPDATE_WAVEFORM_VISIBLE =
     "as-update-waveform-visible";
@@ -29,6 +31,10 @@ export class EventType {
   public static readonly CHANGE = "change";
   public static readonly INPUT = "input";
   public static readonly KEY_DOWN = "keydown";
+  public static readonly MOUSE_DOWN = "mousedown";
+  public static readonly MOUSE_MOVE = "mousemove";
+  public static readonly MOUSE_UP = "mouseup";
+  public static readonly CONTEXT_MENU = "contextmenu";
 }
 
 export class DisposableEventListener extends Disposable {

@@ -18,6 +18,10 @@ Available on Marketplace: https://marketplace.visualstudio.com/items?itemName=su
 How to preview audio.  
 ![how-to-use](https://github.com/sukumo28/vscode-audio-preview/blob/main/images/how-to-use.gif?raw=true)
 
+If you want to display only a specific range of graphs, dragging on the graph will re-run analyze on the selected range.  
+If you want to return to the original range, right-click on the graph.  
+If you want to specify the numerical values in detail, you can press the settings▼ button and enter various numerical values.
+
 If this extension does not open by default, edit `settings.json` like below.
 
 ```jsonc

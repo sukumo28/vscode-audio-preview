@@ -332,7 +332,10 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
+  private _defaultSetting: AnalyzeDefault;
+
   private constructor(
+    defaultSetting: AnalyzeDefault,
     waveformVisible: boolean,
     waveformVerticalScale: number,
     spectrogramVisible: boolean,
@@ -348,6 +351,7 @@ export default class AnalyzeSettingsService extends Service {
     spectrogramAmplitudeRange: number,
   ) {
     super();
+    this._defaultSetting = defaultSetting;
     this._waveformVisible = waveformVisible;
     this._waveformVerticalScale = waveformVerticalScale;
     this._spectrogramVisible = spectrogramVisible;
@@ -385,6 +389,7 @@ export default class AnalyzeSettingsService extends Service {
 
     // create instance
     const setting = new AnalyzeSettingsService(
+      defaultSetting,
       true,
       1.0,
       true,
@@ -447,6 +452,21 @@ export default class AnalyzeSettingsService extends Service {
       defaultSetting.spectrogramAmplitudeRange;
 
     return setting;
+  }
+
+  public resetToDefaultTimeRange() {
+    this.minTime = 0;
+    this.maxTime = this._duration;
+  }
+
+  public resetToDefaultAmplitudeRange() {
+    this.minAmplitude = this._defaultSetting.minAmplitude;
+    this.maxAmplitude = this._defaultSetting.maxAmplitude;
+  }
+
+  public resetToDefaultFrequencyRange() {
+    this.minFrequency = this._defaultSetting.minFrequency;
+    this.maxFrequency = this._defaultSetting.maxFrequency;
   }
 
   /*

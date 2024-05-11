@@ -11,6 +11,7 @@ import AnalyzerComponent from "./analyzerComponent";
 
 describe("analyserComponent", () => {
   let audioBuffer: AudioBuffer;
+  let analyzeService: AnalyzeService;
   let analyzeSettingsService: AnalyzeSettingsService;
   let analyzerComponent: AnalyzerComponent;
   beforeAll(() => {
@@ -31,7 +32,7 @@ describe("analyserComponent", () => {
       frequencyScale: undefined,
       melFilterNum: undefined,
     };
-    const analyzeService = new AnalyzeService(audioBuffer);
+    analyzeService = new AnalyzeService(audioBuffer);
     analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(
       ad,
       audioBuffer,
@@ -80,7 +81,7 @@ describe("analyserComponent", () => {
   });
 
   test("figures in analyze-result-box should be created after analyze", () => {
-    analyzerComponent.analyze();
+    analyzeService.analyze();
     const figures = document
       .querySelector(".analyzeResultBox")
       ?.querySelectorAll("canvas");
@@ -89,9 +90,8 @@ describe("analyserComponent", () => {
   });
 
   test("seek-bar on the figures should be created after analyze", () => {
-    analyzerComponent.analyze();
     expect(document.querySelector(".visibleBar")).toBeTruthy();
-    expect(document.querySelector(".inputSeekBar")).toBeTruthy();
+    expect(document.querySelector(".userInputDiv")).toBeTruthy();
   });
 
   test("waveform-visible should be updated when recieving update-waveform-visible event", () => {
@@ -522,7 +522,7 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
       playerService,
       false,
     );
-    analyzerComponent.analyze();
+    analyzeService.analyze();
   });
 
   afterAll(() => {

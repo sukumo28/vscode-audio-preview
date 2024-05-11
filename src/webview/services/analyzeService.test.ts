@@ -1,3 +1,4 @@
+import { MockAudioBuffer } from "../../__mocks__/helper";
 import AnalyzeService from "./analyzeService";
 
 describe("analyzeService", () => {
@@ -26,5 +27,19 @@ describe("analyzeService", () => {
       expect(nice).toBe(example.expNice);
       expect(dig).toBe(example.expDigs);
     }
+  });
+
+  test("ANALYZE event should be dispatched", () => {
+    const audioBuffer = new MockAudioBuffer(
+      1,
+      44100,
+      44100,
+    ) as unknown as AudioBuffer;
+    const analyzeService = new AnalyzeService(audioBuffer);
+    const spy = jest.spyOn(analyzeService, "dispatchEvent");
+    analyzeService.analyze();
+    expect(spy).toHaveBeenCalledWith(new CustomEvent("ANALYZE"));
+    spy.mockReset();
+    spy.mockRestore();
   });
 });

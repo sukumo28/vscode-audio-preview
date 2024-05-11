@@ -547,4 +547,43 @@ describe("analyzeSettingsService", () => {
     );
     expect(detail.value).toBeCloseTo(as.spectrogramAmplitudeRange);
   });
+
+  test("time range should be reset when resetToDefaultTimeRange is called", () => {
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    as.minTime = getRandomFloat(0, audioBuffer.duration);
+    as.maxTime = getRandomFloat(as.minTime, audioBuffer.duration);
+    as.resetToDefaultTimeRange();
+    expect(as.minTime).toBe(0);
+    expect(as.maxTime).toBeCloseTo(audioBuffer.duration);
+  });
+
+  test("amplitude range should be reset when resetToDefaultAmplitudeRange is called", () => {
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    as.minAmplitude = getRandomFloat(-100, 100);
+    as.maxAmplitude = getRandomFloat(as.minAmplitude, 100);
+    as.resetToDefaultAmplitudeRange();
+    expect(as.minAmplitude).toBeCloseTo(as.minAmplitudeOfAudioBuffer);
+    expect(as.maxAmplitude).toBeCloseTo(as.maxAmplitudeOfAudioBuffer);
+  });
+
+  test("frequency range should be reset when resetToDefaultFrequencyRange is called", () => {
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    as.minFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
+    as.maxFrequency = getRandomFloat(
+      as.minFrequency,
+      audioBuffer.sampleRate / 2,
+    );
+    as.resetToDefaultFrequencyRange();
+    expect(as.minFrequency).toBe(0);
+    expect(as.maxFrequency).toBeCloseTo(audioBuffer.sampleRate / 2);
+  });
 });
