@@ -150,7 +150,7 @@ export class AudioPreviewEditorProvider
     });
   }
 
-  private onReceiveMessage(
+  private async onReceiveMessage(
     msg: WebviewMessage,
     webviewPanel: vscode.WebviewPanel,
     document: AudioPreviewDocument,
@@ -196,6 +196,18 @@ export class AudioPreviewEditorProvider
               wholeLength: dd.length,
             },
           });
+        }
+        break;
+
+      case WebviewMessageType.WRITE_WAV:
+        if (WebviewMessageType.isWriteWav(msg)) {
+          const dir = vscode.workspace.getWorkspaceFolder(document.uri);
+          const wavUri = vscode.Uri.joinPath(dir.uri, msg.data.filename);
+          const content = new Uint8Array(msg.data.samples);
+          await vscode.workspace.fs.writeFile(wavUri, content);
+          vscode.window.showInformationMessage(
+            `Success!\nWav file written to:\n${wavUri.fsPath}`,
+          );
         }
         break;
 

@@ -46,6 +46,7 @@ export class ExtReloadMessage {
 export class WebviewMessageType {
   public static readonly CONFIG = "CONFIG";
   public static readonly DATA = "DATA";
+  public static readonly WRITE_WAV = "WRITE_WAV";
   public static readonly ERROR = "RELOAD";
 
   public static isCONFIG(msg: WebviewMessage): msg is WebviewConfigMessage {
@@ -56,6 +57,10 @@ export class WebviewMessageType {
     return msg.type === WebviewMessageType.DATA;
   }
 
+  public static isWriteWav(msg: WebviewMessage): msg is WebviewWriteWavMessage {
+    return msg.type === WebviewMessageType.WRITE_WAV;
+  }
+
   public static isERROR(msg: WebviewMessage): msg is WebviewErrorMessage {
     return msg.type === WebviewMessageType.ERROR;
   }
@@ -64,6 +69,7 @@ export class WebviewMessageType {
 export type WebviewMessage =
   | WebviewConfigMessage
   | WebviewDataMessage
+  | WebviewWriteWavMessage
   | WebviewErrorMessage;
 
 export class WebviewConfigMessage {
@@ -78,6 +84,16 @@ export class WebviewDataMessage {
 export interface WebviewDataMessageData {
   start: number;
   end: number;
+}
+
+export class WebviewWriteWavMessage {
+  type = WebviewMessageType.WRITE_WAV;
+  data: WebviewWriteWavMessageData;
+}
+
+export interface WebviewWriteWavMessageData {
+  filename: string;
+  samples: ArrayBufferLike;
 }
 
 export class WebviewErrorMessage {

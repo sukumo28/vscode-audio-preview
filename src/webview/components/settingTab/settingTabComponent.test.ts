@@ -1,4 +1,7 @@
-import { MockAudioBuffer } from "../../../__mocks__/helper";
+import {
+  MockAudioBuffer,
+  postMessageFromWebview,
+} from "../../../__mocks__/helper";
 import { AnalyzeDefault } from "../../../config";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
@@ -25,6 +28,8 @@ describe("settingTabComponent", () => {
       "#settingTab",
       analyzeService,
       analyzeSettingsService,
+      audioBuffer,
+      postMessageFromWebview,
     );
   });
 

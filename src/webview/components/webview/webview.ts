@@ -175,6 +175,8 @@ export default class WebView extends Component {
       "#settingTab",
       analyzeService,
       analyzeSettingsService,
+      audioBuffer,
+      this._postMessage,
     );
     this._disposables.push(
       analyzeService,
