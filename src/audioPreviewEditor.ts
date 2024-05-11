@@ -206,7 +206,7 @@ export class AudioPreviewEditorProvider
           const content = new Uint8Array(msg.data.samples);
           await vscode.workspace.fs.writeFile(wavUri, content);
           vscode.window.showInformationMessage(
-            `Success!\nWav file written to:\n${wavUri.fsPath}`,
+            `Success! Wav file written to: ${wavUri.fsPath}`,
           );
         }
         break;
