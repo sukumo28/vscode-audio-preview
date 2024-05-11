@@ -141,9 +141,9 @@ export class AudioPreviewEditorProvider
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
     // Wait for the webview to be properly ready before we init
-    webviewPanel.webview.onDidReceiveMessage((msg: WebviewMessage) => {
+    webviewPanel.webview.onDidReceiveMessage(async (msg: WebviewMessage) => {
       try {
-        this.onReceiveMessage(msg, webviewPanel, document);
+        await this.onReceiveMessage(msg, webviewPanel, document);
       } catch (err) {
         vscode.window.showErrorMessage(err.message);
       }
