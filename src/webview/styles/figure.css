@@ -1,16 +1,21 @@
 .canvasBox {
   position: relative;
   padding: 0;
+  margin-bottom: 5px;
+  border: 1px solid var(--vscode-foreground);
 }
 
 .mainCanvas {
+  top: 0;
+  left: 0;
   width: 100%;
-  border: 1px solid var(--vscode-foreground);
+  height: 100%;
 }
 
 .axisCanvas {
   position: absolute;
-  width: 100%;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
 }

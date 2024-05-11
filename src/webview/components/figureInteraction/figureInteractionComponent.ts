@@ -59,6 +59,32 @@ export default class FigureInteractionComponent extends Component {
       userInputDiv,
       EventType.MOUSE_DOWN,
       (event: MouseEvent) => {
+        /*
+        apply selected range if isDrugging is already true.
+        this condition occurs if user start dragging, move the mouse outside the figure, 
+        release the mouse there, and then move the cursor over the figure again.
+        */
+        if (isDragging) {
+          isDragging = false;
+          if (selectionDiv) {
+            componentRoot.removeChild(selectionDiv);
+            selectionDiv = null;
+          }
+          const rect = userInputDiv.getBoundingClientRect();
+          this.applySelectedRange(
+            mouseDownX,
+            mouseDownY,
+            event.clientX,
+            event.clientY,
+            rect,
+            onWaveformCanvas,
+            settings,
+            analyseSettingsService,
+            analyzeService,
+          );
+          return;
+        }
+
         mouseDownX = event.clientX;
         mouseDownY = event.clientY;
 
@@ -154,41 +180,65 @@ export default class FigureInteractionComponent extends Component {
         }
 
         // treat as drag
-        const minX = Math.min(mouseUpX, mouseDownX) - rect.left;
-        const maxX = Math.max(mouseUpX, mouseDownX) - rect.left;
-        const minY = Math.min(mouseUpY, mouseDownY) - rect.top;
-        const maxY = Math.max(mouseUpY, mouseDownY) - rect.top;
-
-        const timeRange = settings.maxTime - settings.minTime;
-        const minTime = (minX / rect.width) * timeRange + settings.minTime;
-        const maxTime = (maxX / rect.width) * timeRange + settings.minTime;
-        analyseSettingsService.minTime = minTime;
-        analyseSettingsService.maxTime = maxTime;
-
-        // note: direction of y-axis is top to bottom
-        if (onWaveformCanvas) {
-          // WaveformCanvas
-          const amplitudeRange = settings.maxAmplitude - settings.minAmplitude;
-          const minAmplitude =
-            (1 - maxY / rect.height) * amplitudeRange + settings.minAmplitude;
-          const maxAmplitude =
-            (1 - minY / rect.height) * amplitudeRange + settings.minAmplitude;
-          analyseSettingsService.minAmplitude = minAmplitude;
-          analyseSettingsService.maxAmplitude = maxAmplitude;
-        } else {
-          // SpectrogramCanvas
-          const frequencyRange = settings.maxFrequency - settings.minFrequency;
-          const minFrequency =
-            (1 - maxY / rect.height) * frequencyRange + settings.minFrequency;
-          const maxFrequency =
-            (1 - minY / rect.height) * frequencyRange + settings.minFrequency;
-          analyseSettingsService.minFrequency = minFrequency;
-          analyseSettingsService.maxFrequency = maxFrequency;
-        }
-
-        // analyze
-        analyzeService.analyze();
+        this.applySelectedRange(
+          mouseUpX,
+          mouseUpY,
+          mouseDownX,
+          mouseDownY,
+          rect,
+          onWaveformCanvas,
+          settings,
+          analyseSettingsService,
+          analyzeService,
+        );
       },
     );
+  }
+
+  private applySelectedRange(
+    mouseUpX: number,
+    mouseUpY: number,
+    mouseDownX: number,
+    mouseDownY: number,
+    rect: DOMRect,
+    onWaveformCanvas: boolean,
+    settings: AnalyzeSettingsProps,
+    analyseSettingsService: AnalyzeSettingsService,
+    analyzeService: AnalyzeService,
+  ) {
+    const minX = Math.min(mouseUpX, mouseDownX) - rect.left;
+    const maxX = Math.max(mouseUpX, mouseDownX) - rect.left;
+    const minY = Math.min(mouseUpY, mouseDownY) - rect.top;
+    const maxY = Math.max(mouseUpY, mouseDownY) - rect.top;
+
+    const timeRange = settings.maxTime - settings.minTime;
+    const minTime = (minX / rect.width) * timeRange + settings.minTime;
+    const maxTime = (maxX / rect.width) * timeRange + settings.minTime;
+    analyseSettingsService.minTime = minTime;
+    analyseSettingsService.maxTime = maxTime;
+
+    // note: direction of y-axis is top to bottom
+    if (onWaveformCanvas) {
+      // WaveformCanvas
+      const amplitudeRange = settings.maxAmplitude - settings.minAmplitude;
+      const minAmplitude =
+        (1 - maxY / rect.height) * amplitudeRange + settings.minAmplitude;
+      const maxAmplitude =
+        (1 - minY / rect.height) * amplitudeRange + settings.minAmplitude;
+      analyseSettingsService.minAmplitude = minAmplitude;
+      analyseSettingsService.maxAmplitude = maxAmplitude;
+    } else {
+      // SpectrogramCanvas
+      const frequencyRange = settings.maxFrequency - settings.minFrequency;
+      const minFrequency =
+        (1 - maxY / rect.height) * frequencyRange + settings.minFrequency;
+      const maxFrequency =
+        (1 - minY / rect.height) * frequencyRange + settings.minFrequency;
+      analyseSettingsService.minFrequency = minFrequency;
+      analyseSettingsService.maxFrequency = maxFrequency;
+    }
+
+    // analyze
+    analyzeService.analyze();
   }
 }
