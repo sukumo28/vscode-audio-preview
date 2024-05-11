@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.4.0 - 2024-05-12
+
+### Added
+
+- add easyCut feature (experimental)
+- add range select feature
+- add enableSpacekeyPlay option
+
 ## 2.3.0 - 2024-05-08
 
 ### Changed
