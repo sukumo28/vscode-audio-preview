@@ -2,14 +2,8 @@
   border: 1px solid var(--vscode-foreground);
 }
 
-.analyzeControllerButtons {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 0.5em;
-  margin: 0.5em;
-}
-
 .analyzeResultBox {
   position: relative;
   margin: 0.5em;
+  display: none;
 }

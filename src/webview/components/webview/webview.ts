@@ -15,6 +15,7 @@ import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import InfoTableComponent from "../infoTable/infoTableComponent";
 import PlayerComponent from "../player/playerComponent";
+import SettingTab from "../settingTab/settingTabComponent";
 import AnalyzerComponent from "../analyzer/analyzerComponent";
 
 type CreateAudioContext = (sampleRate: number) => AudioContext;
@@ -54,9 +55,8 @@ export default class WebView extends Component {
     const root = document.getElementById("root");
     root.innerHTML = `
       <div id="infoTable"></div>
-      
       <div id="player"></div>
-      
+      <div id="settingTab"></div>
       <div id="analyzer"></div>
     `;
 
@@ -164,12 +164,25 @@ export default class WebView extends Component {
       playerSettingsService,
     );
     this._disposables.push(playerService, playerComponent);
-    // init analyzer
+
+    // init setting tab
     const analyzeService = new AnalyzeService(audioBuffer);
     const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(
       this._config.analyzeDefault,
       audioBuffer,
     );
+    const settingTabComponent = new SettingTab(
+      "#settingTab",
+      analyzeService,
+      analyzeSettingsService,
+    );
+    this._disposables.push(
+      analyzeService,
+      analyzeSettingsService,
+      settingTabComponent,
+    );
+
+    // init analyzer
     const analyzerComponent = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -179,6 +192,7 @@ export default class WebView extends Component {
       this._config.autoAnalyze,
     );
     this._disposables.push(analyzerComponent);
+
     // dispose decoder
     decoder.dispose();
   }

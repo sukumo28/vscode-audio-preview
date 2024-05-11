@@ -43,6 +43,12 @@ describe("analyzeSettingsComponent", () => {
     );
   });
 
+  afterAll(() => {
+    analyzeService.dispose();
+    analyzeSettingsService.dispose();
+    analyzerSettingsComponent.dispose();
+  });
+
   test("waveform-visible should be updated when recieving update-waveform-visible event", () => {
     analyzeSettingsService.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_WAVEFORM_VISIBLE, {

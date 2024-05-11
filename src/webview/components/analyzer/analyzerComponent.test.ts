@@ -1,9 +1,4 @@
-import { EventType } from "../../events";
-import {
-  createAudioContext,
-  getRandomFloat,
-  getRandomInt,
-} from "../../../__mocks__/helper";
+import { createAudioContext } from "../../../__mocks__/helper";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import PlayerService from "../../services/playerService";
@@ -54,30 +49,6 @@ describe("analyserComponent", () => {
 
   test("analyzer should have analyze-button", () => {
     expect(document.querySelector(".analyzeButton")).toBeTruthy();
-  });
-
-  test("analyzer should have analyze-setting-button", () => {
-    expect(document.querySelector(".analyzeSettingButton")).toBeTruthy();
-  });
-
-  test("analyzer should have analyze-setting", () => {
-    expect(document.querySelector(".analyzeSettingBox")).toBeTruthy();
-  });
-
-  test("display of analyze-setting should be controled by analyze-setting-button", () => {
-    const analyzeSetting = document.querySelector(
-      ".analyzeSettingBox",
-    ) as HTMLElement;
-    const analyzeSettingButton = document.querySelector(
-      ".analyzeSettingButton",
-    );
-    // at first, analyze-setting should be hidden
-    expect(analyzeSetting?.style.display).toBe("none");
-    // control display by clicking analyze-setting-button
-    analyzeSettingButton?.dispatchEvent(new Event("click"));
-    expect(analyzeSetting?.style.display).toBe("block");
-    analyzeSettingButton?.dispatchEvent(new Event("click"));
-    expect(analyzeSetting?.style.display).toBe("none");
   });
 
   test("figures in analyze-result-box should be created after analyze", () => {

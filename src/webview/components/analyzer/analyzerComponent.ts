@@ -3,13 +3,10 @@ import { EventType } from "../../events";
 import Component from "../../component";
 import PlayerService from "../../services/playerService";
 import AnalyzeService from "../../services/analyzeService";
-import AnalyzeSettingsService, {
-  AnalyzeSettingsProps,
-} from "../../services/analyzeSettingsService";
+import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import WaveFormComponent from "../waveform/waveFormComponent";
 import SpectrogramComponent from "../spectrogram/spectrogramComponent";
 import FigureInteractionComponent from "../figureInteraction/figureInteractionComponent";
-import AnalyzeSettingsComponent from "../analyzeSettings/analyzeSettingsComponent";
 
 export default class AnalyzerComponent extends Component {
   private _componentRootSelector: string;
@@ -21,7 +18,6 @@ export default class AnalyzerComponent extends Component {
   private _playerService: PlayerService;
 
   private _analyzeButton: HTMLButtonElement;
-  private _analyzeSettingButton: HTMLButtonElement;
   private _analyzeResultBox: HTMLElement;
 
   constructor(
@@ -43,42 +39,10 @@ export default class AnalyzerComponent extends Component {
     this._componentRoot = document.querySelector(this._componentRootSelector);
     this._componentRoot.innerHTML = `
       <div class="analyzerComponent">
-        <div class="analyzeControllerButtons">
-            <div>analyze</div>
-            <button class="analyzeButton">analyze</button>
-            <button class="analyzeSettingButton">▼settings</button>
-        </div>
-        <div class="analyzeSettingBox"></div>
+        <button class="analyzeButton">analyze</button>
         <div class="analyzeResultBox"></div>
       </div>
     `;
-
-    new AnalyzeSettingsComponent(
-      `${this._componentRootSelector} .analyzeSettingBox`,
-      this._analyzeService,
-      this._analyzeSettingsService,
-    );
-
-    // init analyze setting menu
-    const analyzeSettingElement = this._componentRoot.querySelector(
-      ".analyzeSettingBox",
-    ) as HTMLElement;
-    analyzeSettingElement.style.display = "none";
-    this._analyzeSettingButton = <HTMLButtonElement>(
-      this._componentRoot.querySelector(".analyzeSettingButton")
-    );
-    this._analyzeSettingButton.onclick = () => {
-      const settings = this._componentRoot.querySelector(
-        ".analyzeSettingBox",
-      ) as HTMLElement;
-      if (settings.style.display !== "block") {
-        settings.style.display = "block";
-        this._analyzeSettingButton.textContent = "▲settings";
-      } else {
-        settings.style.display = "none";
-        this._analyzeSettingButton.textContent = "▼settings";
-      }
-    };
 
     this._addEventlistener(this._analyzeService, EventType.ANALYZE, () => {
       this.renderAnalyzeResult();
@@ -89,6 +53,7 @@ export default class AnalyzerComponent extends Component {
       this._componentRoot.querySelector(".analyzeButton")
     );
     this._analyzeButton.onclick = () => {
+      this._analyzeResultBox.style.display = "block";
       this._analyzeService.analyze();
     };
 

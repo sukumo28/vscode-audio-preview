@@ -1,0 +1,20 @@
+.settingTab {
+  border: 1px solid var(--vscode-foreground);
+}
+
+.settingTab__menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5em;
+  margin: 0.5em;
+}
+
+.settingTab__button {
+  background: none;
+  color: var(--vscode-foreground);
+  border: 1px solid var(--vscode-foreground);
+}
+
+.settingTab__button--active {
+  background: var(--vscode-button-background);
+}
