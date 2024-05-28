@@ -49,19 +49,31 @@ export default class PlayerSettingsService {
     this._enableSpacekeyPlay = value === undefined ? true : value; // true by default
   }
 
+  private _enableSeekToPlay: boolean;
+  public get enableSeekToPlay() {
+    return this._enableSeekToPlay;
+  }
+  public set enableSeekToPlay(value: boolean) {
+    this._enableSeekToPlay = value === undefined ? true : value; // true by default
+  }
+
   private constructor(
     volumeUnitDb: boolean,
     initialVolumeDb: number,
     initialVolume: number,
+    enableSpacekeyPlay: boolean,
+    enableSeekToPlay: boolean,
   ) {
     this._volumeUnitDb = volumeUnitDb;
     this._initialVolumeDb = initialVolumeDb;
     this._initialVolume = initialVolume;
+    this._enableSpacekeyPlay = enableSpacekeyPlay;
+    this._enableSeekToPlay = enableSeekToPlay;
   }
 
   public static fromDefaultSetting(defaultSetting: PlayerDefault) {
     // create instance
-    const setting = new PlayerSettingsService(true, 0.0, 1.0);
+    const setting = new PlayerSettingsService(true, 0.0, 1.0, true, true);
 
     // init volume unit
     setting.volumeUnitDb = defaultSetting.volumeUnitDb;
@@ -72,6 +84,9 @@ export default class PlayerSettingsService {
 
     // init space key play
     setting.enableSpacekeyPlay = defaultSetting.enableSpacekeyPlay;
+
+    // init seek to play
+    setting.enableSeekToPlay = defaultSetting.enableSeekToPlay;
 
     return setting;
   }

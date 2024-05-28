@@ -154,10 +154,10 @@ export default class WebView extends Component {
       audioBuffer.copyToChannel(d, ch);
     }
     // init player
-    const playerService = new PlayerService(audioContext, audioBuffer);
     const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
       this._config.playerDefault,
     );
+    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
     const playerComponent = new PlayerComponent(
       "#player",
       playerService,

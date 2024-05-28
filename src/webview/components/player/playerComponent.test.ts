@@ -20,9 +20,10 @@ describe("playerComponent", () => {
       initialVolumeDb: 0.0,
       initialVolume: 1.0,
       enableSpacekeyPlay: true,
+      enableSeekToPlay: true,
     };
-    playerService = new PlayerService(audioContext, audioBuffer);
     playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
+    playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
     playerComponent = new PlayerComponent(
       "#player",
       playerService,
@@ -102,9 +103,10 @@ describe("playerComponent", () => {
       initialVolumeDb: 0.0,
       initialVolume: 1.0,
       enableSpacekeyPlay: true,
+      enableSeekToPlay: true,
     };
-    const playerService = new PlayerService(audioContext, audioBuffer);
     const playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
     const playerComponent = new PlayerComponent(
       "#player2",
       playerService,
@@ -175,9 +177,10 @@ describe("playerComponent", () => {
       initialVolumeDb: 0.0,
       initialVolume: 1.0,
       enableSpacekeyPlay: false,
+      enableSeekToPlay: true,
     };
-    const playerService = new PlayerService(audioContext, audioBuffer);
     const playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
     const playerComponent = new PlayerComponent(
       "#player2",
       playerService,

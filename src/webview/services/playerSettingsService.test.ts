@@ -9,6 +9,7 @@ describe("playerSettingsService", () => {
       initialVolumeDb: undefined,
       initialVolume: undefined,
       enableSpacekeyPlay: true,
+      enableSeekToPlay: true,
     };
   });
 
@@ -68,5 +69,37 @@ describe("playerSettingsService", () => {
     defaultSettings.initialVolume = 200;
     const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
     expect(ps.initialVolume).toBe(PlayerSettingService.VOLUME_MAX);
+  });
+
+  // enableSpacekeyPlay
+  test("enableSpacekeyPlay should be true if no default value is provided", () => {
+    const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
+    expect(ps.enableSpacekeyPlay).toBe(true);
+  });
+  test("enableSpacekeyPlay should be true if default value is true", () => {
+    defaultSettings.enableSpacekeyPlay = true;
+    const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
+    expect(ps.enableSpacekeyPlay).toBe(true);
+  });
+  test("enableSpacekeyPlay should be false if default value is false", () => {
+    defaultSettings.enableSpacekeyPlay = false;
+    const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
+    expect(ps.enableSpacekeyPlay).toBe(false);
+  });
+
+  // enableSeekToPlay
+  test("enableSeekToPlay should be true if no default value is provided", () => {
+    const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
+    expect(ps.enableSeekToPlay).toBe(true);
+  });
+  test("enableSeekToPlay should be true if default value is true", () => {
+    defaultSettings.enableSeekToPlay = true;
+    const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
+    expect(ps.enableSeekToPlay).toBe(true);
+  });
+  test("enableSeekToPlay should be false if default value is false", () => {
+    defaultSettings.enableSeekToPlay = false;
+    const ps = PlayerSettingService.fromDefaultSetting(defaultSettings);
+    expect(ps.enableSeekToPlay).toBe(false);
   });
 });

@@ -1,9 +1,11 @@
 import { EventType } from "../events";
 import Service from "../service";
+import PlayerSettingsService from "./playerSettingsService";
 
 export default class PlayerService extends Service {
   private _audioContext: AudioContext;
   private _audioBuffer: AudioBuffer;
+  private _playerSettingService: PlayerSettingsService;
 
   private _isPlaying: boolean = false;
   private _lastStartAcTime: number = 0;
@@ -35,10 +37,11 @@ export default class PlayerService extends Service {
   private _seekbarValue: number = 0;
   private _animationFrameID: number = 0;
 
-  constructor(audioContext: AudioContext, audioBuffer: AudioBuffer) {
+  constructor(audioContext: AudioContext, audioBuffer: AudioBuffer, playerSettingService: PlayerSettingsService) {
     super();
     this._audioContext = audioContext;
     this._audioBuffer = audioBuffer;
+    this._playerSettingService = playerSettingService;
 
     // init volume
     this._gainNode = this._audioContext.createGain();
@@ -122,12 +125,27 @@ export default class PlayerService extends Service {
 
   // seekbar value is 0~100
   public onSeekbarInput(value: number) {
+    const resumeRequired: boolean = this._isPlaying;
+
     if (this._isPlaying) {
       this.pause();
     }
-    // restart from selected place
+
+    // update seek bar value
     this._currentSec = (value * this._audioBuffer.duration) / 100;
     this._seekbarValue = value;
-    this.play();
+    this.dispatchEvent(
+      new CustomEvent(EventType.UPDATE_SEEKBAR, {
+        detail: {
+          value: this._seekbarValue,
+          pos: this._currentSec,
+        },
+      }),
+    );
+    
+    // restart from selected place
+    if (resumeRequired || this._playerSettingService.enableSeekToPlay){
+      this.play();
+    }
   }
 }
