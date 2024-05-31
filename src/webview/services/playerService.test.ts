@@ -1,13 +1,15 @@
 import { EventType } from "../events";
 import { createAudioContext, waitEventForAction } from "../../__mocks__/helper";
 import PlayerService from "./playerService";
+import PlayerSettingsService from "./playerSettingsService";
 
 describe("playerService", () => {
   let playerService: PlayerService;
+  let playerSettingService: PlayerSettingsService;
   beforeAll(() => {
     const audioContext = createAudioContext(44100);
     const audioBuffer = audioContext.createBuffer(1, 44100 * 10, 44100);
-    playerService = new PlayerService(audioContext, audioBuffer);
+    playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
   });
 
   afterAll(() => {

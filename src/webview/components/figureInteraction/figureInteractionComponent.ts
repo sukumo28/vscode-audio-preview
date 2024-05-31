@@ -76,6 +76,8 @@ export default class FigureInteractionComponent extends Component {
             mouseDownY,
             event.clientX,
             event.clientY,
+            event.ctrlKey,
+            event.shiftKey,
             rect,
             onWaveformCanvas,
             settings,
@@ -104,9 +106,16 @@ export default class FigureInteractionComponent extends Component {
         // right click
         if (event.button === 2) {
           // reset the range to the default range
-          analyseSettingsService.resetToDefaultTimeRange();
-          analyseSettingsService.resetToDefaultAmplitudeRange();
-          analyseSettingsService.resetToDefaultFrequencyRange();
+          if (event.ctrlKey) {   // reset time axis only
+            analyseSettingsService.resetToDefaultTimeRange();
+          } else if (event.shiftKey) {   // reset value axis only
+            analyseSettingsService.resetToDefaultAmplitudeRange();
+            analyseSettingsService.resetToDefaultFrequencyRange();
+          } else {    // reset both axes
+            analyseSettingsService.resetToDefaultTimeRange();
+            analyseSettingsService.resetToDefaultAmplitudeRange();
+            analyseSettingsService.resetToDefaultFrequencyRange();            
+          }
           analyzeService.analyze();
         }
       },
@@ -133,12 +142,26 @@ export default class FigureInteractionComponent extends Component {
 
         // draw selection range
         // note: direction of y-axis is top to bottom
-        selectionDiv.style.left =
-          Math.min(mouseDownX, currentX) - rect.left + "px";
-        selectionDiv.style.top =
-          Math.min(mouseDownY, currentY) - rect.top + "px";
-        selectionDiv.style.width = Math.abs(mouseDownX - currentX) + "px";
-        selectionDiv.style.height = Math.abs(mouseDownY - currentY) + "px";
+        if (event.ctrlKey) {   // select time axis only
+          selectionDiv.style.left =
+            Math.min(mouseDownX, currentX) - rect.left + "px";
+          selectionDiv.style.top = "0%";
+          selectionDiv.style.width = Math.abs(mouseDownX - currentX) + "px";
+          selectionDiv.style.height = "100%";
+        } else if (event.shiftKey) {   // select value axis only
+          selectionDiv.style.left = "0%";
+          selectionDiv.style.top =
+            Math.min(mouseDownY, currentY) - rect.top + "px";
+          selectionDiv.style.width = "100%";
+          selectionDiv.style.height = Math.abs(mouseDownY - currentY) + "px";
+        } else {    // select both axes
+          selectionDiv.style.left =
+            Math.min(mouseDownX, currentX) - rect.left + "px";
+          selectionDiv.style.top =
+            Math.min(mouseDownY, currentY) - rect.top + "px";
+            selectionDiv.style.width = Math.abs(mouseDownX - currentX) + "px";
+          selectionDiv.style.height = Math.abs(mouseDownY - currentY) + "px";
+        }
       },
     );
 
@@ -185,6 +208,8 @@ export default class FigureInteractionComponent extends Component {
           mouseUpY,
           mouseDownX,
           mouseDownY,
+          event.ctrlKey,
+          event.shiftKey,
           rect,
           onWaveformCanvas,
           settings,
@@ -200,6 +225,8 @@ export default class FigureInteractionComponent extends Component {
     mouseUpY: number,
     mouseDownX: number,
     mouseDownY: number,
+    pressCtrlKey: boolean,
+    pressShiftKey: boolean,
     rect: DOMRect,
     onWaveformCanvas: boolean,
     settings: AnalyzeSettingsProps,
@@ -211,31 +238,35 @@ export default class FigureInteractionComponent extends Component {
     const minY = Math.min(mouseUpY, mouseDownY) - rect.top;
     const maxY = Math.max(mouseUpY, mouseDownY) - rect.top;
 
-    const timeRange = settings.maxTime - settings.minTime;
-    const minTime = (minX / rect.width) * timeRange + settings.minTime;
-    const maxTime = (maxX / rect.width) * timeRange + settings.minTime;
-    analyseSettingsService.minTime = minTime;
-    analyseSettingsService.maxTime = maxTime;
+    if (!pressShiftKey) {
+      const timeRange = settings.maxTime - settings.minTime;
+      const minTime = (minX / rect.width) * timeRange + settings.minTime;
+      const maxTime = (maxX / rect.width) * timeRange + settings.minTime;
+      analyseSettingsService.minTime = minTime;
+      analyseSettingsService.maxTime = maxTime;
+    }
 
     // note: direction of y-axis is top to bottom
-    if (onWaveformCanvas) {
-      // WaveformCanvas
-      const amplitudeRange = settings.maxAmplitude - settings.minAmplitude;
-      const minAmplitude =
-        (1 - maxY / rect.height) * amplitudeRange + settings.minAmplitude;
-      const maxAmplitude =
-        (1 - minY / rect.height) * amplitudeRange + settings.minAmplitude;
-      analyseSettingsService.minAmplitude = minAmplitude;
-      analyseSettingsService.maxAmplitude = maxAmplitude;
-    } else {
-      // SpectrogramCanvas
-      const frequencyRange = settings.maxFrequency - settings.minFrequency;
-      const minFrequency =
-        (1 - maxY / rect.height) * frequencyRange + settings.minFrequency;
-      const maxFrequency =
-        (1 - minY / rect.height) * frequencyRange + settings.minFrequency;
-      analyseSettingsService.minFrequency = minFrequency;
-      analyseSettingsService.maxFrequency = maxFrequency;
+    if (!pressCtrlKey) {
+      if (onWaveformCanvas) {
+        // WaveformCanvas
+        const amplitudeRange = settings.maxAmplitude - settings.minAmplitude;
+        const minAmplitude =
+          (1 - maxY / rect.height) * amplitudeRange + settings.minAmplitude;
+        const maxAmplitude =
+          (1 - minY / rect.height) * amplitudeRange + settings.minAmplitude;
+        analyseSettingsService.minAmplitude = minAmplitude;
+        analyseSettingsService.maxAmplitude = maxAmplitude;
+      } else {
+        // SpectrogramCanvas
+        const frequencyRange = settings.maxFrequency - settings.minFrequency;
+        const minFrequency =
+          (1 - maxY / rect.height) * frequencyRange + settings.minFrequency;
+        const maxFrequency =
+          (1 - minY / rect.height) * frequencyRange + settings.minFrequency;
+        analyseSettingsService.minFrequency = minFrequency;
+        analyseSettingsService.maxFrequency = maxFrequency;
+      }
     }
 
     // analyze
