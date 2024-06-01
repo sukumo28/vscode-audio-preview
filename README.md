@@ -18,12 +18,17 @@ Available on Marketplace: https://marketplace.visualstudio.com/items?itemName=su
 How to preview audio.  
 ![how-to-use](https://github.com/sukumo28/vscode-audio-preview/blob/main/images/how-to-use.gif?raw=true)
 
-If you want to display only a specific range of graphs, dragging on the graph will re-run analyze on the selected range.
-By pressing the Ctrl key when dragging, you can select only the time range, and the value range is kept.
-By pressing the Shift key when dragging, you can select only the value range, and the time range is kept.
-If you want to return to the original range, right-click on the graph.
-Pressing the Ctrl key or the Shift key when right-clicking helps to reset only the time range or the value range, respectively.
-If you want to specify the numerical values in detail, you can press the settings▼ button and enter various numerical values.
+- If you want to display only a specific range of graphs, dragging on the graph will re-run analyze on the selected range.
+
+  - By pressing the Ctrl key when dragging, you can select only the time range.
+  - By pressing the Shift key when dragging, you can select only the value range.
+
+- If you want to return to the original range, right-click on the graph.
+
+  - Pressing the Ctrl key when right-clicking, reset only the time range.
+  - Pressing the Shift key when right-clicking, reset only the value range.
+
+- If you want to specify the numerical values in detail, you can press the settings▼ button and enter various numerical values.
 
 If this extension does not open by default, edit `settings.json` like below.
 
