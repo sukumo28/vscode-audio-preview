@@ -125,7 +125,7 @@ export default class PlayerService extends Service {
 
   // seekbar value is 0~100
   public onSeekbarInput(value: number) {
-    const resumeRequired: boolean = this._isPlaying;
+    const resumeRequired = this._isPlaying;
 
     if (this._isPlaying) {
       this.pause();
