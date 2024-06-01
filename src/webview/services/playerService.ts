@@ -37,7 +37,11 @@ export default class PlayerService extends Service {
   private _seekbarValue: number = 0;
   private _animationFrameID: number = 0;
 
-  constructor(audioContext: AudioContext, audioBuffer: AudioBuffer, playerSettingService: PlayerSettingsService) {
+  constructor(
+    audioContext: AudioContext,
+    audioBuffer: AudioBuffer,
+    playerSettingService: PlayerSettingsService,
+  ) {
     super();
     this._audioContext = audioContext;
     this._audioBuffer = audioBuffer;
@@ -142,9 +146,9 @@ export default class PlayerService extends Service {
         },
       }),
     );
-    
+
     // restart from selected place
-    if (resumeRequired || this._playerSettingService.enableSeekToPlay){
+    if (resumeRequired || this._playerSettingService.enableSeekToPlay) {
       this.play();
     }
   }

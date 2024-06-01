@@ -9,7 +9,11 @@ describe("playerService", () => {
   beforeAll(() => {
     const audioContext = createAudioContext(44100);
     const audioBuffer = audioContext.createBuffer(1, 44100 * 10, 44100);
-    playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
+    playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingService,
+    );
   });
 
   afterAll(() => {

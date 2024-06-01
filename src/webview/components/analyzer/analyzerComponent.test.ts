@@ -41,7 +41,11 @@ describe("analyserComponent", () => {
       enableSeekToPlay: true,
     };
     const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     analyzerComponent = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -106,7 +110,11 @@ describe("auto analyze", () => {
       enableSeekToPlay: true,
     };
     const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     const ac = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -152,7 +160,11 @@ describe("auto analyze", () => {
       enableSeekToPlay: true,
     };
     const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     const ac = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -205,7 +217,11 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
       enableSeekToPlay: true,
     };
     const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
-    playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     analyzeSettingsService.minTime = 2;
     analyzeSettingsService.maxTime = 6;
     // audio: 10s, minTime: 2s, maxTime: 6s

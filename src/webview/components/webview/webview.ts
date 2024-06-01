@@ -157,7 +157,11 @@ export default class WebView extends Component {
     const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
       this._config.playerDefault,
     );
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     const playerComponent = new PlayerComponent(
       "#player",
       playerService,

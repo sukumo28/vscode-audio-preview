@@ -23,7 +23,11 @@ describe("playerComponent", () => {
       enableSeekToPlay: true,
     };
     playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
-    playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
+    playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingService,
+    );
     playerComponent = new PlayerComponent(
       "#player",
       playerService,
@@ -106,7 +110,11 @@ describe("playerComponent", () => {
       enableSeekToPlay: true,
     };
     const playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingService,
+    );
     const playerComponent = new PlayerComponent(
       "#player2",
       playerService,
@@ -180,7 +188,11 @@ describe("playerComponent", () => {
       enableSeekToPlay: true,
     };
     const playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingService,
+    );
     const playerComponent = new PlayerComponent(
       "#player2",
       playerService,
