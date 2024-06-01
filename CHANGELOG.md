@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.5.0 - 2024-06-01
+
+### Added
+
+- add enableSeekToPlay option
+- add feature to select only the vertical or horizontal axis when selecting a range on the graph
+
 ## 2.4.0 - 2024-05-12
 
 ### Added
