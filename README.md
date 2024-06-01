@@ -75,9 +75,10 @@ You can configure default value of player settings like example below.
     // When set to true, you can play the audio with the space key
     "enableSpacekeyPlay": true,
 
-   /*
+    /*
     Choose whether the audio will automatically play when you seek a new position.
-    true: plays on seeking, false: does not play on seeking
+    true: plays on seeking
+    false: does not start playing on seeking, but resume playing from input time when audio is already playing
     default: true
     */
     "enableSeekToPlay": true,
