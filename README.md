@@ -28,7 +28,7 @@ How to preview audio.
   - Pressing the Ctrl key when right-clicking, reset only the time range.
   - Pressing the Shift key when right-clicking, reset only the value range.
 
-- If you want to specify the numerical values in detail, you can press the setting button and enter various numerical values.
+- If you want to specify the numerical values in detail, you can set the values in the analyze tab found in the settings tab.
 
 If this extension does not open by default, edit `settings.json` like below.
 
