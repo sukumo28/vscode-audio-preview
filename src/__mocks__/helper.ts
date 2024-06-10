@@ -114,6 +114,7 @@ export class MockAudioBuffer {
 
 class MockAudioNode {
   connect() {}
+  disconnect() {}
 }
 
 class MockAudioParam {
@@ -126,6 +127,17 @@ class MockGainNode extends MockAudioNode {
   constructor() {
     super();
     this.gain = { value: 1 };
+  }
+}
+
+class MockBiquadFilterNode extends MockAudioNode {
+  frequency: MockAudioParam;
+  Q: MockAudioParam;
+
+  constructor() {
+    super();
+    this.frequency = { value: 1000 };
+    this.Q = { value: 1.0 };
   }
 }
 
@@ -164,6 +176,10 @@ class MockAudioContext extends MockAudioNode {
 
   createGain() {
     return new MockGainNode();
+  }
+
+  createBiquadFilter() {
+    return new MockBiquadFilterNode();
   }
 }
 
