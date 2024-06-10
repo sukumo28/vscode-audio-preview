@@ -1,6 +1,9 @@
 import "./settingTabComponent.css";
 import Component from "../../component";
 import { EventType } from "../../events";
+import PlayerService from "../../services/playerService";
+import PlayerSettingsService from "../../services/playerSettingsService";
+import PlayerSettingsComponent from "../playerSettings/playerSettingsComponent"; 
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import AnalyzeSettingsComponent from "../analyzeSettings/analyzeSettingsComponent";
@@ -12,6 +15,8 @@ export default class SettingTab extends Component {
 
   constructor(
     coponentRootSelector: string,
+    playerService: PlayerService,
+    playerSettingsService: PlayerSettingsService,
     analyzeService: AnalyzeService,
     analyzeSettingsService: AnalyzeSettingsService,
     audioBuffer: AudioBuffer,
@@ -26,10 +31,12 @@ export default class SettingTab extends Component {
         <div class="settingTab__menu">
           <div>Setting</div>
           <button class="settingTab__button settingTab__button--active js-settingTabButton-hide">hide</button>
+          <button class="settingTab__button js-settingTabButton-player">player</button>
           <button class="settingTab__button js-settingTabButton-analyze">analyze</button>
           <button class="settingTab__button js-settingTabButton-easyCut">easyCut</button>
         </div>
         <div class="settingTab__content">
+          <div class="js-settingTabContent-player"></div>
           <div class="js-settingTabContent-analyze"></div>
           <div class="js-settingTabContent-easyCut"></div>
         </div>
@@ -40,6 +47,13 @@ export default class SettingTab extends Component {
     this.hideAllContent();
 
     // create tab content
+    new PlayerSettingsComponent(
+      `${coponentRootSelector} .js-settingTabContent-player`,
+      playerService,
+      playerSettingsService,
+      analyzeService,
+      analyzeSettingsService
+    );
     new AnalyzeSettingsComponent(
       `${coponentRootSelector} .js-settingTabContent-analyze`,
       analyzeService,
@@ -60,6 +74,20 @@ export default class SettingTab extends Component {
       this.hideAllContent();
       this.resetActivebutton();
       hideTabButton.classList.add("settingTab__button--active");
+    });
+
+    // player tab event
+    const playerTabButton = this._componentRoot.querySelector(
+      ".js-settingTabButton-player",
+    ) as HTMLButtonElement;
+    this._addEventlistener(playerTabButton, EventType.CLICK, () => {
+      this.hideAllContent();
+      this.resetActivebutton();
+      const playerTabContent = this._componentRoot.querySelector(
+        ".js-settingTabContent-player",
+      ) as HTMLElement;
+      playerTabContent.style.display = "block";
+      playerTabButton.classList.add("settingTab__button--active");
     });
 
     // analyze tab event
