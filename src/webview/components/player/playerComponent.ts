@@ -9,21 +9,21 @@ export default class PlayerComponent extends Component {
   private _playButton: HTMLButtonElement;
   private _volumeBar: HTMLInputElement;
   private _playerService: PlayerService;
-  private _playerSettingService: PlayerSettingsService;
+  private _playerSettingsService: PlayerSettingsService;
 
   constructor(
     componentRootID: string,
     playerService: PlayerService,
-    playerSettingService: PlayerSettingsService,
+    playerSettingsService: PlayerSettingsService,
   ) {
     super();
     this._playerService = playerService;
-    this._playerSettingService = playerSettingService;
+    this._playerSettingsService = playerSettingsService;
 
     // init base html
     this._componentRoot = document.querySelector(componentRootID);
 
-    const volumeBar = this._playerSettingService.volumeUnitDb
+    const volumeBar = this._playerSettingsService.volumeUnitDb
       ? `<div class="volumeText">volume 0.0 dB</div>
              <input type="range" class="volumeBar" value="0" min="-80" max="0" step="0.5">`
       : `<div class="volumeText">volume 100</div>
@@ -80,7 +80,7 @@ export default class PlayerComponent extends Component {
       this._componentRoot.querySelector(".volumeText")
     );
     const updateVolume = () => {
-      if (this._playerSettingService.volumeUnitDb) {
+      if (this._playerSettingsService.volumeUnitDb) {
         // convert dB setting to linear gain
         // -80 dB is treated as mute
         const voldb = Number(this._volumeBar.value);
@@ -96,9 +96,9 @@ export default class PlayerComponent extends Component {
     };
     this._addEventlistener(this._volumeBar, EventType.INPUT, updateVolume);
     this._volumeBar.value = String(
-      this._playerSettingService.volumeUnitDb
-        ? this._playerSettingService.initialVolumeDb
-        : this._playerSettingService.initialVolume,
+      this._playerSettingsService.volumeUnitDb
+        ? this._playerSettingsService.initialVolumeDb
+        : this._playerSettingsService.initialVolume,
     );
     updateVolume();
 
@@ -129,7 +129,7 @@ export default class PlayerComponent extends Component {
 
     // register keyboard shortcuts
     // don't use command.register at audioPreviewEditorProvider.openCustomDocument due to command confliction
-    if (this._playerSettingService.enableSpacekeyPlay) {
+    if (this._playerSettingsService.enableSpacekeyPlay) {
       this._addEventlistener(window, EventType.KEY_DOWN, (e: KeyboardEvent) => {
         if (e.isComposing || e.code !== "Space") {
           return;
