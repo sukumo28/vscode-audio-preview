@@ -10,6 +10,11 @@ describe("playerSettingsService", () => {
       initialVolume: undefined,
       enableSpacekeyPlay: true,
       enableSeekToPlay: true,
+      enableHpf: false,
+      hpfFrequency: PlayerSettingService.FILTER_FREQUENCY_HPF_DEFAULT,
+      enableLpf: false,
+      lpfFrequency: PlayerSettingService.FILTER_FREQUENCY_LPF_DEFAULT,
+      matchFilterFrequencyToSpectrogram: false,
     };
   });
 

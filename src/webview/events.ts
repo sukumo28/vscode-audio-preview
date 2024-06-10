@@ -6,6 +6,12 @@ export class EventType {
   // player
   public static readonly UPDATE_SEEKBAR = "update-seekbar";
   public static readonly UPDATE_IS_PLAYING = "update-is-playing";
+  // playerSettings
+  public static readonly PS_UPDATE_ENABLE_HPF = "update-enable-hpf";
+  public static readonly PS_UPDATE_HPF_FREQUENCY = "update-hpf-frequency";
+  public static readonly PS_UPDATE_ENABLE_LPF = "update-enable-lpf";
+  public static readonly PS_UPDATE_LPF_FREQUENCY = "update-lpf-frequency";
+  public static readonly PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM = "update-match-filter-frequency-to-spectrogram";
   // analyzer
   public static readonly ANALYZE = "analyze";
   // analyzeSettings

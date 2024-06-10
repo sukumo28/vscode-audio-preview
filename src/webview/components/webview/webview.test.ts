@@ -8,6 +8,7 @@ import {
   createAudioContext,
   wait,
 } from "../../../__mocks__/helper";
+import PlayerSettingsService from "../../services/playerSettingsService";
 
 describe("webview", () => {
   let webview: Webview;
@@ -61,6 +62,11 @@ describe("webview", () => {
             initialVolume: 1.0,
             enableSpacekeyPlay: true,
             enableSeekToPlay: true,
+            enableHpf: false,
+            hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+            enableLpf: false,
+            lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+            matchFilterFrequencyToSpectrogram: false,
           },
           analyzeDefault: {
             waveformVisible: undefined,
@@ -198,6 +204,11 @@ describe("webview error handling", () => {
             initialVolume: 1.0,
             enableSpacekeyPlay: true,
             enableSeekToPlay: true,
+            enableHpf: false,
+            hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+            enableLpf: false,
+            lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+            matchFilterFrequencyToSpectrogram: false,
           },
           analyzeDefault: {
             waveformVisible: undefined,
