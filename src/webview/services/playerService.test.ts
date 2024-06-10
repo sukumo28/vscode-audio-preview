@@ -1,6 +1,7 @@
 import { EventType } from "../events";
 import { createAudioContext, waitEventForAction } from "../../__mocks__/helper";
 import PlayerService from "./playerService";
+import { PlayerDefault } from "../../config";
 import PlayerSettingsService from "./playerSettingsService";
 
 describe("playerService", () => {
@@ -9,6 +10,8 @@ describe("playerService", () => {
   beforeAll(() => {
     const audioContext = createAudioContext(44100);
     const audioBuffer = audioContext.createBuffer(1, 44100 * 10, 44100);
+    const pd = {} as PlayerDefault;
+    playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
     playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
   });
 

@@ -5,7 +5,7 @@ import PlayerSettingsService from "./playerSettingsService";
 export default class PlayerService extends Service {
   private _audioContext: AudioContext;
   private _audioBuffer: AudioBuffer;
-  private _playerSettingService: PlayerSettingsService;
+  private _playerSettingsService: PlayerSettingsService;
 
   private _isPlaying: boolean = false;
   private _lastStartAcTime: number = 0;
@@ -34,34 +34,64 @@ export default class PlayerService extends Service {
     this._gainNode.gain.value = value;
   }
 
+  private _hpfNode: BiquadFilterNode;
+  private _lpfNode: BiquadFilterNode;
+
   private _seekbarValue: number = 0;
   private _animationFrameID: number = 0;
 
-  constructor(audioContext: AudioContext, audioBuffer: AudioBuffer, playerSettingService: PlayerSettingsService) {
+  constructor(audioContext: AudioContext, audioBuffer: AudioBuffer, playerSettingsService: PlayerSettingsService) {
     super();
     this._audioContext = audioContext;
     this._audioBuffer = audioBuffer;
-    this._playerSettingService = playerSettingService;
+    this._playerSettingsService = playerSettingsService;
 
     // init volume
     this._gainNode = this._audioContext.createGain();
     this._gainNode.connect(this._audioContext.destination);
+
+    // init high-pass filter
+    this._hpfNode = this._audioContext.createBiquadFilter();
+    this._hpfNode.type = "highpass";
+    this._hpfNode.Q.value = Math.SQRT1_2;   // butterworth
+    
+    // init high-pass filter
+    this._lpfNode = this._audioContext.createBiquadFilter();
+    this._lpfNode.type = "lowpass";
+    this._lpfNode.Q.value = Math.SQRT1_2;   // butterworth
   }
 
-  public play() {
+  public play() {    
+    // connect nodes
+    let lastNode = this._gainNode;
+    
+    this._lpfNode.disconnect();
+    if (this._playerSettingsService.enableLpf) {
+      this._lpfNode.frequency.value = this._playerSettingsService.lpfFrequency;
+      this._lpfNode.connect(lastNode);
+      lastNode = this._lpfNode;
+    } 
+    
+    this._hpfNode.disconnect();
+    if (this._playerSettingsService.enableHpf) {
+      this._hpfNode.frequency.value = this._playerSettingsService.hpfFrequency;
+      this._hpfNode.connect(lastNode);
+      lastNode = this._hpfNode;
+    }
+
     // create audioBufferSourceNode every time,
     // because audioBufferSourceNode.start() can't be called more than once.
     // https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
     this._source = this._audioContext.createBufferSource();
     this._source.buffer = this._audioBuffer;
-    this._source.connect(this._gainNode);
-
+    this._source.connect(lastNode);
+    
     // play
     this._isPlaying = true;
     this._lastStartAcTime = this._audioContext.currentTime;
     this._source.start(this._audioContext.currentTime, this._currentSec);
 
-    // update playing status
+// update playing status
     this.dispatchEvent(
       new CustomEvent(EventType.UPDATE_IS_PLAYING, {
         detail: {
@@ -144,7 +174,7 @@ export default class PlayerService extends Service {
     );
     
     // restart from selected place
-    if (resumeRequired || this._playerSettingService.enableSeekToPlay){
+    if (resumeRequired || this._playerSettingsService.enableSeekToPlay){
       this.play();
     }
   }
