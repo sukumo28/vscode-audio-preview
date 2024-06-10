@@ -1,4 +1,3 @@
-import { EventType } from "../events";
 import { PlayerDefault } from "../../config";
 import { getValueInRange } from "../../util";
 import Service from "../service";
