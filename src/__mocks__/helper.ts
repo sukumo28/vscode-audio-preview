@@ -132,7 +132,7 @@ class MockGainNode extends MockAudioNode {
 
 class MockBiquadFilterNode extends MockAudioNode {
   frequency: MockAudioParam;
-  Q: MockAudioParam;
+  Q: MockAudioParam;    // eslint-disable-line
 
   constructor() {
     super();
