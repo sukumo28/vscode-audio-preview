@@ -162,7 +162,7 @@ export default class PlayerSettingsComponent extends Component {
   
   private applyFilters()
   {
-    if (this._playerService.isPlaying) {
+    if (this._playerService.isPlaying && (this._playerSettingsService.enableHpf || this._playerSettingsService.enableLpf)) {
       this._playerService.pause();
       this._playerService.play();
     }    
