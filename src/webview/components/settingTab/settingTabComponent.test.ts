@@ -31,7 +31,7 @@ describe("settingTabComponent", () => {
       audioBuffer,
     );
     const playerDefault = {} as PlayerDefault;
-    playerSettingService = PlayerSettingsService.fromDefaultSetting(playerDefault);
+    playerSettingService = PlayerSettingsService.fromDefaultSetting(playerDefault, audioBuffer);
     playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
     settingTabComponent = new SettingTab(
       "#settingTab",

@@ -51,6 +51,23 @@ export function getValueInRange(
   return targetValue;
 }
 
+export function getLimitedValueInRange(
+  targetValue: number,
+  validMin: number,
+  validMax: number,
+  defaultValue: number
+): number {
+  if (!Number.isFinite(targetValue)) {
+    return defaultValue;
+  } else if (validMax < targetValue) {
+    return validMax;
+  } else if(targetValue < validMin) {
+    return validMin;
+  }
+
+  return targetValue;
+}
+
 export function getValueInEnum(
   targetValue: number,
   enumType,

@@ -50,7 +50,7 @@ describe("playerSettingsComponent", () => {
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
     const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
     playerSettingsComponent = new PlayerSettingsComponent(
       "#playerSettings",

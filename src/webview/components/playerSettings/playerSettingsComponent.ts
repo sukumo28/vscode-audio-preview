@@ -82,13 +82,13 @@ export default class PlayerSettingsComponent extends Component {
     enableHpf.checked = settings.enableHpf;
     this._addEventlistener(enableHpf, EventType.CHANGE, () => {
       settings.enableHpf = enableHpf.checked;
-      this.applyFilters();
     });
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_ENABLE_HPF,
       (e: CustomEventInit) => {
         enableHpf.checked = e.detail.value;
+        this.applyFilters();
       },
     );
 
@@ -99,13 +99,13 @@ export default class PlayerSettingsComponent extends Component {
     hpfFrequency.value = `${settings.hpfFrequency}`;
     this._addEventlistener(hpfFrequency, EventType.INPUT, () => {
       settings.hpfFrequency = Number(hpfFrequency.value);
-      this.applyFilters();
     });
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_HPF_FREQUENCY,
       (e: CustomEventInit) => {
         hpfFrequency.value = `${e.detail.value}`;
+        this.applyFilters();
       },
     );
 
@@ -116,13 +116,13 @@ export default class PlayerSettingsComponent extends Component {
     enableLpf.checked = settings.enableLpf;
     this._addEventlistener(enableLpf, EventType.CHANGE, () => {
       settings.enableLpf = enableLpf.checked;
-      this.applyFilters();
     });
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_ENABLE_LPF,
       (e: CustomEventInit) => {
         enableLpf.checked = e.detail.value;
+        this.applyFilters();
       },
     );
 
@@ -133,13 +133,13 @@ export default class PlayerSettingsComponent extends Component {
     lpfFrequency.value = `${settings.lpfFrequency}`;
     this._addEventlistener(lpfFrequency, EventType.INPUT, () => {
       settings.lpfFrequency = Number(lpfFrequency.value);
-      this.applyFilters();
     });
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_LPF_FREQUENCY,
       (e: CustomEventInit) => {        
         lpfFrequency.value = `${e.detail.value}`;
+        this.applyFilters();
       },
     );
 
@@ -162,7 +162,7 @@ export default class PlayerSettingsComponent extends Component {
   
   private applyFilters()
   {
-    if (this._playerService.isPlaying && (this._playerSettingsService.enableHpf || this._playerSettingsService.enableLpf)) {
+    if (this._playerService.isPlaying) {
       this._playerService.pause();
       this._playerService.play();
     }    
