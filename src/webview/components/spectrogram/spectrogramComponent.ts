@@ -1,6 +1,6 @@
 import "../../styles/figure.css";
 import AnalyzeService from "../../services/analyzeService";
-import {
+import AnalyzeSettingsService, {
   FrequencyScale,
   AnalyzeSettingsProps,
 } from "../../services/analyzeSettingsService";
@@ -218,10 +218,10 @@ export default class WaveFormComponent {
     for (let i = 0; i < numAxes; i++) {
       axisContext.fillStyle = "rgb(245,130,32)";
       const y = Math.round((i * height) / numAxes);
-      const maxMel = this._analyzeService.hzToMel(settings.maxFrequency);
-      const minMel = this._analyzeService.hzToMel(settings.minFrequency);
+      const maxMel = AnalyzeService.hzToMel(settings.maxFrequency);
+      const minMel = AnalyzeService.hzToMel(settings.minFrequency);
       const mel = ((numAxes - i) * (maxMel - minMel)) / numAxes + minMel;
-      const f = this._analyzeService.melToHz(mel);
+      const f = AnalyzeService.melToHz(mel);
       axisContext.fillText(`${Math.trunc(f)}`, 4, y - 4);
 
       axisContext.fillStyle = "rgb(180,120,20)";

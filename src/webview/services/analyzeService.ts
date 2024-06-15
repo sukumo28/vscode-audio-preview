@@ -146,8 +146,8 @@ export default class AnalyzeService extends Service {
     const endIndex = Math.floor(settings.maxTime * sampleRate);
 
     const df = sampleRate / settings.windowSize;
-    const minFreqIndex = Math.floor(this.hzToMel(settings.minFrequency) / df);
-    const maxFreqIndex = Math.floor(this.hzToMel(settings.maxFrequency) / df);
+    const minFreqIndex = Math.floor(AnalyzeService.hzToMel(settings.minFrequency) / df);
+    const maxFreqIndex = Math.floor(AnalyzeService.hzToMel(settings.maxFrequency) / df);
 
     const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
 
@@ -216,8 +216,8 @@ export default class AnalyzeService extends Service {
     minFreqIndex: number,
     maxFreqIndex: number,
   ) {
-    const minMel = this.hzToMel((minFreqIndex * sampleRate) / spectrum.length);
-    const maxMel = this.hzToMel((maxFreqIndex * sampleRate) / spectrum.length);
+    const minMel = AnalyzeService.hzToMel((minFreqIndex * sampleRate) / spectrum.length);
+    const maxMel = AnalyzeService.hzToMel((maxFreqIndex * sampleRate) / spectrum.length);
     const melStep = (maxMel - minMel) / (numFilters + 1);
 
     const filterBank: number[][] = [];
@@ -227,13 +227,13 @@ export default class AnalyzeService extends Service {
       const centerMel = minMel + (i + 1) * melStep;
       const endMel = minMel + (i + 2) * melStep;
       const startIndex = Math.round(
-        (this.melToHz(startMel) * spectrum.length) / sampleRate,
+        (AnalyzeService.melToHz(startMel) * spectrum.length) / sampleRate,
       );
       const centerIndex = Math.round(
-        (this.melToHz(centerMel) * spectrum.length) / sampleRate,
+        (AnalyzeService.melToHz(centerMel) * spectrum.length) / sampleRate,
       );
       const endIndex = Math.round(
-        (this.melToHz(endMel) * spectrum.length) / sampleRate,
+        (AnalyzeService.melToHz(endMel) * spectrum.length) / sampleRate,
       );
       for (let j = 0; j < spectrum.length; j++) {
         if (j < startIndex || j > endIndex) {
@@ -259,11 +259,11 @@ export default class AnalyzeService extends Service {
     return melSpectrum;
   }
 
-  public hzToMel(hz: number) {
+  public static hzToMel(hz: number) {
     return 2595 * Math.log10(1 + hz / 700);
   }
 
-  public melToHz(mel: number) {
+  public static melToHz(mel: number) {
     return 700 * (Math.pow(10, mel / 2595) - 1);
   }
 }
