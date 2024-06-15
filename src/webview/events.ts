@@ -31,6 +31,7 @@ export class EventType {
   public static readonly CHANGE = "change";
   public static readonly INPUT = "input";
   public static readonly KEY_DOWN = "keydown";
+  public static readonly KEY_UP = "keyup";
   public static readonly MOUSE_DOWN = "mousedown";
   public static readonly MOUSE_MOVE = "mousemove";
   public static readonly MOUSE_UP = "mouseup";

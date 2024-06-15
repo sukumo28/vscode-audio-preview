@@ -9,6 +9,7 @@ export interface PlayerDefault {
   initialVolumeDb: number;
   initialVolume: number;
   enableSpacekeyPlay: boolean;
+  enableSeekToPlay: boolean;
 }
 
 export interface AnalyzeDefault {

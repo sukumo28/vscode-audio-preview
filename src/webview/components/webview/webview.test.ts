@@ -60,6 +60,7 @@ describe("webview", () => {
             initialVolumeDb: 0.0,
             initialVolume: 1.0,
             enableSpacekeyPlay: true,
+            enableSeekToPlay: true,
           },
           analyzeDefault: {
             waveformVisible: undefined,
@@ -196,6 +197,7 @@ describe("webview error handling", () => {
             initialVolumeDb: 0.0,
             initialVolume: 1.0,
             enableSpacekeyPlay: true,
+            enableSeekToPlay: true,
           },
           analyzeDefault: {
             waveformVisible: undefined,
