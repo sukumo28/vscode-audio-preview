@@ -18,9 +18,17 @@ Available on Marketplace: https://marketplace.visualstudio.com/items?itemName=su
 How to preview audio.  
 ![how-to-use](https://github.com/sukumo28/vscode-audio-preview/blob/main/images/how-to-use.gif?raw=true)
 
-If you want to display only a specific range of graphs, dragging on the graph will re-run analyze on the selected range.  
-If you want to return to the original range, right-click on the graph.  
-If you want to specify the numerical values in detail, you can press the settings▼ button and enter various numerical values.
+- If you want to display only a specific range of graphs, dragging on the graph will re-run analyze on the selected range.
+
+  - By pressing the Ctrl key when dragging, you can select only the time range.
+  - By pressing the Shift key when dragging, you can select only the value range.
+
+- If you want to return to the original range, right-click on the graph.
+
+  - Pressing the Ctrl key when right-clicking, reset only the time range.
+  - Pressing the Shift key when right-clicking, reset only the value range.
+
+- If you want to specify the numerical values in detail, you can set the values in the analyze tab found in the settings tab.
 
 If this extension does not open by default, edit `settings.json` like below.
 
@@ -71,6 +79,14 @@ You can configure default value of player settings like example below.
 
     // When set to true, you can play the audio with the space key
     "enableSpacekeyPlay": true,
+
+    /*
+    Choose whether the audio will automatically play when you seek a new position.
+    true: plays on seeking
+    false: does not start playing on seeking, but resume playing from input time when audio is already playing
+    default: true
+    */
+    "enableSeekToPlay": true,
 }
 ```
 

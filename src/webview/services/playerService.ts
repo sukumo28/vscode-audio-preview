@@ -172,7 +172,7 @@ export default class PlayerService extends Service {
         },
       }),
     );
-    
+
     // restart from selected place
     if (resumeRequired || this._playerSettingsService.enableSeekToPlay){
       this.play();
