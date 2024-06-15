@@ -2,6 +2,7 @@ import { createAudioContext } from "../../../__mocks__/helper";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import PlayerService from "../../services/playerService";
+import PlayerSettingsService from "../../services/playerSettingsService";
 import AnalyzerComponent from "./analyzerComponent";
 
 describe("analyserComponent", () => {
@@ -32,7 +33,19 @@ describe("analyserComponent", () => {
       ad,
       audioBuffer,
     );
-    const playerService = new PlayerService(audioContext, audioBuffer);
+    const pd = {
+      volumeUnitDb: true,
+      initialVolumeDb: 0.0,
+      initialVolume: 1.0,
+      enableSpacekeyPlay: true,
+      enableSeekToPlay: true,
+    };
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     analyzerComponent = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -89,7 +102,19 @@ describe("auto analyze", () => {
       ad,
       audioBuffer,
     );
-    const playerService = new PlayerService(audioContext, audioBuffer);
+    const pd = {
+      volumeUnitDb: true,
+      initialVolumeDb: 0.0,
+      initialVolume: 1.0,
+      enableSpacekeyPlay: true,
+      enableSeekToPlay: true,
+    };
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     const ac = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -127,7 +152,19 @@ describe("auto analyze", () => {
       ad,
       audioBuffer,
     );
-    const playerService = new PlayerService(audioContext, audioBuffer);
+    const pd = {
+      volumeUnitDb: true,
+      initialVolumeDb: 0.0,
+      initialVolume: 1.0,
+      enableSpacekeyPlay: true,
+      enableSeekToPlay: true,
+    };
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     const ac = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -172,7 +209,19 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
       ad,
       audioBuffer,
     );
-    playerService = new PlayerService(audioContext, audioBuffer);
+    const pd = {
+      volumeUnitDb: true,
+      initialVolumeDb: 0.0,
+      initialVolume: 1.0,
+      enableSpacekeyPlay: true,
+      enableSeekToPlay: true,
+    };
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     analyzeSettingsService.minTime = 2;
     analyzeSettingsService.maxTime = 6;
     // audio: 10s, minTime: 2s, maxTime: 6s
