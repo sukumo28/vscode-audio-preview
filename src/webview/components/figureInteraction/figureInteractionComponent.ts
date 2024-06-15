@@ -331,6 +331,7 @@ export default class FigureInteractionComponent extends Component {
         }                      
         analyseSettingsService.minFrequency = minFrequency;
         analyseSettingsService.maxFrequency = maxFrequency;
+      }
     }
 
     // analyze
