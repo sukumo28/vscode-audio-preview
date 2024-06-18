@@ -106,7 +106,11 @@ export default class WaveFormComponent {
       const x = (i / data.length) * width;
       const y = height * (1 - d);
 
-      if (data.length > AnalyzeSettingsService.WAVEFORM_CANVAS_WIDTH * WaveFormComponent.MIN_DATA_POINTS_PER_PIXEL) {
+      if (
+        data.length >
+        AnalyzeSettingsService.WAVEFORM_CANVAS_WIDTH *
+          WaveFormComponent.MIN_DATA_POINTS_PER_PIXEL
+      ) {
         context.fillRect(x, y, 1, 1);
       } else {
         if (i === 0) {
