@@ -1,8 +1,11 @@
 import "../../styles/figure.css";
 import AnalyzeService from "../../services/analyzeService";
+import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import { AnalyzeSettingsProps } from "../../services/analyzeSettingsService";
 
 export default class WaveFormComponent {
+  public static readonly MIN_DATA_POINTS_PER_PIXEL = 5;
+
   constructor(
     componentRootSelector: string,
     width: number,
@@ -21,6 +24,7 @@ export default class WaveFormComponent {
     canvas.height = height;
     const context = canvas.getContext("2d", { alpha: false });
     context.fillStyle = "rgb(160,60,200)";
+    context.strokeStyle = "rgb(160,60,200)";
     componentRoot.appendChild(canvas);
 
     const axisCanvas = document.createElement("canvas");
@@ -101,7 +105,24 @@ export default class WaveFormComponent {
 
       const x = (i / data.length) * width;
       const y = height * (1 - d);
-      context.fillRect(x, y, 1, 1);
+
+      if (
+        data.length >
+        AnalyzeSettingsService.WAVEFORM_CANVAS_WIDTH *
+          WaveFormComponent.MIN_DATA_POINTS_PER_PIXEL
+      ) {
+        context.fillRect(x, y, 1, 1);
+      } else {
+        if (i === 0) {
+          context.beginPath();
+          context.moveTo(x, y);
+        } else if (i === data.length - 1) {
+          context.lineTo(x, y);
+          context.stroke();
+        } else {
+          context.lineTo(x, y);
+        }
+      }
     }
 
     // draw channel label
