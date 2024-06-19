@@ -146,8 +146,12 @@ export default class AnalyzeService extends Service {
     const endIndex = Math.floor(settings.maxTime * sampleRate);
 
     const df = sampleRate / settings.windowSize;
-    const minFreqIndex = Math.floor(AnalyzeService.hzToMel(settings.minFrequency) / df);
-    const maxFreqIndex = Math.floor(AnalyzeService.hzToMel(settings.maxFrequency) / df);
+    const minFreqIndex = Math.floor(
+      AnalyzeService.hzToMel(settings.minFrequency) / df,
+    );
+    const maxFreqIndex = Math.floor(
+      AnalyzeService.hzToMel(settings.maxFrequency) / df,
+    );
 
     const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
 
@@ -216,8 +220,12 @@ export default class AnalyzeService extends Service {
     minFreqIndex: number,
     maxFreqIndex: number,
   ) {
-    const minMel = AnalyzeService.hzToMel((minFreqIndex * sampleRate) / spectrum.length);
-    const maxMel = AnalyzeService.hzToMel((maxFreqIndex * sampleRate) / spectrum.length);
+    const minMel = AnalyzeService.hzToMel(
+      (minFreqIndex * sampleRate) / spectrum.length,
+    );
+    const maxMel = AnalyzeService.hzToMel(
+      (maxFreqIndex * sampleRate) / spectrum.length,
+    );
     const melStep = (maxMel - minMel) / (numFilters + 1);
 
     const filterBank: number[][] = [];

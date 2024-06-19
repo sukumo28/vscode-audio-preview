@@ -310,25 +310,41 @@ export default class FigureInteractionComponent extends Component {
         analyseSettingsService.minAmplitude = minAmplitude;
         analyseSettingsService.maxAmplitude = maxAmplitude;
       } else {
-        // SpectrogramCanvas      
+        // SpectrogramCanvas
         let minFrequency, maxFrequency, frequencyRange;
         switch (settings.frequencyScale) {
           case FrequencyScale.Linear:
             frequencyRange = settings.maxFrequency - settings.minFrequency;
-            minFrequency = (1 - maxY / rect.height) * frequencyRange + settings.minFrequency;
-            maxFrequency = (1 - minY / rect.height) * frequencyRange + settings.minFrequency;
-            break;            
+            minFrequency =
+              (1 - maxY / rect.height) * frequencyRange + settings.minFrequency;
+            maxFrequency =
+              (1 - minY / rect.height) * frequencyRange + settings.minFrequency;
+            break;
           case FrequencyScale.Log:
-            frequencyRange = Math.log10(settings.maxFrequency) - Math.log10(settings.minFrequency);
-            minFrequency = Math.pow(10, (1 - maxY / rect.height) * frequencyRange) + settings.minFrequency;
-            maxFrequency = Math.pow(10, (1 - minY / rect.height) * frequencyRange) + settings.minFrequency;
+            frequencyRange =
+              Math.log10(settings.maxFrequency) -
+              Math.log10(settings.minFrequency);
+            minFrequency =
+              Math.pow(10, (1 - maxY / rect.height) * frequencyRange) +
+              settings.minFrequency;
+            maxFrequency =
+              Math.pow(10, (1 - minY / rect.height) * frequencyRange) +
+              settings.minFrequency;
             break;
           case FrequencyScale.Mel:
-            frequencyRange = AnalyzeService.hzToMel(settings.maxFrequency) - AnalyzeService.hzToMel(settings.minFrequency);
-            minFrequency = AnalyzeService.melToHz((1 - maxY / rect.height) * frequencyRange) + settings.minFrequency;
-            maxFrequency = AnalyzeService.melToHz((1 - minY / rect.height) * frequencyRange) + settings.minFrequency;
+            frequencyRange =
+              AnalyzeService.hzToMel(settings.maxFrequency) -
+              AnalyzeService.hzToMel(settings.minFrequency);
+            minFrequency =
+              AnalyzeService.melToHz(
+                (1 - maxY / rect.height) * frequencyRange,
+              ) + settings.minFrequency;
+            maxFrequency =
+              AnalyzeService.melToHz(
+                (1 - minY / rect.height) * frequencyRange,
+              ) + settings.minFrequency;
             break;
-        }                      
+        }
         analyseSettingsService.minFrequency = minFrequency;
         analyseSettingsService.maxFrequency = maxFrequency;
       }
