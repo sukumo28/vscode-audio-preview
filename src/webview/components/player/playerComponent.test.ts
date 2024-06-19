@@ -27,8 +27,15 @@ describe("playerComponent", () => {
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    playerSettingService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
+    playerSettingService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingService,
+    );
     playerComponent = new PlayerComponent(
       "#player",
       playerService,
@@ -115,8 +122,15 @@ describe("playerComponent", () => {
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
+    const playerSettingService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingService,
+    );
     const playerComponent = new PlayerComponent(
       "#player2",
       playerService,
@@ -194,8 +208,15 @@ describe("playerComponent", () => {
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
+    const playerSettingService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingService,
+    );
     const playerComponent = new PlayerComponent(
       "#player2",
       playerService,

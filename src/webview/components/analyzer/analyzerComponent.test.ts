@@ -45,8 +45,15 @@ describe("analyserComponent", () => {
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     analyzerComponent = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -115,8 +122,15 @@ describe("auto analyze", () => {
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     const ac = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -166,8 +180,15 @@ describe("auto analyze", () => {
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     const ac = new AnalyzerComponent(
       "#analyzer",
       audioBuffer,
@@ -224,8 +245,15 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     analyzeSettingsService.minTime = 2;
     analyzeSettingsService.maxTime = 6;
     // audio: 10s, minTime: 2s, maxTime: 6s

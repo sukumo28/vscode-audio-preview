@@ -3,7 +3,7 @@ import Component from "../../component";
 import { EventType } from "../../events";
 import PlayerService from "../../services/playerService";
 import PlayerSettingsService from "../../services/playerSettingsService";
-import PlayerSettingsComponent from "../playerSettings/playerSettingsComponent"; 
+import PlayerSettingsComponent from "../playerSettings/playerSettingsComponent";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import AnalyzeSettingsComponent from "../analyzeSettings/analyzeSettingsComponent";
@@ -52,7 +52,7 @@ export default class SettingTab extends Component {
       playerService,
       playerSettingsService,
       analyzeService,
-      analyzeSettingsService
+      analyzeSettingsService,
     );
     new AnalyzeSettingsComponent(
       `${coponentRootSelector} .js-settingTabContent-analyze`,

@@ -52,21 +52,29 @@ export default class PlayerSettingsComponent extends Component {
 
     // init match filter frequency checkbox
     const matchFilterFrequencyToSpectrogram = <HTMLInputElement>(
-      this._componentRoot.querySelector(".js-playerSetting-matchFilterFrequencyToSpectrogram")
+      this._componentRoot.querySelector(
+        ".js-playerSetting-matchFilterFrequencyToSpectrogram",
+      )
     );
-    matchFilterFrequencyToSpectrogram.checked = settings.matchFilterFrequencyToSpectrogram;
-    this._addEventlistener(matchFilterFrequencyToSpectrogram, EventType.CHANGE, () => {
-      hpfFrequency.readOnly = matchFilterFrequencyToSpectrogram.checked;
-      lpfFrequency.readOnly = matchFilterFrequencyToSpectrogram.checked;
-      hpfFrequency.value = String(this._analyzeSettingService.minFrequency);
-      lpfFrequency.value = String(this._analyzeSettingService.maxFrequency);
+    matchFilterFrequencyToSpectrogram.checked =
+      settings.matchFilterFrequencyToSpectrogram;
+    this._addEventlistener(
+      matchFilterFrequencyToSpectrogram,
+      EventType.CHANGE,
+      () => {
+        hpfFrequency.readOnly = matchFilterFrequencyToSpectrogram.checked;
+        lpfFrequency.readOnly = matchFilterFrequencyToSpectrogram.checked;
+        hpfFrequency.value = String(this._analyzeSettingService.minFrequency);
+        lpfFrequency.value = String(this._analyzeSettingService.maxFrequency);
 
-      settings.matchFilterFrequencyToSpectrogram = matchFilterFrequencyToSpectrogram.checked;
-      settings.hpfFrequency = Number(hpfFrequency.value);
-      settings.lpfFrequency = Number(lpfFrequency.value);
+        settings.matchFilterFrequencyToSpectrogram =
+          matchFilterFrequencyToSpectrogram.checked;
+        settings.hpfFrequency = Number(hpfFrequency.value);
+        settings.lpfFrequency = Number(lpfFrequency.value);
 
-      this.applyFilters();
-    });
+        this.applyFilters();
+      },
+    );
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
@@ -137,34 +145,29 @@ export default class PlayerSettingsComponent extends Component {
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_LPF_FREQUENCY,
-      (e: CustomEventInit) => {        
+      (e: CustomEventInit) => {
         lpfFrequency.value = `${e.detail.value}`;
         this.applyFilters();
       },
     );
 
-    this._addEventlistener(
-      this._analyzeService,
-      EventType.ANALYZE,
-      () => {
-        if (matchFilterFrequencyToSpectrogram.checked){
-          hpfFrequency.value = `${this._analyzeSettingService.minFrequency}`;
-          settings.hpfFrequency = Number(hpfFrequency.value);
+    this._addEventlistener(this._analyzeService, EventType.ANALYZE, () => {
+      if (matchFilterFrequencyToSpectrogram.checked) {
+        hpfFrequency.value = `${this._analyzeSettingService.minFrequency}`;
+        settings.hpfFrequency = Number(hpfFrequency.value);
 
-          lpfFrequency.value = `${this._analyzeSettingService.maxFrequency}`;
-          settings.lpfFrequency = Number(lpfFrequency.value);
+        lpfFrequency.value = `${this._analyzeSettingService.maxFrequency}`;
+        settings.lpfFrequency = Number(lpfFrequency.value);
 
-          this.applyFilters();
-        }
-      },
-    );
+        this.applyFilters();
+      }
+    });
   }
-  
-  private applyFilters()
-  {
+
+  private applyFilters() {
     if (this._playerService.isPlaying) {
       this._playerService.pause();
       this._playerService.play();
-    }    
+    }
   }
 }

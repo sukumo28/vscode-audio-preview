@@ -11,7 +11,8 @@ export class EventType {
   public static readonly PS_UPDATE_HPF_FREQUENCY = "update-hpf-frequency";
   public static readonly PS_UPDATE_ENABLE_LPF = "update-enable-lpf";
   public static readonly PS_UPDATE_LPF_FREQUENCY = "update-lpf-frequency";
-  public static readonly PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM = "update-match-filter-frequency-to-spectrogram";
+  public static readonly PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM =
+    "update-match-filter-frequency-to-spectrogram";
   // analyzer
   public static readonly ANALYZE = "analyze";
   // analyzeSettings

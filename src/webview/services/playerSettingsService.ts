@@ -3,7 +3,7 @@ import { getValueInRange, getLimitedValueInRange } from "../../util";
 import Service from "../service";
 import { EventType } from "../events";
 
-export default class PlayerSettingsService extends Service{
+export default class PlayerSettingsService extends Service {
   public static readonly VOLUME_DB_MAX = 0.0;
   public static readonly VOLUME_DB_MIN = -80.0;
   public static readonly VOLUME_MAX = 100;
@@ -77,7 +77,7 @@ export default class PlayerSettingsService extends Service{
         new CustomEvent(EventType.PS_UPDATE_ENABLE_HPF, {
           detail: { value: this._enableHpf },
         }),
-      );  
+      );
     }
   }
 
@@ -87,10 +87,10 @@ export default class PlayerSettingsService extends Service{
   }
   public set hpfFrequency(value: number) {
     const newValue = getLimitedValueInRange(
-      value, 
-      PlayerSettingsService.FILTER_FREQUENCY_MIN, 
+      value,
+      PlayerSettingsService.FILTER_FREQUENCY_MIN,
       this._sampleRate / 2,
-      PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT
+      PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
     );
 
     if (this._hpfFrequency !== newValue) {
@@ -116,7 +116,7 @@ export default class PlayerSettingsService extends Service{
         new CustomEvent(EventType.PS_UPDATE_ENABLE_LPF, {
           detail: { value: this._enableLpf },
         }),
-      );  
+      );
     }
   }
 
@@ -126,10 +126,10 @@ export default class PlayerSettingsService extends Service{
   }
   public set lpfFrequency(value: number) {
     const newValue = getLimitedValueInRange(
-      value, 
-      PlayerSettingsService.FILTER_FREQUENCY_MIN, 
+      value,
+      PlayerSettingsService.FILTER_FREQUENCY_MIN,
       this._sampleRate / 2,
-      PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT
+      PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
     );
 
     if (this._lpfFrequency !== newValue) {
@@ -147,7 +147,8 @@ export default class PlayerSettingsService extends Service{
     return this._matchFilterFrequencyToSpectrogram;
   }
   public set matchFilterFrequencyToSpectrogram(value: boolean) {
-    this._matchFilterFrequencyToSpectrogram = value === undefined ? false : value; // false by default
+    this._matchFilterFrequencyToSpectrogram =
+      value === undefined ? false : value; // false by default
   }
 
   private constructor(
@@ -175,11 +176,23 @@ export default class PlayerSettingsService extends Service{
     this._matchFilterFrequencyToSpectrogram = matchFilterFrequencyToSpectrogram;
   }
 
-  public static fromDefaultSetting(defaultSetting: PlayerDefault, audioBuffer: AudioBuffer) {
+  public static fromDefaultSetting(
+    defaultSetting: PlayerDefault,
+    audioBuffer: AudioBuffer,
+  ) {
     // create instance
-    const setting = new PlayerSettingsService(true, 0.0, 1.0, true, true,
-                                              false, this.FILTER_FREQUENCY_HPF_DEFAULT,
-                                              false, this.FILTER_FREQUENCY_LPF_DEFAULT, false);
+    const setting = new PlayerSettingsService(
+      true,
+      0.0,
+      1.0,
+      true,
+      true,
+      false,
+      this.FILTER_FREQUENCY_HPF_DEFAULT,
+      false,
+      this.FILTER_FREQUENCY_LPF_DEFAULT,
+      false,
+    );
 
     // set sample rate of audio buffer to instance
     setting._sampleRate = audioBuffer.sampleRate;
@@ -202,7 +215,8 @@ export default class PlayerSettingsService extends Service{
     setting.hpfFrequency = defaultSetting.hpfFrequency;
     setting.enableLpf = defaultSetting.enableLpf;
     setting.lpfFrequency = defaultSetting.lpfFrequency;
-    setting.matchFilterFrequencyToSpectrogram = defaultSetting.matchFilterFrequencyToSpectrogram;
+    setting.matchFilterFrequencyToSpectrogram =
+      defaultSetting.matchFilterFrequencyToSpectrogram;
 
     return setting;
   }

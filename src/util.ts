@@ -55,13 +55,13 @@ export function getLimitedValueInRange(
   targetValue: number,
   validMin: number,
   validMax: number,
-  defaultValue: number
+  defaultValue: number,
 ): number {
   if (!Number.isFinite(targetValue)) {
     return defaultValue;
   } else if (validMax < targetValue) {
     return validMax;
-  } else if(targetValue < validMin) {
+  } else if (targetValue < validMin) {
     return validMin;
   }
 

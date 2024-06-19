@@ -11,8 +11,15 @@ describe("playerService", () => {
     const audioContext = createAudioContext(44100);
     const audioBuffer = audioContext.createBuffer(1, 44100 * 10, 44100);
     const pd = {} as PlayerDefault;
-    playerSettingService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    playerService = new PlayerService(audioContext, audioBuffer, playerSettingService);
+    playerSettingService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingService,
+    );
   });
 
   afterAll(() => {

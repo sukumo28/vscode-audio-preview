@@ -1,7 +1,4 @@
-import {
-  createAudioContext,
-  getRandomFloat,
-} from "../../../__mocks__/helper";
+import { createAudioContext, getRandomFloat } from "../../../__mocks__/helper";
 import { EventType } from "../../events";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
@@ -50,8 +47,15 @@ describe("playerSettingsComponent", () => {
       lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
       matchFilterFrequencyToSpectrogram: false,
     };
-    playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd, audioBuffer);
-    const playerService = new PlayerService(audioContext, audioBuffer, playerSettingsService);
+    playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
+    const playerService = new PlayerService(
+      audioContext,
+      audioBuffer,
+      playerSettingsService,
+    );
     playerSettingsComponent = new PlayerSettingsComponent(
       "#playerSettings",
       playerService,
@@ -187,35 +191,49 @@ describe("playerSettingsComponent", () => {
 
   test("match-filter-frequency-to-spectrogram should be updated when user change match-filter-frequency-to-spectrogram-input", () => {
     const matchFilterFrequencyToSpectrogram = <HTMLInputElement>(
-      document.querySelector(".js-playerSetting-matchFilterFrequencyToSpectrogram")
+      document.querySelector(
+        ".js-playerSetting-matchFilterFrequencyToSpectrogram",
+      )
     );
     matchFilterFrequencyToSpectrogram.checked = true;
-    matchFilterFrequencyToSpectrogram.dispatchEvent(new Event(EventType.CHANGE));
+    matchFilterFrequencyToSpectrogram.dispatchEvent(
+      new Event(EventType.CHANGE),
+    );
     expect(playerSettingsService.matchFilterFrequencyToSpectrogram).toBe(true);
 
     matchFilterFrequencyToSpectrogram.checked = false;
-    matchFilterFrequencyToSpectrogram.dispatchEvent(new Event(EventType.CHANGE));
+    matchFilterFrequencyToSpectrogram.dispatchEvent(
+      new Event(EventType.CHANGE),
+    );
     expect(playerSettingsService.matchFilterFrequencyToSpectrogram).toBe(false);
   });
   test("match-filter-frequency-to-spectrogram should be updated when recieving update-match-filter-frequency-to-spectrogram event", () => {
     playerSettingsService.dispatchEvent(
-      new CustomEvent(EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM, {
-        detail: {
-          value: true,
+      new CustomEvent(
+        EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
+        {
+          detail: {
+            value: true,
+          },
         },
-      }),
+      ),
     );
     const matchFilterFrequencyToSpectrogram = <HTMLInputElement>(
-      document.querySelector(".js-playerSetting-matchFilterFrequencyToSpectrogram")
+      document.querySelector(
+        ".js-playerSetting-matchFilterFrequencyToSpectrogram",
+      )
     );
     expect(matchFilterFrequencyToSpectrogram.checked).toBe(true);
 
     playerSettingsService.dispatchEvent(
-      new CustomEvent(EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM, {
-        detail: {
-          value: false,
+      new CustomEvent(
+        EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
+        {
+          detail: {
+            value: false,
+          },
         },
-      }),
+      ),
     );
     expect(matchFilterFrequencyToSpectrogram.checked).toBe(false);
   });

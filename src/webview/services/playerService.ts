@@ -40,7 +40,11 @@ export default class PlayerService extends Service {
   private _seekbarValue: number = 0;
   private _animationFrameID: number = 0;
 
-  constructor(audioContext: AudioContext, audioBuffer: AudioBuffer, playerSettingsService: PlayerSettingsService) {
+  constructor(
+    audioContext: AudioContext,
+    audioBuffer: AudioBuffer,
+    playerSettingsService: PlayerSettingsService,
+  ) {
     super();
     this._audioContext = audioContext;
     this._audioBuffer = audioBuffer;
@@ -53,25 +57,25 @@ export default class PlayerService extends Service {
     // init high-pass filter
     this._hpfNode = this._audioContext.createBiquadFilter();
     this._hpfNode.type = "highpass";
-    this._hpfNode.Q.value = Math.SQRT1_2;   // butterworth
-    
+    this._hpfNode.Q.value = Math.SQRT1_2; // butterworth
+
     // init high-pass filter
     this._lpfNode = this._audioContext.createBiquadFilter();
     this._lpfNode.type = "lowpass";
-    this._lpfNode.Q.value = Math.SQRT1_2;   // butterworth
+    this._lpfNode.Q.value = Math.SQRT1_2; // butterworth
   }
 
-  public play() {    
+  public play() {
     // connect nodes
     let lastNode = this._gainNode;
-    
+
     this._lpfNode.disconnect();
     if (this._playerSettingsService.enableLpf) {
       this._lpfNode.frequency.value = this._playerSettingsService.lpfFrequency;
       this._lpfNode.connect(lastNode);
       lastNode = this._lpfNode;
-    } 
-    
+    }
+
     this._hpfNode.disconnect();
     if (this._playerSettingsService.enableHpf) {
       this._hpfNode.frequency.value = this._playerSettingsService.hpfFrequency;
@@ -85,13 +89,13 @@ export default class PlayerService extends Service {
     this._source = this._audioContext.createBufferSource();
     this._source.buffer = this._audioBuffer;
     this._source.connect(lastNode);
-    
+
     // play
     this._isPlaying = true;
     this._lastStartAcTime = this._audioContext.currentTime;
     this._source.start(this._audioContext.currentTime, this._currentSec);
 
-// update playing status
+    // update playing status
     this.dispatchEvent(
       new CustomEvent(EventType.UPDATE_IS_PLAYING, {
         detail: {
@@ -174,7 +178,7 @@ export default class PlayerService extends Service {
     );
 
     // restart from selected place
-    if (resumeRequired || this._playerSettingsService.enableSeekToPlay){
+    if (resumeRequired || this._playerSettingsService.enableSeekToPlay) {
       this.play();
     }
   }
