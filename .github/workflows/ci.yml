@@ -62,7 +62,13 @@ jobs:
         with:
           script: |
             const issue_number = context.issue.number;
-            const message = `The CI checks failed. Please review the errors and push fixes.`;
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: issue_number,
+            });
+            const pr_author = pr.data.user.login;
+            const message = `@${pr_author} The CI checks failed. Please review the errors and push fixes.`;
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
