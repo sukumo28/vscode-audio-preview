@@ -1,6 +1,6 @@
 import "../../styles/figure.css";
 import AnalyzeService from "../../services/analyzeService";
-import AnalyzeSettingsService, {
+import {
   FrequencyScale,
   AnalyzeSettingsProps,
 } from "../../services/analyzeSettingsService";
