@@ -100,7 +100,9 @@
     "webpack-dev": "webpack --mode development --watch",
     "test": "jest",
     "lint": "eslint \"src/**/*.{js,ts}\"",
-    "format": "prettier --write \"src/**/*.{js,ts,css}\""
+    "format": "prettier --write \"src/**/*.{js,ts,css}\"",
+    "lint-check": "eslint \"src/**/*.{js,ts}\" || (echo \"Lint errors found\" && exit 1)",
+    "format-check": "prettier --check \"src/**/*.ts\" || (echo \"Formatting errors found\" && exit 1)"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",

@@ -1,0 +1,92 @@
+name: PullRequestChecker
+
+# Since there are PRs sent from external users, do not trigger automatically but manually
+on:
+  pull_request_target:
+    types: [labeled]
+
+jobs:
+  check:
+    if: contains(github.event.pull_request.labels.*.name, 'run-check')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout User's PR
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: npm install
+      - name: Lint
+        run: npm run lint-check
+      - name: Format
+        run: npm run format-check
+      - name: Test
+        run: npm run test
+
+  remove-label:
+    needs: check
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Remove run-check label
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const label = 'run-check';
+            github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              name: label
+            });
+
+  notify-failer:
+    needs: check
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: If CI fails, notify the user who created the PR
+        if: ${{ needs.check.result == 'failure' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const message = `The CI checks failed. Please review the errors and push fixes.`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              body: message
+            });
+
+  notify-success:
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: If the CI is successful, notify the user who created the PR.
+        if: ${{ needs.check.result == 'success' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const message = `The CI checks passed.`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              body: message
+            });
