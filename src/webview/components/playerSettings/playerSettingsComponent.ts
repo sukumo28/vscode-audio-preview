@@ -51,26 +51,25 @@ export default class PlayerSettingsComponent extends Component {
     const settings = this._playerSettingsService;
 
     // init match filter frequency checkbox
-    const matchFilterFrequencyToSpectrogram =
+    const matchFilterFrequencyToSpectrogramInput =
       this._componentRoot.querySelector(
         ".js-playerSetting-matchFilterFrequencyToSpectrogram",
       ) as HTMLInputElement;
-    matchFilterFrequencyToSpectrogram.checked =
+    matchFilterFrequencyToSpectrogramInput.checked =
       settings.matchFilterFrequencyToSpectrogram;
     this._addEventlistener(
-      matchFilterFrequencyToSpectrogram,
+      matchFilterFrequencyToSpectrogramInput,
       EventType.CHANGE,
       () => {
-        hpfFrequency.readOnly = matchFilterFrequencyToSpectrogram.checked;
-        lpfFrequency.readOnly = matchFilterFrequencyToSpectrogram.checked;
-        hpfFrequency.value = `${this._analyzeSettingService.minFrequency}`;
-        lpfFrequency.value = `${this._analyzeSettingService.maxFrequency}`;
+        hpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
+        lpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
+        hpfFrequencyInput.value = `${this._analyzeSettingService.minFrequency}`;
+        lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;
 
         settings.matchFilterFrequencyToSpectrogram =
-          matchFilterFrequencyToSpectrogram.checked;
-        settings.hpfFrequency = Number(hpfFrequency.value);
-        settings.lpfFrequency = Number(lpfFrequency.value);
-
+          matchFilterFrequencyToSpectrogramInput.checked;
+        settings.hpfFrequency = Number(hpfFrequencyInput.value);
+        settings.lpfFrequency = Number(lpfFrequencyInput.value);
         this.applyFilters();
       },
     );
@@ -78,78 +77,77 @@ export default class PlayerSettingsComponent extends Component {
       settings,
       EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
       (e: CustomEventInit) => {
-        matchFilterFrequencyToSpectrogram.checked = e.detail.value;
+        matchFilterFrequencyToSpectrogramInput.checked = e.detail.value;
       },
     );
 
     // init enable high-pass filter checkbox
-    const enableHpf = this._componentRoot.querySelector(".js-playerSetting-enableHpf") as HTMLInputElement;
-    enableHpf.checked = settings.enableHpf;
-    this._addEventlistener(enableHpf, EventType.CHANGE, () => {
-      settings.enableHpf = enableHpf.checked;
+    const enableHpfInput = this._componentRoot.querySelector(".js-playerSetting-enableHpf") as HTMLInputElement;
+    enableHpfInput.checked = settings.enableHpf;
+    this._addEventlistener(enableHpfInput, EventType.CHANGE, () => {
+      settings.enableHpf = enableHpfInput.checked;
     });
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_ENABLE_HPF,
       (e: CustomEventInit) => {
-        enableHpf.checked = e.detail.value;
+        enableHpfInput.checked = e.detail.value;
         this.applyFilters();
       },
     );
 
     // init high-pass filter frequency input
-    const hpfFrequency = this._componentRoot.querySelector(".js-playerSetting-hpfFrequency") as HTMLInputElement;
-    hpfFrequency.value = `${settings.hpfFrequency}`;
-    this._addEventlistener(hpfFrequency, EventType.INPUT, () => {
-      settings.hpfFrequency = Number(hpfFrequency.value);
+    const hpfFrequencyInput = this._componentRoot.querySelector(".js-playerSetting-hpfFrequency") as HTMLInputElement;
+    hpfFrequencyInput.value = `${settings.hpfFrequency}`;
+    this._addEventlistener(hpfFrequencyInput, EventType.INPUT, () => {
+      settings.hpfFrequency = Number(hpfFrequencyInput.value);
     });
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_HPF_FREQUENCY,
       (e: CustomEventInit) => {
-        hpfFrequency.value = `${e.detail.value}`;
+        hpfFrequencyInput.value = `${e.detail.value}`;
         this.applyFilters();
       },
     );
 
     // init enable low-pass filter checkbox
-    const enableLpf = this._componentRoot.querySelector(".js-playerSetting-enableLpf") as HTMLInputElement;
-    enableLpf.checked = settings.enableLpf;
-    this._addEventlistener(enableLpf, EventType.CHANGE, () => {
-      settings.enableLpf = enableLpf.checked;
+    const enableLpfInput = this._componentRoot.querySelector(".js-playerSetting-enableLpf") as HTMLInputElement;
+    enableLpfInput.checked = settings.enableLpf;
+    this._addEventlistener(enableLpfInput, EventType.CHANGE, () => {
+      settings.enableLpf = enableLpfInput.checked;
     });
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_ENABLE_LPF,
       (e: CustomEventInit) => {
-        enableLpf.checked = e.detail.value;
+        enableLpfInput.checked = e.detail.value;
         this.applyFilters();
       },
     );
 
     // init low-pass filter frequency input
-    const lpfFrequency = this._componentRoot.querySelector(".js-playerSetting-lpfFrequency") as HTMLInputElement;
-    lpfFrequency.value = `${settings.lpfFrequency}`;
-    this._addEventlistener(lpfFrequency, EventType.INPUT, () => {
-      settings.lpfFrequency = Number(lpfFrequency.value);
+    const lpfFrequencyInput = this._componentRoot.querySelector(".js-playerSetting-lpfFrequency") as HTMLInputElement;
+    lpfFrequencyInput.value = `${settings.lpfFrequency}`;
+    this._addEventlistener(lpfFrequencyInput, EventType.INPUT, () => {
+      settings.lpfFrequency = Number(lpfFrequencyInput.value);
     });
     this._addEventlistener(
       settings,
       EventType.PS_UPDATE_LPF_FREQUENCY,
       (e: CustomEventInit) => {
-        lpfFrequency.value = `${e.detail.value}`;
+        lpfFrequencyInput.value = `${e.detail.value}`;
         this.applyFilters();
       },
     );
 
     this._addEventlistener(this._analyzeService, EventType.ANALYZE, () => {
-      if (matchFilterFrequencyToSpectrogram.checked) {
-        hpfFrequency.value = `${this._analyzeSettingService.minFrequency}`;
-        settings.hpfFrequency = Number(hpfFrequency.value);
+      if (matchFilterFrequencyToSpectrogramInput.checked) {
+        hpfFrequencyInput.value = `${this._analyzeSettingService.minFrequency}`;
+        settings.hpfFrequency = Number(hpfFrequencyInput.value);
 
-        lpfFrequency.value = `${this._analyzeSettingService.maxFrequency}`;
-        settings.lpfFrequency = Number(lpfFrequency.value);
-
+        lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;
+        settings.lpfFrequency = Number(lpfFrequencyInput.value);
         this.applyFilters();
       }
     });
