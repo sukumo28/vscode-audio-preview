@@ -63,8 +63,8 @@ export default class PlayerSettingsComponent extends Component {
       () => {
         hpfFrequency.readOnly = matchFilterFrequencyToSpectrogram.checked;
         lpfFrequency.readOnly = matchFilterFrequencyToSpectrogram.checked;
-        hpfFrequency.value = String(this._analyzeSettingService.minFrequency);
-        lpfFrequency.value = String(this._analyzeSettingService.maxFrequency);
+        hpfFrequency.value = `${this._analyzeSettingService.minFrequency}`;
+        lpfFrequency.value = `${this._analyzeSettingService.maxFrequency}`;
 
         settings.matchFilterFrequencyToSpectrogram =
           matchFilterFrequencyToSpectrogram.checked;
