@@ -1,7 +1,6 @@
 import "./settingTabComponent.css";
 import Component from "../../component";
 import { EventType } from "../../events";
-import PlayerService from "../../services/playerService";
 import PlayerSettingsService from "../../services/playerSettingsService";
 import PlayerSettingsComponent from "../playerSettings/playerSettingsComponent";
 import AnalyzeService from "../../services/analyzeService";
@@ -15,7 +14,6 @@ export default class SettingTab extends Component {
 
   constructor(
     coponentRootSelector: string,
-    playerService: PlayerService,
     playerSettingsService: PlayerSettingsService,
     analyzeService: AnalyzeService,
     analyzeSettingsService: AnalyzeSettingsService,
@@ -49,7 +47,6 @@ export default class SettingTab extends Component {
     // create tab content
     new PlayerSettingsComponent(
       `${coponentRootSelector} .js-settingTabContent-player`,
-      playerService,
       playerSettingsService,
       analyzeService,
       analyzeSettingsService,

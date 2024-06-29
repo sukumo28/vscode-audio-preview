@@ -2,7 +2,6 @@ import { createAudioContext, getRandomFloat } from "../../../__mocks__/helper";
 import { EventType } from "../../events";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
-import PlayerService from "../../services/playerService";
 import PlayerSettingsService from "../../services/playerSettingsService";
 import PlayerSettingsComponent from "./playerSettingsComponent";
 
@@ -51,14 +50,8 @@ describe("playerSettingsComponent", () => {
       pd,
       audioBuffer,
     );
-    const playerService = new PlayerService(
-      audioContext,
-      audioBuffer,
-      playerSettingsService,
-    );
     playerSettingsComponent = new PlayerSettingsComponent(
       "#playerSettings",
-      playerService,
       playerSettingsService,
       analyzeService,
       analyzeSettingsService,

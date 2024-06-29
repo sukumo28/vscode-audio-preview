@@ -1,24 +1,20 @@
 import {
-  createAudioContext,
   MockAudioBuffer,
   postMessageFromWebview,
 } from "../../../__mocks__/helper";
 import { AnalyzeDefault, PlayerDefault } from "../../../config";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
-import PlayerService from "../../services/playerService";
 import PlayerSettingsService from "../../services/playerSettingsService";
 import SettingTab from "./settingTabComponent";
 
 describe("settingTabComponent", () => {
-  let playerService: PlayerService;
   let playerSettingService: PlayerSettingsService;
   let analyzeService: AnalyzeService;
   let analyzeSettingsService: AnalyzeSettingsService;
   let settingTabComponent: SettingTab;
   beforeAll(() => {
     document.body.innerHTML = '<div id="settingTab"></div>';
-    const audioContext = createAudioContext(44100);
     const audioBuffer = new MockAudioBuffer(
       44100,
       1,
@@ -35,14 +31,8 @@ describe("settingTabComponent", () => {
       playerDefault,
       audioBuffer,
     );
-    playerService = new PlayerService(
-      audioContext,
-      audioBuffer,
-      playerSettingService,
-    );
     settingTabComponent = new SettingTab(
       "#settingTab",
-      playerService,
       playerSettingService,
       analyzeService,
       analyzeSettingsService,

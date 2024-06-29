@@ -1,28 +1,24 @@
 import "./playerSettingsComponent.css";
 import Component from "../../component";
 import { EventType } from "../../events";
-import PlayerService from "../../services/playerService";
 import PlayerSettingsService from "../../services/playerSettingsService";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 
 export default class PlayerSettingsComponent extends Component {
   private _componentRoot: HTMLElement;
-  private _playerService: PlayerService;
   private _playerSettingsService: PlayerSettingsService;
   private _analyzeService: AnalyzeService;
   private _analyzeSettingService: AnalyzeSettingsService;
 
   constructor(
     componentRootSelector: string,
-    playerService: PlayerService,
     playerSettingsService: PlayerSettingsService,
     analyzeService: AnalyzeService,
     analyzeSettingService: AnalyzeSettingsService,
   ) {
     super();
     this._componentRoot = document.querySelector(componentRootSelector);
-    this._playerService = playerService;
     this._playerSettingsService = playerSettingsService;
     this._analyzeService = analyzeService;
     this._analyzeSettingService = analyzeSettingService;
@@ -70,7 +66,6 @@ export default class PlayerSettingsComponent extends Component {
           matchFilterFrequencyToSpectrogramInput.checked;
         settings.hpfFrequency = Number(hpfFrequencyInput.value);
         settings.lpfFrequency = Number(lpfFrequencyInput.value);
-        this.applyFilters();
       },
     );
     this._addEventlistener(
@@ -92,7 +87,6 @@ export default class PlayerSettingsComponent extends Component {
       EventType.PS_UPDATE_ENABLE_HPF,
       (e: CustomEventInit) => {
         enableHpfInput.checked = e.detail.value;
-        this.applyFilters();
       },
     );
 
@@ -107,7 +101,6 @@ export default class PlayerSettingsComponent extends Component {
       EventType.PS_UPDATE_HPF_FREQUENCY,
       (e: CustomEventInit) => {
         hpfFrequencyInput.value = `${e.detail.value}`;
-        this.applyFilters();
       },
     );
 
@@ -122,7 +115,6 @@ export default class PlayerSettingsComponent extends Component {
       EventType.PS_UPDATE_ENABLE_LPF,
       (e: CustomEventInit) => {
         enableLpfInput.checked = e.detail.value;
-        this.applyFilters();
       },
     );
 
@@ -137,7 +129,6 @@ export default class PlayerSettingsComponent extends Component {
       EventType.PS_UPDATE_LPF_FREQUENCY,
       (e: CustomEventInit) => {
         lpfFrequencyInput.value = `${e.detail.value}`;
-        this.applyFilters();
       },
     );
 
@@ -148,15 +139,7 @@ export default class PlayerSettingsComponent extends Component {
 
         lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;
         settings.lpfFrequency = Number(lpfFrequencyInput.value);
-        this.applyFilters();
       }
     });
-  }
-
-  private applyFilters() {
-    if (this._playerService.isPlaying) {
-      this._playerService.pause();
-      this._playerService.play();
-    }
   }
 }

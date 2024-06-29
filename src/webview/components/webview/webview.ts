@@ -178,7 +178,6 @@ export default class WebView extends Component {
     );
     const settingTabComponent = new SettingTab(
       "#settingTab",
-      playerService,
       playerSettingsService,
       analyzeService,
       analyzeSettingsService,
