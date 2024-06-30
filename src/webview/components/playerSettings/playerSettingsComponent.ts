@@ -46,36 +46,6 @@ export default class PlayerSettingsComponent extends Component {
   private initPlayerSettingUI() {
     const settings = this._playerSettingsService;
 
-    // init match filter frequency checkbox
-    const matchFilterFrequencyToSpectrogramInput =
-      this._componentRoot.querySelector(
-        ".js-playerSetting-matchFilterFrequencyToSpectrogram",
-      ) as HTMLInputElement;
-    matchFilterFrequencyToSpectrogramInput.checked =
-      settings.matchFilterFrequencyToSpectrogram;
-    this._addEventlistener(
-      matchFilterFrequencyToSpectrogramInput,
-      EventType.CHANGE,
-      () => {
-        hpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
-        lpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
-        hpfFrequencyInput.value = `${this._analyzeSettingService.minFrequency}`;
-        lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;
-
-        settings.matchFilterFrequencyToSpectrogram =
-          matchFilterFrequencyToSpectrogramInput.checked;
-        settings.hpfFrequency = Number(hpfFrequencyInput.value);
-        settings.lpfFrequency = Number(lpfFrequencyInput.value);
-      },
-    );
-    this._addEventlistener(
-      settings,
-      EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
-      (e: CustomEventInit) => {
-        matchFilterFrequencyToSpectrogramInput.checked = e.detail.value;
-      },
-    );
-
     // init enable high-pass filter checkbox
     const enableHpfInput = this._componentRoot.querySelector(".js-playerSetting-enableHpf") as HTMLInputElement;
     enableHpfInput.checked = settings.enableHpf;
@@ -129,6 +99,36 @@ export default class PlayerSettingsComponent extends Component {
       EventType.PS_UPDATE_LPF_FREQUENCY,
       (e: CustomEventInit) => {
         lpfFrequencyInput.value = `${e.detail.value}`;
+      },
+    );
+
+    // init match filter frequency checkbox
+    const matchFilterFrequencyToSpectrogramInput =
+      this._componentRoot.querySelector(
+        ".js-playerSetting-matchFilterFrequencyToSpectrogram",
+      ) as HTMLInputElement;
+    matchFilterFrequencyToSpectrogramInput.checked =
+      settings.matchFilterFrequencyToSpectrogram;
+    this._addEventlistener(
+      matchFilterFrequencyToSpectrogramInput,
+      EventType.CHANGE,
+      () => {
+        hpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
+        lpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
+        hpfFrequencyInput.value = `${this._analyzeSettingService.minFrequency}`;
+        lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;
+
+        settings.matchFilterFrequencyToSpectrogram =
+          matchFilterFrequencyToSpectrogramInput.checked;
+        settings.hpfFrequency = Number(hpfFrequencyInput.value);
+        settings.lpfFrequency = Number(lpfFrequencyInput.value);
+      },
+    );
+    this._addEventlistener(
+      settings,
+      EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
+      (e: CustomEventInit) => {
+        matchFilterFrequencyToSpectrogramInput.checked = e.detail.value;
       },
     );
 
