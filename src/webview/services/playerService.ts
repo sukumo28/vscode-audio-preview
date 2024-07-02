@@ -65,17 +65,16 @@ export default class PlayerService extends Service {
     this._lpfNode.Q.value = Math.SQRT1_2; // butterworth
 
     // play again if filter related setting is changed
-    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_ENABLE_HPF, this.applyFilters);
-    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_HPF_FREQUENCY, this.applyFilters);
-    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_ENABLE_LPF, this.applyFilters);
-    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_LPF_FREQUENCY, this.applyFilters);
-  }
-
-  private applyFilters() {
-    if(this.isPlaying){
-      this.pause();
-      this.play();
-    }
+    const applyFilters = () => {
+      if (this._isPlaying) {
+        this.pause();
+        this.play();
+      }
+    };
+    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_ENABLE_HPF, applyFilters);
+    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_HPF_FREQUENCY, applyFilters);
+    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_ENABLE_LPF, applyFilters);
+    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_LPF_FREQUENCY, applyFilters);
   }
 
   public play() {
