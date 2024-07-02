@@ -87,6 +87,41 @@ You can configure default value of player settings like example below.
     default: true
     */
     "enableSeekToPlay": true,
+
+    /*
+    Enable high-pass filter on playback.
+    true: enable high-pass filter, false: disable high-pass filter
+    default: false
+    */
+    "enableHpf": true,
+
+    /*
+    Cut off frequency for the high-pass filter in Hz. [10, sampleRate/2]
+    default: 100
+    */
+    "hpfFrequency": 100,
+
+    /*
+    Enable low-pass filter on playback.
+    true: enable low-pass filter, false: disable low-pass filter
+    default: false
+    */
+    "enableLpf": true,
+
+    /*
+    Cut off frequency for the low-pass filter in Hz. [10, sampleRate/2]
+    default: 100
+    */
+    "lpfFrequency": 10000,
+
+    /*
+    Match the filter frequencies to the frequency range of the analyzer.
+    Note that if this option is set to true, hpfFrequency and lpfFrequency is overridden by spectrogram frequency range settings.
+    true: automatically match the filter frequencies to the analyzer's frequency range
+    false: filter frequencies can be set independently of the analyzer's frequency range
+    default: false
+    */
+    "matchFilterFrequencyToSpectrogram": true,
 }
 ```
 

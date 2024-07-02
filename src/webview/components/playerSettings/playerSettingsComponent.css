@@ -1,0 +1,9 @@
+.playerSetting {
+  margin: 0.5em;
+}
+
+.playerSetting__input {
+  width: auto;
+  display: inline-block;
+  margin: 0.5em;
+}

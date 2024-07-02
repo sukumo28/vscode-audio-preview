@@ -21,8 +21,16 @@ describe("playerComponent", () => {
       initialVolume: 1.0,
       enableSpacekeyPlay: true,
       enableSeekToPlay: true,
+      enableHpf: false,
+      hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+      enableLpf: false,
+      lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+      matchFilterFrequencyToSpectrogram: false,
     };
-    playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
+    playerSettingService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
     playerService = new PlayerService(
       audioContext,
       audioBuffer,
@@ -108,8 +116,16 @@ describe("playerComponent", () => {
       initialVolume: 1.0,
       enableSpacekeyPlay: true,
       enableSeekToPlay: true,
+      enableHpf: false,
+      hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+      enableLpf: false,
+      lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+      matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerSettingService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
     const playerService = new PlayerService(
       audioContext,
       audioBuffer,
@@ -186,8 +202,16 @@ describe("playerComponent", () => {
       initialVolume: 1.0,
       enableSpacekeyPlay: false,
       enableSeekToPlay: true,
+      enableHpf: false,
+      hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+      enableLpf: false,
+      lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+      matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerSettingService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
     const playerService = new PlayerService(
       audioContext,
       audioBuffer,

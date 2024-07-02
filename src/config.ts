@@ -10,6 +10,11 @@ export interface PlayerDefault {
   initialVolume: number;
   enableSpacekeyPlay: boolean;
   enableSeekToPlay: boolean;
+  enableHpf: boolean;
+  hpfFrequency: number;
+  enableLpf: boolean;
+  lpfFrequency: number;
+  matchFilterFrequencyToSpectrogram: boolean;
 }
 
 export interface AnalyzeDefault {
