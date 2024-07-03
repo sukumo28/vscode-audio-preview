@@ -93,7 +93,7 @@ export default class PlayerSettingsService extends Service {
       PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
     );
 
-    if (this._hpfFrequency !== newValue) {
+    if (this._hpfFrequency !== newValue || value !== newValue) {
       this._hpfFrequency = newValue;
       this.dispatchEvent(
         new CustomEvent(EventType.PS_UPDATE_HPF_FREQUENCY, {
@@ -132,7 +132,7 @@ export default class PlayerSettingsService extends Service {
       PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
     );
 
-    if (this._lpfFrequency !== newValue) {
+    if (this._lpfFrequency !== newValue || value !== newValue) {
       this._lpfFrequency = newValue;
       this.dispatchEvent(
         new CustomEvent(EventType.PS_UPDATE_LPF_FREQUENCY, {
