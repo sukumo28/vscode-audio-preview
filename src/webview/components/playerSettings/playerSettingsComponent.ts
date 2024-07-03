@@ -109,6 +109,8 @@ export default class PlayerSettingsComponent extends Component {
       ) as HTMLInputElement;
     matchFilterFrequencyToSpectrogramInput.checked =
       settings.matchFilterFrequencyToSpectrogram;
+    hpfFrequencyInput.readOnly = settings.matchFilterFrequencyToSpectrogram;
+    lpfFrequencyInput.readOnly = settings.matchFilterFrequencyToSpectrogram;
     this._addEventlistener(
       matchFilterFrequencyToSpectrogramInput,
       EventType.CHANGE,

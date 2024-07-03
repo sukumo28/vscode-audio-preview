@@ -146,9 +146,18 @@ export default class PlayerSettingsService extends Service {
   public get matchFilterFrequencyToSpectrogram() {
     return this._matchFilterFrequencyToSpectrogram;
   }
-  public set matchFilterFrequencyToSpectrogram(value: boolean) {
-    this._matchFilterFrequencyToSpectrogram =
-      value === undefined ? false : value; // false by default
+  public set matchFilterFrequencyToSpectrogram(value: boolean) 
+  {
+    const newValue = value === undefined ? false : value; // false by default
+
+    if (this._matchFilterFrequencyToSpectrogram !== newValue) {
+      this._matchFilterFrequencyToSpectrogram = newValue;
+      this.dispatchEvent(
+        new CustomEvent(EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM, {
+          detail: { value: this._matchFilterFrequencyToSpectrogram },
+        }),
+      );
+    }
   }
 
   private constructor(
