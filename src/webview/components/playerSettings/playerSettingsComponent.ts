@@ -47,7 +47,9 @@ export default class PlayerSettingsComponent extends Component {
     const settings = this._playerSettingsService;
 
     // init enable high-pass filter checkbox
-    const enableHpfInput = this._componentRoot.querySelector(".js-playerSetting-enableHpf") as HTMLInputElement;
+    const enableHpfInput = this._componentRoot.querySelector(
+      ".js-playerSetting-enableHpf",
+    ) as HTMLInputElement;
     enableHpfInput.checked = settings.enableHpf;
     this._addEventlistener(enableHpfInput, EventType.CHANGE, () => {
       settings.enableHpf = enableHpfInput.checked;
@@ -61,7 +63,9 @@ export default class PlayerSettingsComponent extends Component {
     );
 
     // init high-pass filter frequency input
-    const hpfFrequencyInput = this._componentRoot.querySelector(".js-playerSetting-hpfFrequency") as HTMLInputElement;
+    const hpfFrequencyInput = this._componentRoot.querySelector(
+      ".js-playerSetting-hpfFrequency",
+    ) as HTMLInputElement;
     hpfFrequencyInput.value = `${settings.hpfFrequency}`;
     this._addEventlistener(hpfFrequencyInput, EventType.INPUT, () => {
       settings.hpfFrequency = Number(hpfFrequencyInput.value);
@@ -73,9 +77,11 @@ export default class PlayerSettingsComponent extends Component {
         hpfFrequencyInput.value = `${e.detail.value}`;
       },
     );
-    
+
     // init enable low-pass filter checkbox
-    const enableLpfInput = this._componentRoot.querySelector(".js-playerSetting-enableLpf") as HTMLInputElement;
+    const enableLpfInput = this._componentRoot.querySelector(
+      ".js-playerSetting-enableLpf",
+    ) as HTMLInputElement;
     enableLpfInput.checked = settings.enableLpf;
     this._addEventlistener(enableLpfInput, EventType.CHANGE, () => {
       settings.enableLpf = enableLpfInput.checked;
@@ -89,7 +95,9 @@ export default class PlayerSettingsComponent extends Component {
     );
 
     // init low-pass filter frequency input
-    const lpfFrequencyInput = this._componentRoot.querySelector(".js-playerSetting-lpfFrequency") as HTMLInputElement;
+    const lpfFrequencyInput = this._componentRoot.querySelector(
+      ".js-playerSetting-lpfFrequency",
+    ) as HTMLInputElement;
     lpfFrequencyInput.value = `${settings.lpfFrequency}`;
     this._addEventlistener(lpfFrequencyInput, EventType.INPUT, () => {
       settings.lpfFrequency = Number(lpfFrequencyInput.value);
@@ -115,11 +123,13 @@ export default class PlayerSettingsComponent extends Component {
       matchFilterFrequencyToSpectrogramInput,
       EventType.CHANGE,
       () => {
-        hpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
-        lpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
+        hpfFrequencyInput.readOnly =
+          matchFilterFrequencyToSpectrogramInput.checked;
+        lpfFrequencyInput.readOnly =
+          matchFilterFrequencyToSpectrogramInput.checked;
         settings.matchFilterFrequencyToSpectrogram =
-        matchFilterFrequencyToSpectrogramInput.checked;
-        
+          matchFilterFrequencyToSpectrogramInput.checked;
+
         if (matchFilterFrequencyToSpectrogramInput.checked) {
           hpfFrequencyInput.value = `${this._analyzeSettingService.minFrequency}`;
           lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;

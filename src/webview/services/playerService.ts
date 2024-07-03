@@ -71,10 +71,22 @@ export default class PlayerService extends Service {
         this.play();
       }
     };
-    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_ENABLE_HPF, applyFilters);
-    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_HPF_FREQUENCY, applyFilters);
-    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_ENABLE_LPF, applyFilters);
-    this._playerSettingsService.addEventListener(EventType.PS_UPDATE_LPF_FREQUENCY, applyFilters);
+    this._playerSettingsService.addEventListener(
+      EventType.PS_UPDATE_ENABLE_HPF,
+      applyFilters,
+    );
+    this._playerSettingsService.addEventListener(
+      EventType.PS_UPDATE_HPF_FREQUENCY,
+      applyFilters,
+    );
+    this._playerSettingsService.addEventListener(
+      EventType.PS_UPDATE_ENABLE_LPF,
+      applyFilters,
+    );
+    this._playerSettingsService.addEventListener(
+      EventType.PS_UPDATE_LPF_FREQUENCY,
+      applyFilters,
+    );
   }
 
   public play() {

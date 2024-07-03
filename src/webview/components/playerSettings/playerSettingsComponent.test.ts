@@ -65,7 +65,9 @@ describe("playerSettingsComponent", () => {
   });
 
   test("enable-hpf should be updated when user change enable-hpf-input", () => {
-    const enableHpf = document.querySelector(".js-playerSetting-enableHpf") as HTMLInputElement;
+    const enableHpf = document.querySelector(
+      ".js-playerSetting-enableHpf",
+    ) as HTMLInputElement;
     enableHpf.checked = true;
     enableHpf.dispatchEvent(new Event(EventType.CHANGE));
     expect(playerSettingsService.enableHpf).toBe(true);
@@ -82,7 +84,9 @@ describe("playerSettingsComponent", () => {
         },
       }),
     );
-    const enableHpf = document.querySelector(".js-playerSetting-enableHpf") as HTMLInputElement;
+    const enableHpf = document.querySelector(
+      ".js-playerSetting-enableHpf",
+    ) as HTMLInputElement;
     expect(enableHpf.checked).toBe(true);
 
     playerSettingsService.dispatchEvent(
@@ -97,7 +101,9 @@ describe("playerSettingsComponent", () => {
 
   test("hpf-frequency should be updated when user change hpf-frequency-input", () => {
     const hpfFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
-    const hpfFrequencyInput = document.querySelector(".js-playerSetting-hpfFrequency") as HTMLInputElement;
+    const hpfFrequencyInput = document.querySelector(
+      ".js-playerSetting-hpfFrequency",
+    ) as HTMLInputElement;
     hpfFrequencyInput.value = hpfFrequency.toString();
     hpfFrequencyInput.dispatchEvent(new Event(EventType.INPUT));
     expect(playerSettingsService.hpfFrequency).toBeCloseTo(hpfFrequency);
@@ -111,12 +117,16 @@ describe("playerSettingsComponent", () => {
         },
       }),
     );
-    const hpfFrequencyInput = document.querySelector(".js-playerSetting-hpfFrequency") as HTMLInputElement;
+    const hpfFrequencyInput = document.querySelector(
+      ".js-playerSetting-hpfFrequency",
+    ) as HTMLInputElement;
     expect(Number(hpfFrequencyInput.value)).toBeCloseTo(hpfFrequency);
   });
 
   test("enable-lpf should be updated when user change enable-lpf-input", () => {
-    const enableLpf = document.querySelector(".js-playerSetting-enableLpf") as HTMLInputElement;
+    const enableLpf = document.querySelector(
+      ".js-playerSetting-enableLpf",
+    ) as HTMLInputElement;
     enableLpf.checked = true;
     enableLpf.dispatchEvent(new Event(EventType.CHANGE));
     expect(playerSettingsService.enableLpf).toBe(true);
@@ -133,7 +143,9 @@ describe("playerSettingsComponent", () => {
         },
       }),
     );
-    const enableLpf = document.querySelector(".js-playerSetting-enableLpf") as HTMLInputElement;
+    const enableLpf = document.querySelector(
+      ".js-playerSetting-enableLpf",
+    ) as HTMLInputElement;
     expect(enableLpf.checked).toBe(true);
 
     playerSettingsService.dispatchEvent(
@@ -148,7 +160,9 @@ describe("playerSettingsComponent", () => {
 
   test("lpf-frequency should be updated when user change lpf-frequency-input", () => {
     const lpfFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
-    const lpfFrequencyInput = document.querySelector(".js-playerSetting-lpfFrequency") as HTMLInputElement;
+    const lpfFrequencyInput = document.querySelector(
+      ".js-playerSetting-lpfFrequency",
+    ) as HTMLInputElement;
     lpfFrequencyInput.value = lpfFrequency.toString();
     lpfFrequencyInput.dispatchEvent(new Event(EventType.INPUT));
     expect(playerSettingsService.lpfFrequency).toBeCloseTo(lpfFrequency);
@@ -162,15 +176,16 @@ describe("playerSettingsComponent", () => {
         },
       }),
     );
-    const lpfFrequencyInput = document.querySelector(".js-playerSetting-lpfFrequency") as HTMLInputElement;
+    const lpfFrequencyInput = document.querySelector(
+      ".js-playerSetting-lpfFrequency",
+    ) as HTMLInputElement;
     expect(Number(lpfFrequencyInput.value)).toBeCloseTo(lpfFrequency);
   });
 
   test("match-filter-frequency-to-spectrogram should be updated when user change match-filter-frequency-to-spectrogram-input", () => {
-    const matchFilterFrequencyToSpectrogram =
-      document.querySelector(
-        ".js-playerSetting-matchFilterFrequencyToSpectrogram",
-      ) as HTMLInputElement;
+    const matchFilterFrequencyToSpectrogram = document.querySelector(
+      ".js-playerSetting-matchFilterFrequencyToSpectrogram",
+    ) as HTMLInputElement;
     matchFilterFrequencyToSpectrogram.checked = true;
     matchFilterFrequencyToSpectrogram.dispatchEvent(
       new Event(EventType.CHANGE),
@@ -194,10 +209,9 @@ describe("playerSettingsComponent", () => {
         },
       ),
     );
-    const matchFilterFrequencyToSpectrogram =
-      document.querySelector(
-        ".js-playerSetting-matchFilterFrequencyToSpectrogram",
-      ) as HTMLInputElement;
+    const matchFilterFrequencyToSpectrogram = document.querySelector(
+      ".js-playerSetting-matchFilterFrequencyToSpectrogram",
+    ) as HTMLInputElement;
     expect(matchFilterFrequencyToSpectrogram.checked).toBe(true);
 
     playerSettingsService.dispatchEvent(
