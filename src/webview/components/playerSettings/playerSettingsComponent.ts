@@ -35,7 +35,7 @@ export default class PlayerSettingsComponent extends Component {
           <input class="playerSetting__input js-playerSetting-lpfFrequency" type="number" min="10" max="100000" step="10"> Hz
       </div>      
       <div>
-          <input class="playerSetting__input js-playerSetting-matchFilterFrequencyToSpectrogram" type="checkbox"> match to spectrogram frequency range
+          <input class="playerSetting__input js-playerSetting-matchFilterFrequencyToSpectrogram" type="checkbox">match to spectrogram frequency range
       </div>
     </div>
     `;
@@ -73,7 +73,7 @@ export default class PlayerSettingsComponent extends Component {
         hpfFrequencyInput.value = `${e.detail.value}`;
       },
     );
-
+    
     // init enable low-pass filter checkbox
     const enableLpfInput = this._componentRoot.querySelector(".js-playerSetting-enableLpf") as HTMLInputElement;
     enableLpfInput.checked = settings.enableLpf;
@@ -118,13 +118,13 @@ export default class PlayerSettingsComponent extends Component {
         hpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
         lpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
         settings.matchFilterFrequencyToSpectrogram =
-          matchFilterFrequencyToSpectrogramInput.checked;
+        matchFilterFrequencyToSpectrogramInput.checked;
         
         if (matchFilterFrequencyToSpectrogramInput.checked) {
           hpfFrequencyInput.value = `${this._analyzeSettingService.minFrequency}`;
           lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;
-        settings.hpfFrequency = Number(hpfFrequencyInput.value);
-        settings.lpfFrequency = Number(lpfFrequencyInput.value);
+          settings.hpfFrequency = Number(hpfFrequencyInput.value);
+          settings.lpfFrequency = Number(lpfFrequencyInput.value);
         }
       },
     );
