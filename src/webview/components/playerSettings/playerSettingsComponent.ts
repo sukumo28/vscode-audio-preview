@@ -117,13 +117,15 @@ export default class PlayerSettingsComponent extends Component {
       () => {
         hpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
         lpfFrequencyInput.readOnly = matchFilterFrequencyToSpectrogramInput.checked;
-        hpfFrequencyInput.value = `${this._analyzeSettingService.minFrequency}`;
-        lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;
-
         settings.matchFilterFrequencyToSpectrogram =
           matchFilterFrequencyToSpectrogramInput.checked;
+        
+        if (matchFilterFrequencyToSpectrogramInput.checked) {
+          hpfFrequencyInput.value = `${this._analyzeSettingService.minFrequency}`;
+          lpfFrequencyInput.value = `${this._analyzeSettingService.maxFrequency}`;
         settings.hpfFrequency = Number(hpfFrequencyInput.value);
         settings.lpfFrequency = Number(lpfFrequencyInput.value);
+        }
       },
     );
     this._addEventlistener(
