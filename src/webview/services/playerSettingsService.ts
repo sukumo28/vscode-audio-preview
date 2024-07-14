@@ -69,16 +69,12 @@ export default class PlayerSettingsService extends Service {
     return this._enableHpf;
   }
   public set enableHpf(value: boolean) {
-    const newValue = value === undefined ? false : value; // false by default
-
-    if (this._enableHpf !== newValue) {
-      this._enableHpf = newValue;
-      this.dispatchEvent(
-        new CustomEvent(EventType.PS_UPDATE_ENABLE_HPF, {
-          detail: { value: this._enableHpf },
-        }),
-      );
-    }
+    this._enableHpf = value === undefined ? false : value; // false by default
+    this.dispatchEvent(
+      new CustomEvent(EventType.PS_UPDATE_ENABLE_HPF, {
+        detail: { value: this._enableHpf },
+      }),
+    );
   }
 
   private _hpfFrequency: number;
@@ -86,21 +82,17 @@ export default class PlayerSettingsService extends Service {
     return this._hpfFrequency;
   }
   public set hpfFrequency(value: number) {
-    const newValue = getLimitedValueInRange(
+    this._hpfFrequency = getLimitedValueInRange(
       value,
       PlayerSettingsService.FILTER_FREQUENCY_MIN,
       this._sampleRate / 2,
       PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
     );
-
-    if (this._hpfFrequency !== newValue || value !== newValue) {
-      this._hpfFrequency = newValue;
-      this.dispatchEvent(
-        new CustomEvent(EventType.PS_UPDATE_HPF_FREQUENCY, {
-          detail: { value: this._hpfFrequency },
-        }),
-      );
-    }
+    this.dispatchEvent(
+      new CustomEvent(EventType.PS_UPDATE_HPF_FREQUENCY, {
+        detail: { value: this._hpfFrequency },
+      }),
+    );
   }
 
   private _enableLpf: boolean;
@@ -108,16 +100,12 @@ export default class PlayerSettingsService extends Service {
     return this._enableLpf;
   }
   public set enableLpf(value: boolean) {
-    const newValue = value === undefined ? false : value; // false by default
-
-    if (this._enableLpf !== newValue) {
-      this._enableLpf = newValue;
-      this.dispatchEvent(
-        new CustomEvent(EventType.PS_UPDATE_ENABLE_LPF, {
-          detail: { value: this._enableLpf },
-        }),
-      );
-    }
+    this._enableLpf = value === undefined ? false : value; // false by default
+    this.dispatchEvent(
+      new CustomEvent(EventType.PS_UPDATE_ENABLE_LPF, {
+        detail: { value: this._enableLpf },
+      }),
+    );
   }
 
   private _lpfFrequency: number;
@@ -125,21 +113,17 @@ export default class PlayerSettingsService extends Service {
     return this._lpfFrequency;
   }
   public set lpfFrequency(value: number) {
-    const newValue = getLimitedValueInRange(
+    this._lpfFrequency = getLimitedValueInRange(
       value,
       PlayerSettingsService.FILTER_FREQUENCY_MIN,
       this._sampleRate / 2,
       PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
     );
-
-    if (this._lpfFrequency !== newValue || value !== newValue) {
-      this._lpfFrequency = newValue;
-      this.dispatchEvent(
-        new CustomEvent(EventType.PS_UPDATE_LPF_FREQUENCY, {
-          detail: { value: this._lpfFrequency },
-        }),
-      );
-    }
+    this.dispatchEvent(
+      new CustomEvent(EventType.PS_UPDATE_LPF_FREQUENCY, {
+        detail: { value: this._lpfFrequency },
+      }),
+    );
   }
 
   private _matchFilterFrequencyToSpectrogram: boolean;
@@ -147,19 +131,15 @@ export default class PlayerSettingsService extends Service {
     return this._matchFilterFrequencyToSpectrogram;
   }
   public set matchFilterFrequencyToSpectrogram(value: boolean) {
-    const newValue = value === undefined ? false : value; // false by default
-
-    if (this._matchFilterFrequencyToSpectrogram !== newValue) {
-      this._matchFilterFrequencyToSpectrogram = newValue;
-      this.dispatchEvent(
-        new CustomEvent(
-          EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
-          {
-            detail: { value: this._matchFilterFrequencyToSpectrogram },
-          },
-        ),
-      );
-    }
+    this._matchFilterFrequencyToSpectrogram = value === undefined ? false : value; // false by default
+    this.dispatchEvent(
+      new CustomEvent(
+        EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
+        {
+          detail: { value: this._matchFilterFrequencyToSpectrogram },
+        },
+      ),
+    );
   }
 
   private constructor(
