@@ -131,7 +131,8 @@ export default class PlayerSettingsService extends Service {
     return this._matchFilterFrequencyToSpectrogram;
   }
   public set matchFilterFrequencyToSpectrogram(value: boolean) {
-    this._matchFilterFrequencyToSpectrogram = value === undefined ? false : value; // false by default
+    this._matchFilterFrequencyToSpectrogram =
+      value === undefined ? false : value; // false by default
     this.dispatchEvent(
       new CustomEvent(
         EventType.PS_UPDATE_MATCH_FILTER_FREQUENCY_TO_SPECTROGRAM,
