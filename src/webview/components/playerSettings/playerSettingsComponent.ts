@@ -67,7 +67,7 @@ export default class PlayerSettingsComponent extends Component {
       ".js-playerSetting-hpfFrequency",
     ) as HTMLInputElement;
     hpfFrequencyInput.value = `${settings.hpfFrequency}`;
-    this._addEventlistener(hpfFrequencyInput, EventType.INPUT, () => {
+    this._addEventlistener(hpfFrequencyInput, EventType.CHANGE, () => {
       settings.hpfFrequency = Number(hpfFrequencyInput.value);
     });
     this._addEventlistener(
@@ -99,7 +99,7 @@ export default class PlayerSettingsComponent extends Component {
       ".js-playerSetting-lpfFrequency",
     ) as HTMLInputElement;
     lpfFrequencyInput.value = `${settings.lpfFrequency}`;
-    this._addEventlistener(lpfFrequencyInput, EventType.INPUT, () => {
+    this._addEventlistener(lpfFrequencyInput, EventType.CHANGE, () => {
       settings.lpfFrequency = Number(lpfFrequencyInput.value);
     });
     this._addEventlistener(

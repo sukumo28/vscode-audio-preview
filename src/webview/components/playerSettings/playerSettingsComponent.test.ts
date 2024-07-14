@@ -105,7 +105,7 @@ describe("playerSettingsComponent", () => {
       ".js-playerSetting-hpfFrequency",
     ) as HTMLInputElement;
     hpfFrequencyInput.value = hpfFrequency.toString();
-    hpfFrequencyInput.dispatchEvent(new Event(EventType.INPUT));
+    hpfFrequencyInput.dispatchEvent(new Event(EventType.CHANGE));
     expect(playerSettingsService.hpfFrequency).toBeCloseTo(hpfFrequency);
   });
   test("hpf-frequency-input should be updated when recieving update-hpf-frequency event", () => {
@@ -164,7 +164,7 @@ describe("playerSettingsComponent", () => {
       ".js-playerSetting-lpfFrequency",
     ) as HTMLInputElement;
     lpfFrequencyInput.value = lpfFrequency.toString();
-    lpfFrequencyInput.dispatchEvent(new Event(EventType.INPUT));
+    lpfFrequencyInput.dispatchEvent(new Event(EventType.CHANGE));
     expect(playerSettingsService.lpfFrequency).toBeCloseTo(lpfFrequency);
   });
   test("lpf-frequency-input should be updated when recieving update-lpf-frequency event", () => {
