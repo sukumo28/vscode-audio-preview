@@ -20,6 +20,7 @@ jobs:
           node-version: 18.x
       - name: Install dependencies
         run: npm install
+      # The tests do not depend on the decoder, so there is no need to build the decoder
       - name: Lint
         run: npm run lint-check
       - name: Format
