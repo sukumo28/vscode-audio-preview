@@ -39,8 +39,16 @@ describe("analyserComponent", () => {
       initialVolume: 1.0,
       enableSpacekeyPlay: true,
       enableSeekToPlay: true,
+      enableHpf: false,
+      hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+      enableLpf: false,
+      lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+      matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
     const playerService = new PlayerService(
       audioContext,
       audioBuffer,
@@ -108,8 +116,16 @@ describe("auto analyze", () => {
       initialVolume: 1.0,
       enableSpacekeyPlay: true,
       enableSeekToPlay: true,
+      enableHpf: false,
+      hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+      enableLpf: false,
+      lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+      matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
     const playerService = new PlayerService(
       audioContext,
       audioBuffer,
@@ -158,8 +174,16 @@ describe("auto analyze", () => {
       initialVolume: 1.0,
       enableSpacekeyPlay: true,
       enableSeekToPlay: true,
+      enableHpf: false,
+      hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+      enableLpf: false,
+      lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+      matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
     const playerService = new PlayerService(
       audioContext,
       audioBuffer,
@@ -215,8 +239,16 @@ describe("position of seek-bar should be updated when recieving update-seekbar e
       initialVolume: 1.0,
       enableSpacekeyPlay: true,
       enableSeekToPlay: true,
+      enableHpf: false,
+      hpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_HPF_DEFAULT,
+      enableLpf: false,
+      lpfFrequency: PlayerSettingsService.FILTER_FREQUENCY_LPF_DEFAULT,
+      matchFilterFrequencyToSpectrogram: false,
     };
-    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(pd);
+    const playerSettingsService = PlayerSettingsService.fromDefaultSetting(
+      pd,
+      audioBuffer,
+    );
     playerService = new PlayerService(
       audioContext,
       audioBuffer,

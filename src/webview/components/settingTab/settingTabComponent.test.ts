@@ -2,12 +2,14 @@ import {
   MockAudioBuffer,
   postMessageFromWebview,
 } from "../../../__mocks__/helper";
-import { AnalyzeDefault } from "../../../config";
+import { AnalyzeDefault, PlayerDefault } from "../../../config";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import PlayerSettingsService from "../../services/playerSettingsService";
 import SettingTab from "./settingTabComponent";
 
 describe("settingTabComponent", () => {
+  let playerSettingService: PlayerSettingsService;
   let analyzeService: AnalyzeService;
   let analyzeSettingsService: AnalyzeSettingsService;
   let settingTabComponent: SettingTab;
@@ -24,8 +26,14 @@ describe("settingTabComponent", () => {
       analyzeDefault,
       audioBuffer,
     );
+    const playerDefault = {} as PlayerDefault;
+    playerSettingService = PlayerSettingsService.fromDefaultSetting(
+      playerDefault,
+      audioBuffer,
+    );
     settingTabComponent = new SettingTab(
       "#settingTab",
+      playerSettingService,
       analyzeService,
       analyzeSettingsService,
       audioBuffer,
@@ -44,6 +52,17 @@ describe("settingTabComponent", () => {
     for (const content of contents) {
       expect((content as HTMLElement).style.display).toBe("none");
     }
+  });
+
+  test("click player-button should show player content", () => {
+    const playerButton = document.querySelector(
+      ".js-settingTabButton-player",
+    ) as HTMLButtonElement;
+    playerButton.click();
+    const playerContent = document.querySelector(
+      ".js-settingTabContent-player",
+    ) as HTMLElement;
+    expect(playerContent.style.display).toBe("block");
   });
 
   test("click analyze-button should show analyze content", () => {
