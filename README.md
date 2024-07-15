@@ -5,7 +5,8 @@ You can also check waveform and spectrogram.
 
 Supported Audio Files: `wav`, `mp3`, `aac`, `ogg`, `flac`, `opus`, `m4a`, `sph` ... etc.
 
-Available on Marketplace: https://marketplace.visualstudio.com/items?itemName=sukumo28.wav-preview
+Available on Marketplace: https://marketplace.visualstudio.com/items?itemName=sukumo28.wav-preview  
+Repository: https://github.com/sukumo28/vscode-audio-preview
 
 > **Note**  
 > Please consider using the built-in audio playback feature as well.
