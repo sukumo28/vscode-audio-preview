@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.6.0 - 2024-07-15
+
+### Added
+
+- add bi-quad filters for playback audio path
+- add playerSetting tab
+- add setting enableHpf, enableLpf, hpfFrequency, lpfFrequency
+
+### Changed
+
+- If the number of data points in the selected range is less than five times the drawing width, the data is drawn with lines instead of points.
+
+### Fixed
+
+- Fix frequency range selection
+
 ## 2.5.0 - 2024-06-01
 
 ### Added
